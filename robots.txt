@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /studio.html
 
-Sitemap: https://YOUR-DOMAIN/sitemap.xml
+Sitemap: https://primznews.com/sitemap.xml

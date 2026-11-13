@@ -5,6 +5,9 @@
   .wrap { width: calc(100% - 40px); }
   .hero-grid { grid-template-columns: 1fr 1fr !important; }
   .lead-story { grid-column: 1 / -1; min-height: 460px !important; }
+  .secondary-stories { grid-column: 1 / -1; display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 18px !important; }
+  .secondary-card, .compact-feature { min-height: 0 !important; height: auto !important; }
+  .lead-image .image-location { display: none !important; }
   .latest-panel { grid-column: 1 / -1; }
   .community-edition,
   .topic-grid { grid-template-columns: 1fr 1fr !important; }
@@ -125,7 +128,7 @@
   .briefing { flex-wrap: wrap; gap: 8px 12px; padding: 12px 14px !important; }
   .briefing p { font-size: 15px; line-height: 1.5; flex: 1 1 100%; order: 3; }
   .briefing-label { font-size: 11px; }
-  .ticker-arrows { margin-left: auto; }
+  .ticker-arrows { margin-left: auto; display: flex; gap: 6px; }
 
   /* Hero: one column, lead first */
   .hero-section { padding-top: 22px !important; padding-bottom: 28px !important; }
