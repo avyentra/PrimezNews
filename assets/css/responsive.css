@@ -1,0 +1,230 @@
+/* Responsive overrides. Loaded last. Desktop (>1024px) is intentionally left unchanged. */
+
+/* ---------- Tablet and small laptop (641px – 1024px) ---------- */
+@media (max-width: 1024px) {
+  .wrap { width: calc(100% - 40px); }
+  .hero-grid { grid-template-columns: 1fr 1fr !important; }
+  .lead-story { grid-column: 1 / -1; min-height: 460px !important; }
+  .latest-panel { grid-column: 1 / -1; }
+  .community-edition,
+  .topic-grid { grid-template-columns: 1fr 1fr !important; }
+  .coverage-layout { grid-template-columns: 1fr !important; }
+  .feed-grid { grid-template-columns: 1fr 1fr !important; }
+  .district-inner { grid-template-columns: 1fr !important; }
+  .site-skin { display: none !important; }
+  .edition-sidebar { grid-column: 1 / -1; }
+  .perspective-grid { grid-template-columns: 1fr !important; }
+  .masthead .edition { font-size: 11px; }
+  .main-nav { overflow-x: auto; scrollbar-width: none; }
+  .main-nav::-webkit-scrollbar { display: none; }
+  .nav-links { flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-item { white-space: nowrap; flex: none; }
+}
+
+/* ---------- Phone (up to 720px) ---------- */
+@media (max-width: 720px) {
+  html, body { overflow-x: hidden; }
+  .wrap { width: calc(100% - 28px) !important; }
+
+  /* Utility bar: keep one line, hide the middle "sample" note */
+  .utility-inner { height: auto !important; min-height: 34px; flex-wrap: wrap; justify-content: center; gap: 4px 12px; padding: 6px 0; }
+  .utility-inner > span:first-child { font-size: 10px !important; letter-spacing: .6px; }
+  .utility-inner .demo { display: none !important; }
+  .utility-inner > div { font-size: 12px; }
+
+  /* Masthead: stacked, logo centred and fully visible */
+  .masthead-shell { background-position: 60% center !important; }
+  .masthead {
+    position: relative !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    padding: 14px 0 16px !important;
+  }
+  .masthead .edition {
+    position: static !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px 12px;
+    font-size: 11px !important;
+    line-height: 1.35;
+    padding: 0 !important;
+    border-left: 0 !important;
+  }
+  .masthead .edition .eyebrow { font-size: 10px; }
+  .masthead .weather { font-size: 12px; }
+  .masthead .wordmark {
+    position: static !important;
+    transform: none !important;
+    left: auto !important;
+    top: auto !important;
+    width: min(74vw, 300px) !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    align-items: center;
+  }
+  .masthead .wordmark img,
+  .masthead .wordmark .brand-logo-image { width: 100% !important; height: auto !important; display: block; }
+  .masthead .wordmark > span,
+  .masthead .wordmark i { display: revert; }
+  .masthead .mast-actions {
+    position: static !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px !important;
+    width: 100%;
+  }
+  .masthead .mast-actions .outline-button,
+  .masthead .mast-actions .blue-button { font-size: 13px; padding: 9px 12px; }
+
+  /* Edition info: one clean centred line, no side rule or box */
+  .masthead .edition {
+    width: 100% !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    text-align: center;
+    gap: 2px 10px !important;
+  }
+  .masthead .edition > span:not(.eyebrow) { white-space: nowrap; }
+
+  /* Masthead actions: plain icon row, no dark panel behind it */
+  .masthead .mast-actions {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  /* Masthead actions: one tidy row */
+  .masthead .mast-actions { display: flex !important; align-items: center !important; justify-content: center !important; }
+  .masthead .mast-actions > * { display: inline-flex !important; align-items: center; justify-content: center; gap: 6px; }
+  .masthead .icon-button { min-width: 44px; min-height: 44px; }
+  .masthead .watch-top { display: none !important; }
+
+  /* Nav: horizontal swipe row, no clipped text */
+  .nav-shell { overflow: hidden; }
+  .main-nav { height: auto !important; min-height: 52px; padding: 0 !important; }
+  .nav-links { gap: 2px !important; padding: 0 2px; }
+  .nav-item { padding: 14px 12px !important; font-size: 15px !important; }
+  .district-nav { display: none !important; }
+
+  /* Briefing strip */
+  .briefing { flex-wrap: wrap; gap: 8px 12px; padding: 12px 14px !important; }
+  .briefing p { font-size: 15px; line-height: 1.5; flex: 1 1 100%; order: 3; }
+  .briefing-label { font-size: 11px; }
+  .ticker-arrows { margin-left: auto; }
+
+  /* Hero: one column, lead first */
+  .hero-section { padding-top: 22px !important; padding-bottom: 28px !important; }
+  .section-line { flex-wrap: wrap; gap: 6px 12px; }
+  .section-line h1, .section-line h2 { font-size: 24px !important; line-height: 1.3 !important; }
+  .hero-grid { display: flex !important; flex-direction: column; gap: 18px !important; }
+  .lead-story { min-height: 560px !important; height: auto !important; display: flex !important; flex-direction: column; justify-content: flex-end; }
+  .lead-image { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; }
+  .lead-image img { height: 100%; width: 100%; object-fit: cover; }
+  .lead-image .image-tag { top: 14px !important; left: 14px !important; bottom: auto !important; }
+  .lead-image .image-location { display: none !important; }
+  .lead-image .cover-note { display: none !important; }
+  .lead-content { position: relative !important; padding: 0 16px 20px !important; }
+  .lead-content .story-meta { padding-top: 16px; }
+  .lead-content h2 { font-size: 24px !important; line-height: 1.35 !important; }
+  .lead-content p { font-size: 15px !important; }
+  .secondary-stories { display: flex; flex-direction: column; gap: 16px !important; }
+  .secondary-card { min-height: 0 !important; height: auto !important; }
+  .secondary-image { height: 190px !important; }
+  .compact-feature { display: flex; align-items: center; gap: 12px; }
+  .compact-feature > div { flex: 1; }
+  .politics-watermark { display: none; }
+  .latest-panel { padding: 16px !important; }
+
+  /* Story meta: never overlap (category + location) */
+  .story-meta { flex-wrap: wrap; gap: 6px 10px; }
+  .feed-card { min-height: 0 !important; height: auto !important; padding: 200px 0 0 !important; }
+  .feed-card .feed-image { position: absolute !important; top: 0; left: 0; right: 0; height: 200px !important; width: auto !important; }
+  .feed-card .feed-image img { width: 100%; height: 100%; object-fit: cover; }
+  .feed-card .photo-caption { left: 12px !important; top: 12px !important; bottom: auto !important; }
+  .feed-card .story-meta,
+  .feed-card .headline-button,
+  .feed-card .read-time { padding-left: 14px; padding-right: 14px; }
+  .feed-card .headline-button { display: block; text-align: left; }
+  .feed-card .story-meta { padding-top: 14px; }
+
+  /* Feed and coverage: single column */
+  .feed-grid,
+  .coverage-grid,
+  .topic-grid,
+  .community-edition,
+  .perspective-grid,
+  .district-chips { grid-template-columns: 1fr !important; }
+  .feed-grid { gap: 18px !important; }
+  .feed-tabs { overflow-x: auto; flex-wrap: nowrap !important; scrollbar-width: none; padding-bottom: 12px !important; }
+  .feed-tabs::-webkit-scrollbar { display: none; }
+  .feed-tabs button { flex: none; white-space: nowrap; }
+  .feed-footer { flex-direction: column; gap: 12px; align-items: stretch; }
+  .feed-footer .outline-button { width: 100%; }
+
+  /* Topic tiles: 2 per row so they stay tappable */
+  .topic-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px; }
+  .topic-tile { min-height: 96px; }
+
+  /* Community / ads */
+  .custom-ad-stack img { width: 100% !important; height: auto !important; max-height: none !important; }
+  .edition-sidebar { max-width: none !important; width: 100% !important; }
+  .pilgrimage-ad img { width: 100% !important; height: auto !important; }
+
+  /* Video */
+  .video-grid { display: flex !important; flex-direction: column; gap: 14px !important; }
+  .video-main { min-height: 280px !important; }
+  .video-side { display: flex; flex-direction: column; gap: 14px; }
+  .video-copy strong { font-size: 20px !important; }
+  .video-cta { padding: 16px !important; }
+
+  /* Coverage hub */
+  .coverage-column { min-width: 0; }
+
+  /* District */
+  .district-section { padding-top: 40px !important; padding-bottom: 40px !important; }
+  .district-art { display: none !important; }
+  .district-chip { font-size: 13px; padding: 9px 12px; }
+
+  /* Dialogs: full screen sheets */
+  dialog { width: calc(100vw - 20px) !important; max-width: none !important; max-height: calc(100dvh - 20px) !important; margin: 10px auto !important; overflow: auto; }
+  dialog h2 { font-size: 22px !important; }
+  #articleDialog img.article-image { width: 100%; height: auto; }
+  #articleDialog .article-actions { flex-direction: column; align-items: stretch; }
+  #articleDialog .article-actions button,
+  #articleDialog .article-actions a { width: 100%; margin-left: 0 !important; text-align: center; }
+  .search-field input { font-size: 16px; }
+
+  /* Footer */
+  .footer-main { grid-template-columns: 1fr !important; gap: 26px !important; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .footer-bottom a { font-size: 13px; }
+
+  /* Tap targets: at least 44px */
+  .icon-button, .round-arrow, .close-button, .save-button { min-width: 44px; min-height: 44px; }
+  .text-link { min-height: 40px; display: inline-flex; align-items: center; }
+  .toast { left: 14px; right: 14px; bottom: 16px; }
+}
+
+/* ---------- Very small phones (up to 380px) ---------- */
+@media (max-width: 380px) {
+  .masthead .edition { font-size: 10px !important; }
+  .masthead .mast-actions .outline-button { display: none; }
+  .lead-content h2 { font-size: 21px !important; }
+  .section-line h1, .section-line h2 { font-size: 21px !important; }
+  .topic-grid { grid-template-columns: 1fr !important; }
+}
