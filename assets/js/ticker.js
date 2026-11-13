@@ -1,13 +1,21 @@
-// Briefing strip ("बड़ी तस्वीर") as a right-to-left marquee. Loads after locale.js so translated text is measured.
+// Briefing strip ("बड़ी तस्वीर") as a right-to-left marquee, in the language chosen at the top of the page.
 (() => {
   const el = document.getElementById('ticker');
-  if (!el || typeof tickerItems === 'undefined' || !tickerItems.length) return;
+  if (!el) return;
+
+  const TICKER = [
+    { hi: 'खेत से शहर तक। पंजाब की हर कहानी, एक जगह।', en: 'From farm to city: every Punjab story, in one place.', pa: 'ਖੇਤ ਤੋਂ ਸ਼ਹਿਰ ਤੱਕ। ਪੰਜਾਬ ਦੀ ਹਰ ਕਹਾਣੀ, ਇੱਕ ਥਾਂ।' },
+    { hi: 'आपके जिले के मुद्दे। आपकी ज़िंदगी से जुड़ी बातें।', en: 'Issues from your district. Stories from your daily life.', pa: 'ਤੁਹਾਡੇ ਜ਼ਿਲ੍ਹੇ ਦੇ ਮੁੱਦੇ। ਤੁਹਾਡੀ ਜ਼ਿੰਦਗੀ ਨਾਲ ਜੁੜੀਆਂ ਗੱਲਾਂ।' },
+    { hi: 'राजनीति से खेल तक—खबर के साथ उसका संदर्भ भी।', en: 'From politics to sports, every story with its context.', pa: 'ਸਿਆਸਤ ਤੋਂ ਖੇਡਾਂ ਤੱਕ, ਹਰ ਖ਼ਬਰ ਦੇ ਨਾਲ ਉਸਦਾ ਸੰਦਰਭ ਵੀ।' }
+  ];
+  const currentLanguage = () => (typeof currentLang !== 'undefined' && ['en', 'hi', 'pa'].includes(currentLang) ? currentLang : 'pa');
+  const itemsFor = lang => TICKER.map(t => t[lang] || t.hi);
+
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isPhone = () => window.matchMedia('(max-width: 720px)').matches;
   const SEP = '  •  ';
-  const items = tickerItems;
 
-  // Take over the arrows from app.js (they used to swap text, which would wipe the marquee).
+  // The arrows swap text in app.js, which would wipe the marquee, so take them over.
   ['tickerPrev', 'tickerNext'].forEach(id => { const b = document.getElementById(id); if (b) b.onclick = null; });
 
   el.textContent = '';
@@ -16,19 +24,19 @@
   track.style.cssText = 'display:inline-block;will-change:transform';
   el.appendChild(track);
 
-  let copyW = 0, offsets = [], x = 0, hold = false, last = 0;
+  let copyW = 0, offsets = [], x = 0, hold = false, last = 0, items = itemsFor(currentLanguage());
 
-  function build() {
+  function build(keepPosition) {
     const keepX = x;
+    items = itemsFor(currentLanguage());
     track.textContent = '';
     const first = items.map(t => { const s = document.createElement('span'); s.textContent = t + SEP; return s; });
     first.forEach(s => track.appendChild(s));
     copyW = first.reduce((a, s) => a + s.getBoundingClientRect().width, 0);
     offsets = first.map((_, i) => first.slice(0, i).reduce((a, s) => a + s.getBoundingClientRect().width, 0));
-    // Repeat the set enough times to fill the strip, so the loop never shows a gap.
     const copies = Math.max(2, Math.ceil(el.clientWidth / Math.max(copyW, 1)) + 1);
     for (let c = 1; c < copies; c++) items.forEach(t => { const s = document.createElement('span'); s.textContent = t + SEP; track.appendChild(s); });
-    x = keepX || el.clientWidth;
+    x = keepPosition && keepX ? keepX : el.clientWidth;
   }
 
   function frame(now) {
@@ -62,7 +70,12 @@
   document.getElementById('tickerPrev')?.addEventListener('click', () => jump(-1));
   document.getElementById('tickerNext')?.addEventListener('click', () => jump(1));
 
-  build();
-  if ('ResizeObserver' in window) new ResizeObserver(() => build()).observe(el);
+  // Rebuild in the new language when the reader switches language (top bar buttons or the select).
+  const rebuildSoon = () => setTimeout(() => build(true), 0);
+  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.language')) rebuildSoon(); });
+  document.getElementById('siteLanguage')?.addEventListener('change', rebuildSoon);
+
+  build(false);
+  if ('ResizeObserver' in window) new ResizeObserver(() => build(true)).observe(el);
   requestAnimationFrame(frame);
 })();
