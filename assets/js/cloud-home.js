@@ -10,7 +10,7 @@
  function photo(s,cls){const img=node('img',undefined,cls);img.src=model.image(s);img.alt=s.photoCaption||s.en||s.title;img.decoding='async';img.loading='lazy';img.addEventListener('error',()=>{if(!img.dataset.fallback){img.dataset.fallback='true';img.src='assets/news-farm.webp';}});return img;}
  function link(s,cls){const a=node('a',undefined,cls);a.href=href(s);return a;}
  const category=s=>typeof label==='function'?label(s.category):s.category;
- function date(s){return new Date(s.published).toLocaleDateString('en-IN',{day:'numeric',month:'short',timeZone:'Asia/Kolkata'});}
+ function date(s){return window.PrimezLocaleFormatting.date(s.published,currentLang,false);}
  function render(){
   if(new URLSearchParams(location.search).has('story'))return;
   const selected=model.select(live,seed);stories.splice(0,stories.length,...selected,...seed.filter(s=>s.id==="video"));
