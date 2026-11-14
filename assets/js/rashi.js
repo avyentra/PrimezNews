@@ -4,7 +4,7 @@
 
  const el = id => document.getElementById(id);
  const query = new URLSearchParams(location.search).get('sign');
- const selected = /^(?:[0-9]|1[01])$/.test(query || '') ? Number(query) : 0;
+ let selected = /^(?:[0-9]|1[01])$/.test(query || '') ? Number(query) : 0;
  const unavailable = 'इस अवधि का राशिफल अभी उपलब्ध नहीं है।';
  const dateText = date => date.toLocaleDateString('hi-IN',{timeZone:'Asia/Kolkata',weekday:'long',day:'numeric',month:'long',year:'numeric'});
  const zodiacPaths = [
@@ -22,17 +22,23 @@
  'M4 2c7 4 7 16 0 20 M20 2c-7 4-7 16 0 20 M2 12h20'
  ];
  function zodiac(index) { const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.35');svg.setAttribute('stroke-linecap','round');svg.setAttribute('stroke-linejoin','round');svg.setAttribute('aria-hidden','true');const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',zodiacPaths[index]);svg.append(path);return svg; }
- el('signSymbol').replaceChildren(zodiac(selected));
- el('signTitle').textContent = signs[selected][0]+' राशिफल';
- el('signDate').textContent = 'अपनी नाम राशि या चंद्र राशि के अनुसार पढ़ें';
- el('pageDate').textContent = dateText(new Date());
- document.title = signs[selected][0]+' राशिफल आज | PrimezNews';
- signs.forEach((sign,index) => {
-  const a = document.createElement('a'); a.href = 'rashi.html?sign='+index; a.className = 'zodiac-tile'+(index===selected?' active':'');
-  if (index===selected) a.setAttribute('aria-current','page');
-  const icon = document.createElement('span'); icon.className = 'zodiac-symbol'; icon.append(zodiac(index)); icon.setAttribute('aria-hidden','true');
-  const label = document.createElement('span'); label.className = 'zodiac-name'; label.textContent = sign[0]; a.append(icon,label); el('signLinks').append(a);
- });
+ const language=()=>typeof window==='object'?(window.PrimezLanguage?.get()||'pa'):'hi';
+ const namesPa=['ਮੇਖ','ਬ੍ਰਿਖ','ਮਿਥੁਨ','ਕਰਕ','ਸਿੰਘ','ਕੰਨਿਆ','ਤੁਲਾ','ਬ੍ਰਿਸ਼ਚਕ','ਧਨੁ','ਮਕਰ','ਕੁੰਭ','ਮੀਨ'];
+ const namesEn=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+ const display=index=>language()==='pa'?namesPa[index]:language()==='en'?namesEn[index]:signs[index][0];
+ function renderHeader(){
+  el('signSymbol').replaceChildren(zodiac(selected));
+  el('signTitle').textContent=display(selected)+(language()==='pa'?' ਰਾਸ਼ੀਫਲ':language()==='en'?' horoscope':' राशिफल');
+  el('signDate').textContent=language()==='pa'?'ਆਪਣੀ ਨਾਮ ਰਾਸ਼ੀ ਜਾਂ ਚੰਦਰ ਰਾਸ਼ੀ ਅਨੁਸਾਰ ਪੜ੍ਹੋ':language()==='en'?'Read according to your name sign or Moon sign':'अपनी नाम राशि या चंद्र राशि के अनुसार पढ़ें';
+  document.title=el('signTitle').textContent+' | PrimezNews';
+  el('signLinks').replaceChildren();
+  signs.forEach((sign,index)=>{
+   const a=document.createElement('a');a.href='rashi.html?sign='+index;a.className='zodiac-tile'+(index===selected?' active':'');if(index===selected)a.setAttribute('aria-current','page');
+   const icon=document.createElement('span');icon.className='zodiac-symbol';icon.append(zodiac(index));icon.setAttribute('aria-hidden','true');const label=document.createElement('span');label.className='zodiac-name';label.textContent=display(index);a.append(icon,label);
+   a.addEventListener('click',event=>{event.preventDefault();selectSign(index,true);});el('signLinks').append(a);
+  });
+ }
+ renderHeader();el('pageDate').textContent=dateText(new Date());
  const tabs = [...document.querySelectorAll('.sign-card [role=tab]')];
  function activate(tab) { tabs.forEach(t => { const active=t===tab; t.setAttribute('aria-selected',String(active)); t.tabIndex=active?0:-1; el(t.getAttribute('aria-controls')).hidden=!active; }); }
  tabs.forEach((tab,index) => {
@@ -64,13 +70,22 @@
   });
   if(!el('luckyDetails').children.length){const p=document.createElement('p');p.className='rashi-muted';p.textContent='शुभ संकेत अभी उपलब्ध नहीं हैं।';el('luckyDetails').append(p);}
  }
- fetch('data/rashifal/latest.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Unavailable');return response.json();}).then(data=>{
-  const sign=data.signs?.[signs[selected][0]];if(!sign)throw new Error('Missing sign');
-  ['daily','weekly','monthly','yearly'].forEach(period=>{el('x-'+period).textContent=typeof sign[period]==='string'&&sign[period].trim()?sign[period]:unavailable;});
-  renderDetails(sign.details || {});
-  if(/^\d{4}-\d{2}-\d{2}$/.test(data.date||'')){const date=new Date(data.date+'T12:00:00+05:30');if(Number.isFinite(date.getTime()))el('pageDate').textContent=dateText(date);}
-  el('genNote').textContent=data.generated_by || 'स्रोत की जानकारी उपलब्ध नहीं है।';
- }).catch(()=>{['daily','weekly','monthly','yearly'].forEach(period=>{el('x-'+period).textContent=unavailable;});renderDetails({});el('genNote').textContent='डेटा लोड नहीं हो सका। कृपया कुछ देर बाद फिर कोशिश करें।';});
+ let loadedData=null,loadFailed=false;
+ function renderPeriods(){
+  const sign=loadedData?.signs?.[signs[selected][0]];
+  ['daily','weekly','monthly','yearly'].forEach(period=>{el('x-'+period).textContent=typeof sign?.[period]==='string'&&sign[period].trim()?sign[period]:unavailable;});
+  renderDetails(sign?.details||{});
+  if(/^\d{4}-\d{2}-\d{2}$/.test(loadedData?.date||'')){const date=new Date(loadedData.date+'T12:00:00+05:30');if(Number.isFinite(date.getTime()))el('pageDate').textContent=dateText(date);}
+  el('genNote').textContent=loadFailed?'डेटा लोड नहीं हो सका। कृपया कुछ देर बाद फिर कोशिश करें।':loadedData?.generated_by||'स्रोत की जानकारी उपलब्ध नहीं है।';
+ }
+ function selectSign(index,scroll=false){
+  if(!Number.isInteger(index)||index<0||index>11)return;
+  selected=index;renderHeader();renderPeriods();
+  if(typeof history==='object'&&typeof location.href==='string'){const url=new URL(location.href);url.searchParams.set('sign',String(index));history.replaceState(null,'',url.href);}
+  if(scroll&&typeof el('signLinks').scrollIntoView==='function')el('signLinks').scrollIntoView({behavior:'smooth',block:'start'});
+ }
+ if(typeof window==='object'){window.PrimezRashiView={select:selectSign};if(document.addEventListener)document.addEventListener('primez-language-change',()=>{renderHeader();renderPeriods();});}
+ fetch('data/rashifal/latest.json',{cache:'no-store'}).then(response=>{if(!response.ok)throw new Error('Unavailable');return response.json();}).then(data=>{loadedData=data;renderPeriods();}).catch(()=>{loadFailed=true;renderPeriods();});
  const toggle=document.querySelector('.menu-toggle'),links=el('navLinks');
  if(toggle && links)toggle.addEventListener('click',()=>{const open=!links.classList.contains('open');links.classList.toggle('open',open);toggle.setAttribute('aria-expanded',String(open));});
 })();

@@ -6,7 +6,7 @@
  const seed=stories.slice();let live=[];
  const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=String(text);if(cls)el.className=cls;return el;};
  const title=s=>typeof heading==='function'?heading(s):s.title||s.en;
- const href=s=>s.cloudId?'news.html?story='+encodeURIComponent(s.cloudId):'home-v2.html?story='+encodeURIComponent(s.id);
+ const href=s=>window.PrimezNewsURLs.href(s);
  function photo(s,cls){const img=node('img',undefined,cls);img.src=model.image(s);img.alt=s.photoCaption||s.en||s.title;img.decoding='async';img.loading='lazy';img.addEventListener('error',()=>{if(!img.dataset.fallback){img.dataset.fallback='true';img.src='assets/news-farm.webp';}});return img;}
  function link(s,cls){const a=node('a',undefined,cls);a.href=href(s);return a;}
  const category=s=>typeof label==='function'?label(s.category):s.category;

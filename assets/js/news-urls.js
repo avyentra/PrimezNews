@@ -1,0 +1,11 @@
+/* One URL rule for editor, ticker, homepage, search and article reader. */
+(function(root){
+ 'use strict';
+ const routes=root.PRIMEZ_NEWS_ROUTES||{};
+ function href(story){
+  const id=story.cloudId||story.id;
+  const slug=story.slug||routes[id];
+  return slug?'news/'+encodeURIComponent(slug)+'/':(story.cloudId?'news.html?story=':'home-v2.html?story=')+encodeURIComponent(id);
+ }
+ root.PrimezNewsURLs={href};
+})(window);
