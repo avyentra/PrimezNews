@@ -19,11 +19,11 @@
  const storyButton=(story,cls)=>{const button=node('button',null,cls+' story-open');button.type='button';button.dataset.story=story.id;return button;};
  function image(src,alt,cls){const img=node('img',null,cls);img.src=src;img.alt=alt;img.loading='lazy';img.decoding='async';return img;}
  const main=node('div',null,'faith-main'),lead=items[0],leadButton=storyButton(lead,'faith-lead');
- const leadImage=image('assets/amritsar.webp','श्री हरमंदिर साहिब, अमृतसर','faith-lead-image');leadImage.width=1200;leadImage.height=800;
+ const leadImage=image(window.PrimezHomeModel.image(lead),'प्रतीकात्मक तस्वीर','faith-lead-image');leadImage.width=1200;leadImage.height=800;
  const leadCopy=node('div',null,'faith-lead-copy');leadCopy.append(node('span','आस्था और विरासत','faith-tag'),node('h3',title(lead)),node('span',lead.district+' · '+lead.minutes+' मिनट पढ़ें','faith-meta'));
  leadButton.append(leadImage,leadCopy);main.append(leadButton);
  const rest=items.slice(1,3);
- if(rest.length){const secondary=node('div',null,'faith-secondary');rest.forEach((story,index)=>{const button=storyButton(story,'faith-compact');const photo=index===0?'assets/faith-heritage.jpg':'assets/faith-langar.jpg';const alt=index===0?'किला मुबारक, पटियाला — प्रतीकात्मक तस्वीर':'श्री हरमंदिर साहिब परिसर का लंगर — प्रतीकात्मक तस्वीर';const img=image(photo,alt,'faith-compact-image');img.width=160;img.height=120;const copy=node('span',null,'faith-compact-copy');copy.append(node('h3',title(story)),node('span',story.district+' · '+story.minutes+' मिनट','faith-meta'));button.append(img,copy);secondary.append(button);});main.append(secondary);}
+ if(rest.length){const secondary=node('div',null,'faith-secondary');rest.forEach((story,index)=>{const button=storyButton(story,'faith-compact');const photo=window.PrimezHomeModel.image(story);const alt='प्रतीकात्मक तस्वीर';const img=image(photo,alt,'faith-compact-image');img.width=160;img.height=120;const copy=node('span',null,'faith-compact-copy');copy.append(node('h3',title(story)),node('span',story.district+' · '+story.minutes+' मिनट','faith-meta'));button.append(img,copy);secondary.append(button);});main.append(secondary);}
  faith.append(main);
  const others=stories.filter(s=>s.category!=='Faith').slice(0,6);
  faith.classList.toggle('single',!others.length);

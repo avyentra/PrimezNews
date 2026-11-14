@@ -12,3 +12,18 @@ License: CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
 Qila Mubarak, Patiala.jpg — Journojp.
 Source: https://commons.wikimedia.org/wiki/File:Qila_Mubarak,_Patiala.jpg
 License: CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
+
+Additional illustrative topic photographs (Unsplash, displayed as symbolic images, not event photographs):
+news-farm: https://images.unsplash.com/photo-1500382017468-9049fed747ef
+news-computers: https://images.unsplash.com/photo-1516321318423-f06f85e504b3
+news-school: https://images.unsplash.com/photo-1503676260728-1c00da094a0b
+news-books: https://images.unsplash.com/photo-1507842217343-583bb7270b66
+news-health: https://images.unsplash.com/photo-1576091160399-112ba8d25d1d
+License: https://unsplash.com/license
+faith-heritage.webp: resized format conversion of the Qila Mubarak image credited above; CC BY-SA 4.0.
+
+Impact UI illustrative photographs (not photographs of a reported complaint):
+School: Sourav Debnath, https://unsplash.com/photos/fUdDCNJ3uw4
+Road: https://unsplash.com/photos/El5wbLuYhBU
+Water tap: Taichi Nakamura, https://unsplash.com/photos/_QzQ-C6PkXw
+License: https://unsplash.com/license
