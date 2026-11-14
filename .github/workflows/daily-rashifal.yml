@@ -1,0 +1,53 @@
+name: Daily Hindi Rashifal
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/daily-rashifal.yml'
+      - 'scripts/*rashifal*.py'
+  schedule:
+    # 00:47 UTC = 06:17 IST; scheduled runs may start late.
+    - cron: '47 0 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: daily-rashifal
+  cancel-in-progress: false
+jobs:
+  generate:
+    if: github.ref == 'refs/heads/main' && github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test generator without API calls
+        run: python -m unittest discover -s tests -p 'test_*.py'
+      - name: Generate keyless curated Hindi guidance
+        env:
+          RASHIFAL_PROVIDER: curated
+        run: python scripts/generate_rashifal.py
+      - name: Commit only validated Rashifal data
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/rashifal/
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update daily Hindi Rashifal'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Request Pages build explicitly
+        # GITHUB_TOKEN commits do not automatically trigger branch-based Pages builds.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent
+      - name: Write result
+        run: echo 'Validated Rashifal data is committed. Pages build requested; check Pages deployment for its final result.' >> "$GITHUB_STEP_SUMMARY"
