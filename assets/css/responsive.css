@@ -258,3 +258,19 @@
   .nav-links.open .nav-item{width:100%;text-align:left;padding:13px 4px;border-bottom:1px solid #eceae2;font-size:16px}
   .district-nav{white-space:nowrap}
 }
+
+/* Phone: news cards in the feed show one at a time and swipe horizontally (right to left). */
+@media (max-width: 720px) {
+  .feed-grid{display:flex!important;grid-template-columns:none!important;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;margin-inline:-16px;padding:4px 16px 14px;scroll-padding-inline:16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+  .feed-grid::-webkit-scrollbar{display:none}
+  .feed-grid>*{flex:0 0 calc(100% - 36px);min-width:0;scroll-snap-align:start}
+}
+
+/* Phone footer: brand and principle full width; "Explore" and "Closer to you" sit side by side. */
+@media (max-width: 720px) {
+  .footer-main{grid-template-columns:1fr 1fr!important;gap:22px 16px!important}
+  .footer-main>div:first-child,
+  .footer-main>.footer-principle{grid-column:1/-1}
+  .footer-main h4{margin-bottom:10px}
+  .footer-main a,.footer-main button{font-size:14px;padding:6px 0}
+}
