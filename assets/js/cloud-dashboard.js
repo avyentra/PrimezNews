@@ -35,12 +35,12 @@
   document.querySelector('input[name=mode][value=' + (s.status === 'scheduled' ? 'scheduled' : 'published') + ']').checked = true;
   el('publishAt').value = istInput(s.publish_at); mode();
   el('editorHeading').textContent = story ? 'Edit story' : 'New story'; el('editorStatus').textContent = s.status || 'Unsaved draft';
-  el('deleteStory').hidden = !story; dirty = false; feedback(''); renderList();
+  el('deleteStory').hidden = !story; dirty = false; feedback(''); renderList(); window.PrimezWorkspace.show('details'); window.PrimezWorkspace.closeRail();
  }
  function mode() { const scheduled = document.querySelector('input[name=mode]:checked').value === 'scheduled'; el('scheduleField').hidden = !scheduled; el('publish').textContent = scheduled ? 'Save schedule' : 'Publish now'; }
  async function refresh() { rows = await api.stories(); renderList(); }
  async function save(status) {
-  if (saving || !el('cloudStoryForm').reportValidity()) return;
+  if (saving || !window.PrimezWorkspace.validate()) return;
   saving = true;
   const controls = [...document.querySelectorAll('#cloudStoryForm input, #cloudStoryForm textarea, #cloudStoryForm select, #cloudStoryForm button, #saveDraft, #publish, #newStory, #deleteStory, #logout, #importDrafts')];
   const previousDisabled = controls.map(control => control.disabled);
@@ -54,7 +54,7 @@
    if (el('storyFile').files[0]) story.image = await api.upload(el('storyFile').files[0]);
    const saved = await api.save(story); dirty = false; await refresh(); select(saved);
    feedback(status === 'scheduled' ? 'Schedule saved in the database. Available publicly from ' + new Date(saved.publish_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}) + ' IST.' : status === 'published' ? 'Published. Your story is available to visitors.' : 'Draft saved securely to the database.');
-  } catch (error) { feedback(error.message || 'Save failed. Your changes remain in the form.'); }
+  } catch (error) { if (status !== 'draft' && !el('body').value.trim()) window.PrimezWorkspace.show('article'); else if (status === 'scheduled' && !el('publishAt').value) window.PrimezWorkspace.show('publishing'); feedback(error.message || 'Save failed. Your changes remain in the form.'); }
   finally { saving = false; controls.forEach((control,index) => { control.disabled = previousDisabled[index]; }); }
  }
  try {
