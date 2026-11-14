@@ -8,7 +8,12 @@
     if (!configured) throw new Error('Backend setup pending. Add the Supabase project URL and public key in assets/js/backend-config.js.');
     if (!root.supabase) throw new Error('Unable to load sign-in service. Check your connection and reload.');
     return client || (client = root.supabase.createClient(cfg.url, cfg.publicKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true,
+        storage: {
+          getItem: key => sessionStorage.getItem(key) || localStorage.getItem(key),
+          setItem: (key, value) => { const remember = localStorage.getItem('primezRemember') === 'yes'; (remember ? localStorage : sessionStorage).setItem(key, value); (remember ? sessionStorage : localStorage).removeItem(key); },
+          removeItem: key => { sessionStorage.removeItem(key); localStorage.removeItem(key); }
+        } }
     }));
   }
   function check(result) { if (result.error) throw result.error; return result.data; }
@@ -57,7 +62,7 @@
   }
   root.PrimezAPI = {
     configured, db, requireEditor, validateStory, istToISO, safeUrl, image,
-    async login(identifier, password) { const email = identifier.includes('@') ? identifier.trim() : cfg.usernames?.[identifier.trim().toLowerCase()]; if (!email) throw new Error('User ID is not configured. Sign in with your email address.'); check(await db().auth.signInWithPassword({ email, password })); return requireEditor(); },
+    async login(identifier, password, remember = false) { localStorage.setItem('primezRemember', remember ? 'yes' : 'no'); const email = identifier.includes('@') ? identifier.trim() : cfg.usernames?.[identifier.trim().toLowerCase()]; if (!email) throw new Error('User ID is not configured. Sign in with your email address.'); check(await db().auth.signInWithPassword({ email, password })); return requireEditor(); },
     async logout() { check(await db().auth.signOut()); },
     async recover(email) { check(await db().auth.resetPasswordForEmail(email, { redirectTo: new URL('reset-password.html', location.href).href })); },
     async reset(password) { check(await db().auth.updateUser({ password })); },

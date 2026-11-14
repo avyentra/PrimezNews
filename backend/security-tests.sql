@@ -18,7 +18,7 @@ reset role;
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-000000000001","role":"authenticated"}',true);
 do $$ begin
- if public.is_newsroom_editor() then raise exception 'Non-editor gained editor access';end if;
+ if newsroom_private.is_newsroom_editor() then raise exception 'Non-editor gained editor access';end if;
  if exists(select 1 from public.stories where id='test-draft') then raise exception 'Non-editor read draft';end if;
  begin
   insert into public.newsroom_editors(user_id) values ('00000000-0000-0000-0000-000000000001');
