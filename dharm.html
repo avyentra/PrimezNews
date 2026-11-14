@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>धर्म और आस्था | पंजाब की धार्मिक खबरें | PrimezNews</title>
+<meta name="description" content="पंजाब की धार्मिक खबरें, गुरपुरब, त्योहार, आस्था और संस्कृति से जुड़ी ताज़ा जानकारी PrimezNews पर।">
+<link rel="canonical" href="https://primznews.com/dharm.html">
+<meta name="keywords" content="धर्म, आस्था, गुरपुरब, पंजाब धार्मिक खबरें, Punjab religion news">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PrimezNews">
+<meta property="og:title" content="धर्म और आस्था | पंजाब की धार्मिक खबरें | PrimezNews">
+<meta property="og:description" content="पंजाब की धार्मिक खबरें, गुरपुरब, त्योहार, आस्था और संस्कृति से जुड़ी ताज़ा जानकारी PrimezNews पर।">
+<meta property="og:url" content="https://primznews.com/dharm.html">
+<meta property="og:image" content="https://primznews.com/assets/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="धर्म और आस्था | पंजाब की धार्मिक खबरें | PrimezNews">
+<meta name="twitter:description" content="पंजाब की धार्मिक खबरें, गुरपुरब, त्योहार, आस्था और संस्कृति से जुड़ी ताज़ा जानकारी PrimezNews पर।">
+<meta name="twitter:image" content="https://primznews.com/assets/og-image.jpg">
+<link rel="icon" href="assets/primznews-logo.svg">
+<link rel="stylesheet" href="assets/css/legal.css?v=20261114b">
+<style>
+.faith-list-page{display:grid;grid-template-columns:1fr;gap:16px;margin-top:20px}
+.faith-card{display:grid;grid-template-columns:200px 1fr;gap:18px;background:#fff;border:1px solid #e4e7f0;border-radius:10px;overflow:hidden;text-decoration:none;color:#1d1d2b}
+.faith-card img{width:100%;height:100%;min-height:130px;object-fit:cover;display:block}
+.faith-card div{padding:14px 16px 14px 0}
+.faith-card h2{font-size:19px;margin:6px 0 8px;color:#181642}
+.faith-card small{color:#6b6f7c;font-size:13px}
+.faith-card:hover h2{color:#8b64e4}
+.faith-tag{font-size:11px;font-weight:700;letter-spacing:1px;color:#8a5a00;text-transform:uppercase}
+@media (max-width:720px){.faith-card{grid-template-columns:1fr}.faith-card img{min-height:0;height:170px}.faith-card div{padding:0 14px 14px}}
+</style>
+</head>
+<body>
+<header>
+  <a href="index.html">Primez<span>News.</span></a>
+  <nav><a href="index.html">होम</a><a href="rashi.html">राशिफल</a><a href="dharm.html">धर्म</a><a href="about-us.html">About us</a><a href="contact.html">Contact</a></nav>
+</header>
+<main>
+  <span class="kicker">धर्म · आस्था और संस्कृति</span>
+  <h1>धर्म</h1>
+  <p>पंजाब के त्योहार, गुरुपर्व, मेले और आस्था से जुड़ी खबरें।</p>
+  <div class="faith-list-page" id="faithPage"><p class="card">इस श्रेणी की खबरें जल्द आएँगी।</p></div>
+</main>
+<footer>© 2026 PrimezNews · PrimezNews.com is a digital news portal operated by SHARVIX Studio. · <a href="privacy-policy.html">Privacy</a> · <a href="grievance-redressal.html">Grievance</a> · <a href="advertise.html">Advertise</a> · <a href="contact.html">Contact</a></footer>
+<script>
+fetch('stories.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(list){
+  var items=list.filter(function(s){return s.category==='Faith'});
+  var el=document.getElementById('faithPage');
+  if(!items.length)return;
+  el.innerHTML=items.map(function(s){
+    return '<a class="faith-card" href="home-v2.html?story='+encodeURIComponent(s.id)+'"><img loading="lazy" decoding="async" src="assets/'+s.image+'.webp" alt="'+String(s.title).replace(/"/g,'&quot;')+'" width="800" height="450"><div><span class="faith-tag">'+s.district+'</span><h2>'+s.title+'</h2><small>'+s.minutes+' मिनट पढ़ें</small></div></a>';
+  }).join('');
+}).catch(function(){});
+</script>
+</body>
+</html>
