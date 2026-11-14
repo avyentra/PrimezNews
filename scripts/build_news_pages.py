@@ -56,6 +56,9 @@ def build():
         slug=s['slug']
         if '/' in slug or '\\' in slug or slug in ('.','..'):raise ValueError('Unsafe slug')
         path=ROOT/'news'/slug/'index.html';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(page(template,s));paths.append(str(path.relative_to(ROOT)));routes[s['id']]=slug
+        for alias in s.get('slug_aliases',[]):
+            if '/' in alias or '\\' in alias or alias in ('.','..'):raise ValueError('Unsafe alias')
+            legacy=ROOT/'news'/alias/'index.html';legacy.parent.mkdir(parents=True,exist_ok=True);legacy.write_text(page(template,s));paths.append(str(legacy.relative_to(ROOT)))
     manifest=ROOT/'data/news-pages.json'
     old=json.loads(manifest.read_text()) if manifest.exists() else []
     for stale in set(old)-set(paths):
