@@ -18,3 +18,5 @@
   .briefing-label { font-size: 16px !important; }
   #ticker { font-size: 16px !important; }
 }
+#ticker{overflow:hidden;white-space:nowrap;position:relative;min-width:0}.headline-ticker-track{display:inline-block;will-change:transform}.headline-ticker-item{display:inline-block}.headline-ticker-item a{display:inline-block;color:#ffcf64;text-decoration:none;padding:8px 0}.headline-ticker-item a:hover{text-decoration:underline;text-underline-offset:4px}.headline-ticker-item a:focus-visible{outline:2px solid #fff;outline-offset:-2px}.headline-ticker-item>span{padding:0 16px}
+@media(prefers-reduced-motion:reduce){.headline-ticker-track{will-change:auto}}

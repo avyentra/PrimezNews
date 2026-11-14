@@ -1,0 +1,14 @@
+/* Homepage masthead/footer behaviour on the public reading page. */
+(function(){'use strict';const el=id=>document.getElementById(id),nav=el('navLinks'),menu=document.querySelector('.menu-toggle');
+ const language=()=>window.PrimezLanguage?.get()||'pa';const text=(pa,hi,en)=>({pa,hi,en}[language()]);
+ function openMenu(value){nav.classList.toggle('open',value);menu.setAttribute('aria-expanded',String(value));}menu.addEventListener('click',()=>openMenu(menu.getAttribute('aria-expanded')!=='true'));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')openMenu(false);});
+ document.addEventListener('click',e=>{const category=e.target.closest('[data-category],[data-footer-category]');if(category){e.preventDefault();const key=category.dataset.category||category.dataset.footerCategory;location.href=key==='All'?'index.html':'home-v2.html?category='+encodeURIComponent(key);}const close=e.target.closest('[data-reader-close]');if(close)el(close.dataset.readerClose).close();});
+ el('tipFooter').addEventListener('click',()=>location.href='index.html#tipOpen');
+ function results(host,rows){host.replaceChildren();if(!rows.length){host.textContent=text('ਇਸ ਚੋਣ ਲਈ ਕੋਈ ਪ੍ਰਕਾਸ਼ਿਤ ਖ਼ਬਰ ਨਹੀਂ ਮਿਲੀ।','इस चयन के लिए कोई प्रकाशित खबर नहीं मिली।','No published stories found for this selection.');return;}rows.forEach(s=>{const a=document.createElement('a');a.href='news.html?story='+encodeURIComponent(s.id);const h=document.createElement('h3');h.textContent=window.PrimezReader.headline(s);const p=document.createElement('p');p.textContent=s.district;a.append(h,p);host.append(a);});}
+ function search(){const query=el('readerSearchInput').value.trim().toLowerCase();results(el('readerSearchResults'),(window.PrimezReader?.stories()||[]).filter(s=>[s.title,s.en,s.pa,s.summary,s.district,...(window.PRIMEZ_LOCALE_ROWS.find(row=>row[0]===s.district)||[])].join(' ').toLowerCase().includes(query)));}
+ function saved(){let ids=[];try{const value=JSON.parse(localStorage.getItem('punjabSaved')||'[]');if(Array.isArray(value))ids=value;}catch{}el('savedCount').textContent=ids.length;results(el('readerSavedResults'),(window.PrimezReader?.stories()||[]).filter(s=>ids.includes(s.id)));}
+ el('searchOpen').addEventListener('click',()=>{search();el('readerSearch').showModal();el('readerSearchInput').focus();});el('readerSearchInput').addEventListener('input',search);el('savedOpen').addEventListener('click',()=>{saved();el('readerSaved').showModal();});
+ function date(){el('liveDate').textContent=window.PrimezLocaleFormatting.date(Date.now(),language());}
+ document.addEventListener('primez-reader-updated',()=>{search();saved();});document.addEventListener('primez-saved-change',saved);document.addEventListener('primez-language-change',()=>{date();search();saved();});date();saved();
+})();
