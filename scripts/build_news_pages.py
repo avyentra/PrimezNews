@@ -28,10 +28,11 @@ def page(template,s):
     title=s.get('pa') or s['title'];url=BASE+'news/'+quote(s['slug'])+'/'
     desc=s.get('summary','')[:200];photo=image(s)
     metadata='<link rel="canonical" href="'+url+'">'
-    for key,value in [('og:type','article'),('og:title',title),('og:description',desc),('og:url',url),('og:image',photo),('twitter:card','summary_large_image')]:
-        metadata+='<meta property="'+key+'" content="'+escape(value)+'">'
-    data={'@context':'https://schema.org','@type':'NewsArticle','headline':title,'description':desc,'mainEntityOfPage':url,'image':[photo],'datePublished':s.get('publish_at') or s.get('published'),'dateModified':s.get('updated_at') or s.get('publish_at') or s.get('published'),'author':{'@type':'Person','name':s.get('author') or s.get('source') or 'PrimezNews Editorial Desk'},'publisher':{'@type':'Organization','name':'PrimezNews','url':BASE},'inLanguage':'pa'}
-    metadata+='<script type="application/ld+json">'+json.dumps(data,ensure_ascii=False).replace('<','\\u003c')+'</script>'
+    for key,value in [('og:type','article'),('og:title',title),('og:description',desc),('og:url',url),('og:image',photo),('og:site_name','PrimezNews'),('twitter:card','summary_large_image'),('twitter:title',title),('twitter:description',desc),('twitter:image',photo)]:
+        metadata+='<meta '+('name' if key.startswith('twitter:') else 'property')+'="'+key+'" content="'+escape(value)+'">'
+    data={'@context':'https://schema.org','@type':'NewsArticle','headline':title,'description':desc,'mainEntityOfPage':url,'image':[photo],'datePublished':s.get('publish_at') or s.get('published'),'dateModified':s.get('updated_at') or s.get('publish_at') or s.get('published'),'author':{'@type':'Person','name':s.get('author') or s.get('source') or 'PrimezNews Editorial Desk'},'publisher':{'@type':'NewsMediaOrganization','name':'PrimezNews','url':BASE,'logo':{'@type':'ImageObject','url':BASE+'assets/primznews-logo-new.webp'}},'inLanguage':'pa'}
+    metadata+='<script type="application/ld+json">'+json.dumps({'@context':'https://schema.org','@graph':[data,{'@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':1,'name':'PrimezNews','item':BASE},{'@type':'ListItem','position':2,'name':'News','item':BASE+'news.html'},{'@type':'ListItem','position':3,'name':title,'item':url}]}]},ensure_ascii=False).replace('<','\\u003c')+'</script>'
+    template=re.sub(r'<link rel="canonical"[^>]*>|<meta (?:property="og:[^"]+"|name="twitter:[^"]+")[^>]*>','',template)
     out=template.replace('<html lang="pa">','<html lang="pa" data-story-id="'+escape(s['id'])+'">').replace('<head>','<head><base href="/PrimezNews/">'+metadata)
     out=re.sub(r'<title>.*?</title>',lambda _: '<title>'+escape(title)+' | PrimezNews</title>',out,count=1)
     out=re.sub(r'<meta name="description" content="[^"]*">',lambda _: '<meta name="description" content="'+escape(desc)+'">',out,count=1)
@@ -68,7 +69,8 @@ def build():
         if p.parent.parent==ROOT/'news':shutil.rmtree(p.parent)
     manifest.write_text(json.dumps(paths,ensure_ascii=False,indent=2)+'\n')
     (ROOT/'assets/js/news-routes.js').write_text('window.PRIMEZ_NEWS_ROUTES='+json.dumps(routes,ensure_ascii=False,separators=(',',':'))+';\n')
-    fallback=template.replace('<html lang="pa">','<html lang="pa" data-news-fallback="true">').replace('<head>','<head><base href="/PrimezNews/"><meta name="robots" content="noindex">')
+    fallback_template=re.sub(r'<meta name="robots"[^>]*>','',template)
+    fallback=fallback_template.replace('<html lang="pa">','<html lang="pa" data-news-fallback="true">').replace('<head>','<head><base href="/PrimezNews/"><meta name="robots" content="noindex">')
     (ROOT/'404.html').write_text(fallback)
     # Only genuine public articles and established public pages enter the sitemap.
     pages=['','news.html','rashi.html','dharm.html','about-us.html','editorial-policy.html','privacy-policy.html','grievance-redressal.html','contact.html','advertise.html']
