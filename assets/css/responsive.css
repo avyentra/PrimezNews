@@ -405,3 +405,4 @@
 @media (max-width:640px){.wordmark .brand-logo-image{max-width:200px}.wordmark-tag{font-size:8px;letter-spacing:1.4px}}
 .wordmark>.wordmark-tag{font-size:13px!important;letter-spacing:2.6px!important;line-height:1.2!important;margin:0}
 @media (max-width:640px){.wordmark>.wordmark-tag{font-size:8px!important;letter-spacing:1.4px!important}}
+@media (max-width:640px){.masthead .wordmark .brand-logo-image{width:min(76vw,310px)!important;max-width:none!important;height:auto!important}}
