@@ -16,6 +16,9 @@ begin
  ) x;
  candidate := trim(both '-' from array_to_string(words,'-'));
  if candidate is null or candidate = '' then candidate := 'punjab-news'; end if;
+ -- Keep UTF-8 directory names below filesystem limits, even for a very long word.
+ while octet_length(candidate)>180 loop candidate := left(candidate,length(candidate)-1); end loop;
+ candidate := rtrim(candidate,'-');
  -- Lock one candidate to avoid concurrent editor publications choosing the same URL.
  perform pg_advisory_xact_lock(hashtextextended(candidate,0));
  if exists(select 1 from public.stories s where s.slug=candidate and s.id<>NEW.id) then
