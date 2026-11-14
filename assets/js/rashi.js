@@ -1,7 +1,7 @@
 (function () {
  'use strict';
  const signs = [['मेष','♈'],['वृषभ','♉'],['मिथुन','♊'],['कर्क','♋'],['सिंह','♌'],['कन्या','♍'],['तुला','♎'],['वृश्चिक','♏'],['धनु','♐'],['मकर','♑'],['कुंभ','♒'],['मीन','♓']];
- const dates = ['21 मार्च – 19 अप्रैल','20 अप्रैल – 20 मई','21 मई – 20 जून','21 जून – 22 जुलाई','23 जुलाई – 22 अगस्त','23 अगस्त – 22 सितंबर','23 सितंबर – 22 अक्टूबर','23 अक्टूबर – 21 नवंबर','22 नवंबर – 21 दिसंबर','22 दिसंबर – 19 जनवरी','20 जनवरी – 18 फरवरी','19 फरवरी – 20 मार्च'];
+
  const el = id => document.getElementById(id);
  const query = new URLSearchParams(location.search).get('sign');
  const selected = /^(?:[0-9]|1[01])$/.test(query || '') ? Number(query) : 0;
@@ -24,7 +24,7 @@
  function zodiac(index) { const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.35');svg.setAttribute('stroke-linecap','round');svg.setAttribute('stroke-linejoin','round');svg.setAttribute('aria-hidden','true');const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',zodiacPaths[index]);svg.append(path);return svg; }
  el('signSymbol').replaceChildren(zodiac(selected));
  el('signTitle').textContent = signs[selected][0]+' राशिफल';
- el('signDate').textContent = dates[selected];
+ el('signDate').textContent = 'अपनी नाम राशि या चंद्र राशि के अनुसार पढ़ें';
  el('pageDate').textContent = dateText(new Date());
  document.title = signs[selected][0]+' राशिफल आज | PrimezNews';
  signs.forEach((sign,index) => {
@@ -33,7 +33,7 @@
   const icon = document.createElement('span'); icon.className = 'zodiac-symbol'; icon.append(zodiac(index)); icon.setAttribute('aria-hidden','true');
   const label = document.createElement('span'); label.className = 'zodiac-name'; label.textContent = sign[0]; a.append(icon,label); el('signLinks').append(a);
  });
- const tabs = [...document.querySelectorAll('[role=tab]')];
+ const tabs = [...document.querySelectorAll('.sign-card [role=tab]')];
  function activate(tab) { tabs.forEach(t => { const active=t===tab; t.setAttribute('aria-selected',String(active)); t.tabIndex=active?0:-1; el(t.getAttribute('aria-controls')).hidden=!active; }); }
  tabs.forEach((tab,index) => {
   tab.addEventListener('click',()=>activate(tab));
