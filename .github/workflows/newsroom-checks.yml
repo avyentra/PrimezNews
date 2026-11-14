@@ -10,7 +10,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/newsroom.test.cjs
+      - run: node --test tests/*.test.cjs
       - name: Check JavaScript syntax
         run: |
           for file in assets/js/*.js; do node --check "$file"; done
