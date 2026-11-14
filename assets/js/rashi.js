@@ -6,7 +6,8 @@
  const query = new URLSearchParams(location.search).get('sign');
  let selected = /^(?:[0-9]|1[01])$/.test(query || '') ? Number(query) : 0;
  const unavailable = 'इस अवधि का राशिफल अभी उपलब्ध नहीं है।';
- const dateText = date => date.toLocaleDateString('hi-IN',{timeZone:'Asia/Kolkata',weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ const dateText = date => window.PrimezLocaleFormatting?window.PrimezLocaleFormatting.date(date,window.PrimezLanguage?.get()||'pa'):date.toLocaleDateString('hi-IN',{timeZone:'Asia/Kolkata',day:'numeric',month:'long',year:'numeric'});
+ const localText=value=>window.PrimezRashiTranslations?.text(String(value),window.PrimezLanguage?.get()||'pa')??String(value);
  const zodiacPaths = [
  'M12 21V8C12-1 1 1 3 8l3 6 M12 8C12-1 23 1 21 8l-3 6',
  'M5 2c0 7 14 7 14 0 M19 14a7 7 0 1 1-14 0 7 7 0 0 1 14 0',
@@ -59,24 +60,24 @@
   el('detailList').replaceChildren();
   [['career','करियर'],['money','धन'],['love','प्रेम'],['family','परिवार'],['health','स्वास्थ्य'],['remedy','उपाय']].forEach(([key,label]) => {
    if(details[key]===undefined || details[key]===null || details[key]==='') return;
-   const card=document.createElement('section');card.className='detail-topic';const copy=document.createElement('div');const h=document.createElement('h3');h.textContent=label;const p=document.createElement('p');p.textContent=String(details[key]);copy.append(h,p);card.append(icon(key),copy);el('detailList').append(card);
+   const card=document.createElement('section');card.className='detail-topic';const copy=document.createElement('div');const h=document.createElement('h3');h.textContent=localText(label);const p=document.createElement('p');p.textContent=localText(details[key]);copy.append(h,p);card.append(icon(key),copy);el('detailList').append(card);
   });
   el('luckyDetails').replaceChildren();
   [['lucky_number','शुभ अंक'],['lucky_color','शुभ रंग'],['lucky_time','शुभ समय']].forEach(([key,label])=>{
    if(details[key]===undefined || details[key]===null || details[key]==='')return;
-   const row=document.createElement('p');row.className='lucky-row';const name=document.createElement('span');name.textContent=label;const value=document.createElement('span');value.className='lucky-value';value.textContent=String(details[key]);
+   const row=document.createElement('p');row.className='lucky-row';const name=document.createElement('span');name.textContent=localText(label);const value=document.createElement('span');value.className='lucky-value';value.textContent=localText(details[key]);
    if(key==='lucky_color' && colors[details[key]]){const swatch=document.createElement('span');swatch.className='color-swatch';swatch.style.backgroundColor=colors[details[key]];swatch.setAttribute('aria-hidden','true');value.append(swatch);}
    row.append(name,value);el('luckyDetails').append(row);
   });
-  if(!el('luckyDetails').children.length){const p=document.createElement('p');p.className='rashi-muted';p.textContent='शुभ संकेत अभी उपलब्ध नहीं हैं।';el('luckyDetails').append(p);}
+  if(!el('luckyDetails').children.length){const p=document.createElement('p');p.className='rashi-muted';p.textContent=localText('शुभ संकेत अभी उपलब्ध नहीं हैं।');el('luckyDetails').append(p);}
  }
  let loadedData=null,loadFailed=false;
  function renderPeriods(){
   const sign=loadedData?.signs?.[signs[selected][0]];
-  ['daily','weekly','monthly','yearly'].forEach(period=>{el('x-'+period).textContent=typeof sign?.[period]==='string'&&sign[period].trim()?sign[period]:unavailable;});
+  ['daily','weekly','monthly','yearly'].forEach(period=>{el('x-'+period).textContent=typeof sign?.[period]==='string'&&sign[period].trim()?(window.PrimezRashiTranslations?.guidance(sign[period],language())??sign[period]):localText(unavailable);});
   renderDetails(sign?.details||{});
   if(/^\d{4}-\d{2}-\d{2}$/.test(loadedData?.date||'')){const date=new Date(loadedData.date+'T12:00:00+05:30');if(Number.isFinite(date.getTime()))el('pageDate').textContent=dateText(date);}
-  el('genNote').textContent=loadFailed?'डेटा लोड नहीं हो सका। कृपया कुछ देर बाद फिर कोशिश करें।':loadedData?.generated_by||'स्रोत की जानकारी उपलब्ध नहीं है।';
+  el('genNote').textContent=localText(loadFailed?'डेटा लोड नहीं हो सका। कृपया कुछ देर बाद फिर कोशिश करें।':loadedData?.generated_by||'स्रोत की जानकारी उपलब्ध नहीं है।');
  }
  function selectSign(index,scroll=false){
   if(!Number.isInteger(index)||index<0||index>11)return;
