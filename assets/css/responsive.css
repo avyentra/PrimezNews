@@ -231,3 +231,13 @@
   .section-line h1, .section-line h2 { font-size: 21px !important; }
   .topic-grid { grid-template-columns: 1fr !important; }
 }
+
+/* Footer bottom bar: legal text on the left, links in a tidy wrapping row on the right. */
+.footer-bottom{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:14px 28px;align-items:center;font-size:13px!important;line-height:1.6!important;padding:22px 0!important}
+.footer-legal{display:flex;flex-direction:column;gap:6px;min-width:0}
+.footer-legal span{max-width:none!important;width:auto!important;order:0!important;margin:0!important;font-size:13px;line-height:1.6}
+.footer-links{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px 20px}
+.footer-links a{margin:0!important;white-space:nowrap;font-size:13px;color:#d3ddf0;text-decoration:none}
+.footer-links a:hover{color:#ffcf64}
+@media (max-width:900px){.footer-bottom{grid-template-columns:1fr}.footer-links{justify-content:flex-start}}
+@media (max-width:720px){.footer-bottom{gap:12px;padding:18px 0!important}.footer-links{gap:8px 16px}.footer-links a{font-size:13px}}
