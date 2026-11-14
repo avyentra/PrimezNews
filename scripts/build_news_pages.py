@@ -33,8 +33,8 @@ def page(template,s):
     data={'@context':'https://schema.org','@type':'NewsArticle','headline':title,'description':desc,'mainEntityOfPage':url,'image':[photo],'datePublished':s.get('publish_at') or s.get('published'),'dateModified':s.get('updated_at') or s.get('publish_at') or s.get('published'),'author':{'@type':'Person','name':s.get('author') or s.get('source') or 'PrimezNews Editorial Desk'},'publisher':{'@type':'Organization','name':'PrimezNews','url':BASE},'inLanguage':'pa'}
     metadata+='<script type="application/ld+json">'+json.dumps(data,ensure_ascii=False).replace('<','\\u003c')+'</script>'
     out=template.replace('<html lang="pa">','<html lang="pa" data-story-id="'+escape(s['id'])+'">').replace('<head>','<head><base href="/PrimezNews/">'+metadata)
-    out=re.sub(r'<title>.*?</title>','<title>'+escape(title)+' | PrimezNews</title>',out,count=1)
-    out=re.sub(r'<meta name="description" content="[^"]*">','<meta name="description" content="'+escape(desc)+'">',out,count=1)
+    out=re.sub(r'<title>.*?</title>',lambda _: '<title>'+escape(title)+' | PrimezNews</title>',out,count=1)
+    out=re.sub(r'<meta name="description" content="[^"]*">',lambda _: '<meta name="description" content="'+escape(desc)+'">',out,count=1)
     body='<header class="reader-article-header"><nav class="reader-breadcrumb"><a href="index.html">ਮੁੱਖ ਪੰਨਾ</a> / <a href="news.html">ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ</a></nav><h1>'+escape(title)+'</h1>'
     if desc.strip('* ')!=title.strip('* '):body+='<p class="reader-deck">'+escape(s.get('summary',''))+'</p>'
     body+='<p class="reader-meta">'+escape(s.get('author') or s.get('source') or 'PrimezNews')+' · '+escape(s.get('district'))+' · '+escape(s.get('publish_at') or s.get('published'))+'</p></header>'
@@ -46,15 +46,17 @@ def page(template,s):
 
 def build():
     rows=fetch(); seen={s['slug'] for s in rows}
+    route_file=ROOT/'assets/js/news-routes.js'
+    previous=json.loads(route_file.read_text().removeprefix('window.PRIMEZ_NEWS_ROUTES=').rstrip().removesuffix(';')) if route_file.exists() else {}
     for s in seeds():
         if s.get('id')=='video':continue
-        slug=slugify(s.get('en') or s['title'])
+        slug=previous.get(s['id']) or slugify(s.get('en') or s['title'])
         if slug in seen:slug+='-brief'
         seen.add(slug);rows.append({**s,'slug':slug})
     template=(ROOT/'news.html').read_text(); routes={};paths=[]
     for s in rows:
         slug=s['slug']
-        if '/' in slug or '\\' in slug or slug in ('.','..'):raise ValueError('Unsafe slug')
+        if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*',slug):raise ValueError('Article slug must use English letters, numbers and hyphens')
         path=ROOT/'news'/slug/'index.html';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(page(template,s));paths.append(str(path.relative_to(ROOT)));routes[s['id']]=slug
         for alias in s.get('slug_aliases',[]):
             if '/' in alias or '\\' in alias or alias in ('.','..'):raise ValueError('Unsafe alias')

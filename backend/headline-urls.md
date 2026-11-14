@@ -1,7 +1,7 @@
 # Headline URLs
 
 Published and scheduled articles receive a stable, unique `slug` in Postgres.
-English headline words are preferred when the English field is English; Punjabi/Hindi headlines retain their native script. Nine significant words maximum, hyphen separated. Headline changes preserve existing URLs. Existing row-level access controls are unchanged.
+English headline words are preferred when available; Punjabi/Hindi text is converted to English/Roman letters with a local transliteration and common-news-word dictionary. No translation API key is required. Apply `roman-headline-slugs.sql` after `seo-slugs.sql`. Previous native-script slugs are retained in `slug_aliases`, served by generated alias pages and redirected by the reader. Nine significant words maximum, hyphen separated. Headline changes preserve existing URLs. Existing row-level access controls are unchanged.
 
 `python scripts/build_news_pages.py` fetches **only** the public `published_stories` RPC using the existing publishable key, then builds real HTML article paths, canonical metadata, NewsArticle structured data, a route map and sitemap. Fetch failures abort without deleting previous pages. Curated source briefs retain source attribution and illustrative-image labels.
 
