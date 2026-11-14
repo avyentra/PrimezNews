@@ -4,3 +4,11 @@ License: CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
 Original image bytes retained; displayed with CSS cropping and colour overlay.
 Other illustrative photography: Unsplash.
 Phulkari-inspired geometric pattern: original SVG artwork for this homepage.
+
+Homepage faith section thumbnails (original downloaded JPEG thumbnails, CSS object-fit):
+Guru Ram Das Langar in the Golden Temple complex in Amritsar 02.jpg — Kritzolina.
+Source: https://commons.wikimedia.org/wiki/File:Guru_Ram_Das_Langar_in_the_golden_temple_complex_in_Amritsar_02.jpg
+License: CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
+Qila Mubarak, Patiala.jpg — Journojp.
+Source: https://commons.wikimedia.org/wiki/File:Qila_Mubarak,_Patiala.jpg
+License: CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
