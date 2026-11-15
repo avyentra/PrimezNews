@@ -111,6 +111,13 @@
         if(Number.isFinite(value))weather.textContent=Math.round(value)+'°';
       }).catch(()=>{});
   }
-  render();new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+  let renderedLanguage = locale();
+  render();
+  new MutationObserver(() => {
+    if (locale() !== renderedLanguage) {
+      renderedLanguage = locale();
+      render();
+    }
+  }).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
   fetch('data/header-news.json').then(r=>r.ok?r.json():[]).then(rows=>{stories=rows;renderHeadlines();}).catch(()=>{});
 })();
