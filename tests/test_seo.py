@@ -3,7 +3,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
 ROOT=Path(__file__).resolve().parents[1]
-BASE='https://avyentra.github.io/PrimezNews/'
+BASE='https://primeznews.com/'
 class Head(HTMLParser):
  def __init__(self,source):super().__init__();self.tags=[];self.inhead=False;self.feed(source)
  def handle_starttag(self,tag,attrs):
@@ -23,6 +23,16 @@ class SEO(unittest.TestCase):
    with self.subTest(page=path):
     source=(ROOT/path).read_text();head=Head(source);self.assertEqual(len(head.canonical()),1);self.assertEqual(len(head.meta('description')),1);self.assertEqual(head.canonical(),head.meta('og:url'));self.assertTrue(head.canonical()[0].isascii())
     for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>',source,re.S):json.loads(block)
+ def test_production_origin_for_discovery_and_metadata(self):
+  self.assertEqual(BASE, 'https://'+(ROOT/'CNAME').read_text().strip()+'/')
+  self.assertIn('Sitemap: '+BASE+'sitemap.xml',(ROOT/'robots.txt').read_text().splitlines())
+  for path in [*ROOT.glob('*.html'),*(ROOT/'news').glob('*/index.html')]:
+   with self.subTest(page=path):
+    source=path.read_text()
+    self.assertNotIn('https://avyentra.github.io/PrimezNews/',source)
+    head=Head(source)
+    for url in head.canonical()+head.meta('og:url'):
+     self.assertTrue(url.startswith(BASE),url)
  def test_private_pages_and_fallback_are_noindex(self):
   for page in ['admin.html','login.html','reset-password.html','404.html']:
    head=Head((ROOT/page).read_text());self.assertEqual(len(head.meta('robots')),1);self.assertIn('noindex',head.meta('robots')[0])

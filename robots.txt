@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin.html
 Disallow: /studio.html
 
-Sitemap: https://avyentra.github.io/PrimezNews/sitemap.xml
+Sitemap: https://primeznews.com/sitemap.xml

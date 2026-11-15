@@ -5,7 +5,7 @@ import html, json, re, subprocess, urllib.request, shutil
 from pathlib import Path
 from urllib.parse import quote
 ROOT=Path(__file__).resolve().parents[1]
-BASE='https://avyentra.github.io/PrimezNews/'
+BASE = "https://" + (ROOT / "CNAME").read_text().strip() + "/"
 def slugify(text):
     words=re.findall(r'[a-z0-9]+',text.lower())
     stop={'a','an','the','and','of','in','to','for','with','on','at'}

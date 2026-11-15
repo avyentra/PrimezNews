@@ -2,7 +2,7 @@
 import re,html
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-BASE='https://avyentra.github.io/PrimezNews/'
+BASE = "https://" + (ROOT / "CNAME").read_text().strip() + "/"
 PUBLIC=['index.html','home-v2.html','news.html','rashi.html','dharm.html','about-us.html','editorial-policy.html','privacy-policy.html','grievance-redressal.html','contact.html','advertise.html']
 OVERRIDES={
  'index.html':('PrimezNews | ਪੰਜਾਬ ਦੀਆਂ ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ ਅਤੇ ਜ਼ਿਲ੍ਹਾ ਖ਼ਬਰਾਂ','ਪੰਜਾਬ ਅਤੇ ਜ਼ਿਲ੍ਹਿਆਂ ਦੀਆਂ ਖ਼ਬਰਾਂ: ਖੇਤੀਬਾੜੀ, ਸਿੱਖਿਆ, ਸਿਆਸਤ, ਖੇਡਾਂ ਅਤੇ ਸੱਭਿਆਚਾਰ। PrimezNews ਪੰਜਾਬੀ, ਹਿੰਦੀ ਅਤੇ English ਵਿੱਚ ਪੜ੍ਹੋ।'),
