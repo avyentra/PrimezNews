@@ -5,7 +5,7 @@
  el('showPassword').onclick = () => { const visible = el('password').type === 'password'; el('password').type = visible ? 'text' : 'password'; el('showPassword').setAttribute('aria-label', visible ? 'Hide password' : 'Show password'); el('showPassword').setAttribute('aria-pressed', String(visible)); };
  el('loginForm').onsubmit = async event => {
   event.preventDefault(); el('signIn').disabled = true; msg('Signing in…');
-  try { await api.login(el('email').value.trim(), el('password').value, el('rememberMe').checked); location.replace('admin.html'); }
+  try { const destination = await api.login(el('email').value.trim(), el('password').value, el('rememberMe').checked); location.replace(destination); }
   catch (error) { msg(error.message || 'Sign in failed. Please try again.'); }
   finally { el('signIn').disabled = false; }
  };

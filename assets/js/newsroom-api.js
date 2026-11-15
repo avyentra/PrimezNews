@@ -62,7 +62,9 @@
   }
   root.PrimezAPI = {
     configured, db, requireEditor, validateStory, istToISO, safeUrl, image,
-    async login(identifier, password, remember = false) { localStorage.setItem('primezRemember', remember ? 'yes' : 'no'); const email = identifier.includes('@') ? identifier.trim() : cfg.usernames?.[identifier.trim().toLowerCase()]; if (!email) throw new Error('User ID is not configured. Sign in with your email address.'); check(await db().auth.signInWithPassword({ email, password })); return requireEditor(); },
+    async login(identifier, password, remember = false) { localStorage.setItem('primezRemember', remember ? 'yes' : 'no'); const email = identifier.includes('@') ? identifier.trim() : cfg.usernames?.[identifier.trim().toLowerCase()]; if (!email) throw new Error('User ID is not configured. Sign in with your email address.'); const {user} = check(await db().auth.signInWithPassword({ email, password }));
+      const editor = check(await db().from('newsroom_editors').select('user_id').eq('user_id', user.id).maybeSingle());
+      return editor ? 'admin.html' : 'join-newsroom.html'; },
     async logout() { check(await db().auth.signOut()); },
     async recover(email) { check(await db().auth.resetPasswordForEmail(email, { redirectTo: new URL('reset-password.html', location.href).href })); },
     async reset(password) { check(await db().auth.updateUser({ password })); },

@@ -1,0 +1,10 @@
+.join{max-width:780px;min-height:58vh}
+.join form,.join #review article{display:grid;gap:14px;background:white;border:1px solid #d9dce4;border-radius:12px;padding:clamp(16px,4vw,32px);margin:16px 0}
+.join [hidden]{display:none!important}
+.join label{display:grid;gap:5px;font-weight:600}
+.join input,.join textarea{font:inherit;padding:10px;border:1px solid #aeb8c8;border-radius:6px;width:100%;box-sizing:border-box}
+.join button{font:inherit;border:1px solid #14233a;color:white;background:#14233a;border-radius:6px;padding:8px 14px;margin:3px;cursor:pointer}
+.join button:disabled{opacity:.55;cursor:default}
+.join #register,.join #logout{background:white;color:#14233a}
+.join #review img{max-width:100%;max-height:400px;object-fit:contain}
+.join p,.join article{overflow-wrap:anywhere;white-space:pre-line}

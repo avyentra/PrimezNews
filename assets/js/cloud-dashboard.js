@@ -60,6 +60,7 @@
  try {
   if (!api.configured) throw new Error('Backend setup pending. Configure Supabase before using the newsroom.');
   const user = await api.requireEditor();
+  api.db().rpc('journalist_reviewer').then(({data}) => { el('reviewJournalists').hidden = data !== true; });
   el('signedInAs').textContent = 'Signed in as ' + user.email;
   el('accessMessage').hidden = true; el('workspace').hidden = false;
   cats.forEach(c => { const label = document.createElement('label'), checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.value = c; checkbox.onchange = primaryOptions; label.append(checkbox,document.createTextNode(' '+c)); el('categories').append(label); });
