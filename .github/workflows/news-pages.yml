@@ -3,6 +3,10 @@ on:
   push:
     branches: [main]
     paths:
+      - 'CNAME'
+      - 'assets/js/backend-config.js'
+      - 'scripts/social_preview.py'
+      - 'assets/*.webp'
       - 'news.html'
       - 'assets/js/news-seed.js'
       - 'scripts/build_news_pages.py'
@@ -32,7 +36,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: python -m pip install 'Pillow>=11,<14'
       - run: python scripts/build_news_pages.py
+      - run: python tests/test_social_cards.py
       - name: Commit published pages only
         env:
           GH_TOKEN: ${{ github.token }}
@@ -44,5 +50,10 @@ jobs:
             git commit -m 'Refresh published headline pages'
             git pull --rebase origin main
             git push origin HEAD:main
-            gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent
+          fi
+          if [ "$(git log -1 --format=%s)" = "Refresh published headline pages" ]; then
+            deployed=$(gh api "repos/${GITHUB_REPOSITORY}/pages/builds/latest" --jq .commit)
+            if [ "$deployed" != "$(git rev-parse HEAD)" ]; then
+              gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent
+            fi
           fi

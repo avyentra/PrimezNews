@@ -12,7 +12,7 @@ def slugify(text):
     return '-'.join([w for w in words if w not in stop][:9])[:100].rstrip('-') or 'punjab-news'
 def escape(value):return html.escape(str(value or ''),quote=True)
 def image(s):
-    value=s.get('image','')
+    value=s.get('image') or ''
     return value if value.startswith('https://') else BASE+'assets/'+(value if re.fullmatch('[a-z0-9-]+',value) else 'news-farm')+'.webp'
 def fetch():
     cfg=(ROOT/'assets/js/backend-config.js').read_text()
@@ -24,20 +24,27 @@ def fetch():
 def seeds():
     code="global.window={};require('./assets/js/news-seed.js');console.log(JSON.stringify(window.PRIMEZ_SEED_STORIES))"
     return json.loads(subprocess.check_output(['node','-e',code],cwd=ROOT))
-def page(template,s):
+def page(template,s,share_image=None):
     title=s.get('pa') or s['title'];url=BASE+'news/'+quote(s['slug'])+'/'
-    desc=s.get('summary','')[:200];photo=image(s)
+    photo=image(s)
+    share_image = share_image or photo
+    summary = ' '.join((s.get('summary') or '').split())
+    excerpt = ' '.join((s.get('body') or '').split())
+    desc = (excerpt if excerpt and summary.strip('* ') in ('', title.strip('* ')) else summary) or title
+    if len(desc) > 200:
+        desc = desc[:200].rsplit(' ', 1)[0] + '…'
     metadata='<link rel="canonical" href="'+url+'">'
-    for key,value in [('og:type','article'),('og:title',title),('og:description',desc),('og:url',url),('og:image',photo),('og:site_name','PrimezNews'),('twitter:card','summary_large_image'),('twitter:title',title),('twitter:description',desc),('twitter:image',photo)]:
+    for key,value in [('og:type','article'),('og:title',title),('og:description',desc),('og:url',url),('og:image',share_image),('og:image:secure_url',share_image),('og:image:type','image/jpeg'),('og:image:width','1200'),('og:image:height','630'),('og:image:alt',title),('og:locale','pa_IN'),('og:site_name','PrimezNews'),('twitter:card','summary_large_image'),('twitter:title',title),('twitter:description',desc),('twitter:image',share_image),('twitter:image:alt',title)]:
         metadata+='<meta '+('name' if key.startswith('twitter:') else 'property')+'="'+key+'" content="'+escape(value)+'">'
-    data={'@context':'https://schema.org','@type':'NewsArticle','headline':title,'description':desc,'url':url,'mainEntityOfPage':url,'image':[photo],'datePublished':s.get('publish_at') or s.get('published'),'dateModified':s.get('updated_at') or s.get('publish_at') or s.get('published'),'author':{'@type':'Person','name':s.get('author') or s.get('source') or 'PrimezNews Editorial Desk'},'publisher':{'@type':'NewsMediaOrganization','name':'PrimezNews','url':BASE,'logo':{'@type':'ImageObject','url':BASE+'assets/primznews-logo-new.webp'}},'inLanguage':'pa'}
+    data={'@context':'https://schema.org','@type':'NewsArticle','headline':title,'description':desc,'url':url,'mainEntityOfPage':url,'image':[share_image],'datePublished':s.get('publish_at') or s.get('published'),'dateModified':s.get('updated_at') or s.get('publish_at') or s.get('published'),'author':{'@type':'Person','name':s.get('author') or s.get('source') or 'PrimezNews Editorial Desk'},'publisher':{'@type':'NewsMediaOrganization','name':'PrimezNews','url':BASE,'logo':{'@type':'ImageObject','url':BASE+'assets/primznews-logo-new.webp'}},'inLanguage':'pa'}
     metadata+='<script type="application/ld+json">'+json.dumps({'@context':'https://schema.org','@graph':[data,{'@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':1,'name':'PrimezNews','item':BASE},{'@type':'ListItem','position':2,'name':'News','item':BASE+'news.html'},{'@type':'ListItem','position':3,'name':title,'item':url}]}]},ensure_ascii=False).replace('<','\\u003c')+'</script>'
     template=re.sub(r'<link rel="canonical"[^>]*>|<meta (?:property="og:[^"]+"|name="twitter:[^"]+")[^>]*>','',template)
-    out=template.replace('<html lang="pa">','<html lang="pa" data-story-id="'+escape(s['id'])+'">').replace('<head>','<head><base href="../../">'+metadata)
+    template=template.replace('<meta charset="utf-8">','')
+    out=template.replace('<html lang="pa">','<html lang="pa" data-story-id="'+escape(s['id'])+'">').replace('<head>','<head><meta charset="utf-8"><base href="../../">'+metadata)
     out=re.sub(r'<title>.*?</title>',lambda _: '<title>'+escape(title)+' | PrimezNews</title>',out,count=1)
     out=re.sub(r'<meta name="description" content="[^"]*">',lambda _: '<meta name="description" content="'+escape(desc)+'">',out,count=1)
     body='<header class="reader-article-header"><nav class="reader-breadcrumb"><a href="index.html">ਮੁੱਖ ਪੰਨਾ</a> / <a href="news.html">ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ</a></nav><h1>'+escape(title)+'</h1>'
-    if desc.strip('* ')!=title.strip('* '):body+='<p class="reader-deck">'+escape(s.get('summary',''))+'</p>'
+    if summary.strip('* ')!=title.strip('* '):body+='<p class="reader-deck">'+escape(s.get('summary',''))+'</p>'
     body+='<p class="reader-meta">'+escape(s.get('author') or s.get('source') or 'PrimezNews')+' · '+escape(s.get('district'))+' · '+escape(s.get('publish_at') or s.get('published'))+'</p></header>'
     body+='<figure class="reader-figure"><img class="reader-hero-image" fetchpriority="high" decoding="async" src="'+escape(photo)+'" alt="'+escape(title)+'"></figure><div class="reader-body">'
     body+=''.join('<p>'+escape(p)+'</p>' for p in s.get('body','').split('\n\n') if p.strip())+'</div>'
@@ -46,6 +53,9 @@ def page(template,s):
     return out.replace('<use href="#', '<use href="assets/reader-icons.svg#')
 
 def build():
+    from social_preview import preview
+    cfg = (ROOT/'assets/js/backend-config.js').read_text()
+    storage_origin = re.search(r"url: '([^']+)'", cfg)[1]
     rows=fetch(); seen={s['slug'] for s in rows}
     route_file=ROOT/'assets/js/news-routes.js'
     previous=json.loads(route_file.read_text().splitlines()[0].removeprefix('window.PRIMEZ_NEWS_ROUTES=').rstrip().removesuffix(';')) if route_file.exists() else {}
@@ -58,10 +68,10 @@ def build():
     for s in rows:
         slug=s['slug']
         if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*',slug):raise ValueError('Article slug must use English letters, numbers and hyphens')
-        path=ROOT/'news'/slug/'index.html';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(page(template,s));paths.append(str(path.relative_to(ROOT)));routes[s['id']]=slug
+        path=ROOT/'news'/slug/'index.html';path.parent.mkdir(parents=True,exist_ok=True);share_image=preview(ROOT,path.parent,image(s),BASE,storage_origin);path.write_text(page(template,s,share_image));paths.append(str(path.relative_to(ROOT)));routes[s['id']]=slug
         for alias in s.get('slug_aliases',[]):
             if '/' in alias or '\\' in alias or alias in ('.','..'):raise ValueError('Unsafe alias')
-            legacy=ROOT/'news'/alias/'index.html';legacy.parent.mkdir(parents=True,exist_ok=True);legacy.write_text(page(template,s));paths.append(str(legacy.relative_to(ROOT)))
+            legacy=ROOT/'news'/alias/'index.html';legacy.parent.mkdir(parents=True,exist_ok=True);legacy.write_text(page(template,s,share_image));paths.append(str(legacy.relative_to(ROOT)))
     manifest=ROOT/'data/news-pages.json'
     old=json.loads(manifest.read_text()) if manifest.exists() else []
     for stale in set(old)-set(paths):
