@@ -79,6 +79,21 @@ class MobileLanguageTest(unittest.TestCase):
                     """})
                     self.assertEqual(state[:3], [lang, 390, 390], (page, lang, state))
                     self.assertTrue(state[3] and state[4])
+                    nav = command(base + "/execute/sync", {"args": [], "script": """
+                        const root = document.querySelector('primez-site-nav').shadowRoot;
+                        const toggle = root.querySelector('button');
+                        toggle.click();
+                        const links = [...root.querySelectorAll('.items a')];
+                        const first = links[0];
+                        const result = [toggle.getAttribute('aria-expanded'),
+                            links.length, first.innerText.trim(), first.getBoundingClientRect().width,
+                            new URL(links[2].href).searchParams.get('category')];
+                        toggle.click();
+                        return result;
+                    """})
+                    self.assertEqual(nav[:3], ["true", 9, {"en": "Home", "hi": "होम", "pa": "ਮੁੱਖ ਪੰਨਾ"}[lang]])
+                    self.assertGreater(nav[3], 0)
+                    self.assertEqual(nav[4], "Politics")
                     headings.add(state[3])
                     paragraphs.add(state[4])
                 self.assertEqual(len(headings), 3)

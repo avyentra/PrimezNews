@@ -1,8 +1,6 @@
 /* Homepage masthead/footer behaviour on the public reading page. */
-(function(){'use strict';const el=id=>document.getElementById(id),nav=el('navLinks'),menu=document.querySelector('.menu-toggle');
+(function(){'use strict';const el=id=>document.getElementById(id);
  const language=()=>window.PrimezLanguage?.get()||'pa';const text=(pa,hi,en)=>({pa,hi,en}[language()]);
- function openMenu(value){nav.classList.toggle('open',value);menu.setAttribute('aria-expanded',String(value));}menu.addEventListener('click',()=>openMenu(menu.getAttribute('aria-expanded')!=='true'));
- document.addEventListener('keydown',e=>{if(e.key==='Escape')openMenu(false);});
  document.addEventListener('click',e=>{const category=e.target.closest('[data-category],[data-footer-category]');if(category){e.preventDefault();const key=category.dataset.category||category.dataset.footerCategory;location.href=key==='All'?'index.html':'home-v2.html?category='+encodeURIComponent(key);}const close=e.target.closest('[data-reader-close]');if(close)el(close.dataset.readerClose).close();});
  el('tipFooter').addEventListener('click',()=>location.href='index.html#tipOpen');
  function results(host,rows){host.replaceChildren();if(!rows.length){host.textContent=text('ਇਸ ਚੋਣ ਲਈ ਕੋਈ ਪ੍ਰਕਾਸ਼ਿਤ ਖ਼ਬਰ ਨਹੀਂ ਮਿਲੀ।','इस चयन के लिए कोई प्रकाशित खबर नहीं मिली।','No published stories found for this selection.');return;}rows.forEach(s=>{const a=document.createElement('a');a.href=(window.PrimezNewsURLs?window.PrimezNewsURLs.href({...s,cloudId:s.id}):'news.html?story='+encodeURIComponent(s.id));const h=document.createElement('h3');h.textContent=window.PrimezReader.headline(s);const p=document.createElement('p');p.textContent=s.district;a.append(h,p);host.append(a);});}
