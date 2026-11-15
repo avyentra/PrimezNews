@@ -10,7 +10,6 @@ OVERRIDES={
  'dharm.html':('ਧਰਮ, ਆਸਥਾ ਅਤੇ ਪੰਜਾਬੀ ਸੱਭਿਆਚਾਰ | PrimezNews','ਪੰਜਾਬ ਦੀਆਂ ਧਰਮ, ਆਸਥਾ, ਗੁਰਪੁਰਬ, ਤਿਉਹਾਰ ਅਤੇ ਸੱਭਿਆਚਾਰ ਨਾਲ ਜੁੜੀਆਂ ਖ਼ਬਰਾਂ PrimezNews ਉੱਤੇ ਪੜ੍ਹੋ।')}
 def normalize(name):
  p=ROOT/name;s=p.read_text();head,body=s.split('</head>',1)
- head=head.replace('https://primznews.com/',BASE)
  # Remove stale/duplicate metadata; reinsert one consistent set.
  title=re.search(r'<title>(.*?)</title>',head,re.S)[1]
  description=re.search(r'<meta name="description" content="([^"]*)"',head)[1]
