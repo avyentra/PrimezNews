@@ -6,7 +6,7 @@
   if(!story || !['published','scheduled'].includes(story.status))return;
   const live=Number.isFinite(Date.parse(story.publish_at)) && Date.parse(story.publish_at)<=Date.now();
   label.textContent=live?(justSaved?'✓ Done — Published':'✓ Published'):'✓ Scheduled — not live yet';
-  if(live){link.href=(window.PrimezNewsURLs?window.PrimezNewsURLs.href({...story,cloudId:story.id}):'news.html?story='+encodeURIComponent(story.id));link.hidden=false;}
+  if(live){link.href=(window.PrimezNewsURLs?(window.PrimezNewsURLs.publicHref || window.PrimezNewsURLs.href)({...story,cloudId:story.id}):'news.html?story='+encodeURIComponent(story.id));link.hidden=false;}
   box.hidden=false;
  }};
 })();

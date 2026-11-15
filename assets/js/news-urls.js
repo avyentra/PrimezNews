@@ -7,5 +7,8 @@
   const slug=story.slug||routes[id];
   return slug?'news/'+encodeURIComponent(slug)+'/':(story.cloudId?'news.html?story=':'home-v2.html?story=')+encodeURIComponent(id);
  }
- root.PrimezNewsURLs={href};
+ function publicHref(story){
+  return (root.PRIMEZ_PUBLIC_BASE || '') + href(story);
+ }
+ root.PrimezNewsURLs={href,publicHref};
 })(window);
