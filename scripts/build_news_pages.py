@@ -72,6 +72,8 @@ def build():
         for alias in s.get('slug_aliases',[]):
             if '/' in alias or '\\' in alias or alias in ('.','..'):raise ValueError('Unsafe alias')
             legacy=ROOT/'news'/alias/'index.html';legacy.parent.mkdir(parents=True,exist_ok=True);legacy.write_text(page(template,s,share_image));paths.append(str(legacy.relative_to(ROOT)))
+    headlines = [{key: row.get(key) for key in ('slug', 'title', 'pa', 'hi', 'en')} for row in rows[:4]]
+    (ROOT/'data/header-news.json').write_text(json.dumps(headlines, ensure_ascii=False) + '\n')
     manifest=ROOT/'data/news-pages.json'
     old=json.loads(manifest.read_text()) if manifest.exists() else []
     for stale in set(old)-set(paths):

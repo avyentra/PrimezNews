@@ -74,7 +74,7 @@ class MobileLanguageTest(unittest.TestCase):
                     state = command(base + "/execute/sync", {"args": [], "script": """
                         const root = document.documentElement;
                         const frame = ['.pn-header', '.pn-footer'].map(selector =>
-                            document.querySelector(selector + ' [data-frame-lang="' + root.lang + '"]'));
+                            [...document.querySelectorAll(selector + ' [data-frame-lang="' + root.lang + '"]')].find(el => el.getClientRects().length));
                         if (frame.some(el => !el || !el.getClientRects().length)) {
                             throw Error('Selected language missing from public header or footer');
                         }
@@ -88,18 +88,45 @@ class MobileLanguageTest(unittest.TestCase):
                         const root = document.querySelector('primez-site-nav').shadowRoot;
                         const toggle = root.querySelector('button');
                         toggle.click();
-                        const links = [...root.querySelectorAll('.items a')];
+                        const links = [...root.querySelectorAll('#sections a')];
                         const first = links[0];
                         const result = [toggle.getAttribute('aria-expanded'),
-                            links.length, first.innerText.trim(), first.getBoundingClientRect().width,
+                            links.length, first.getAttribute('aria-label'), first.getBoundingClientRect().width,
                             new URL(links[2].href).searchParams.get('category')];
                         toggle.click();
                         return result;
                     """})
-                    self.assertEqual(nav[:3], ["true", 9, {"en": "Home", "hi": "होम", "pa": "ਮੁੱਖ ਪੰਨਾ"}[lang]])
+                    self.assertEqual(nav[:3], ["true", 10, {"en": "Home", "hi": "होम", "pa": "ਮੁੱਖ ਪੰਨਾ"}[lang]])
                     self.assertGreater(nav[3], 0)
-                    self.assertEqual(nav[4], "Politics")
+                    self.assertEqual(nav[4], "Agriculture")
                     headings.add(state[3])
                     paragraphs.add(state[4])
                 self.assertEqual(len(headings), 3)
                 self.assertEqual(len(paragraphs), 3)
+
+        def nav_state(script):
+            return command(base + "/execute/sync", {"args": [], "script":
+                "const root=document.querySelector('primez-site-nav').shadowRoot;"
+                "const trigger=root.querySelector('.more'),panel=root.querySelector('#panel');" + script})
+        self.assertTrue(nav_state("return panel.hidden"))
+        self.assertFalse(nav_state("trigger.click(); return panel.hidden"))
+        self.assertTrue(nav_state("trigger.click(); return panel.hidden"))
+        self.assertEqual(nav_state("return document.querySelector('.pn-edition').getBoundingClientRect().width"), 0)
+        desktop = command("/session", {"capabilities": {"alwaysMatch": {
+            "browserName": "chrome", "goog:chromeOptions": {"args": ["--headless=new", "--no-sandbox", "--window-size=1440,900"]}}}})
+        base = "/session/" + desktop["sessionId"]
+        command(base + "/url", {"url": f"http://127.0.0.1:{server.server_port}/about-us.html"})
+        self.assertTrue(nav_state("return panel.hidden"))
+        element = nav_state("return trigger")
+        def hover(origin, x=0, y=0):
+            command(base + "/actions", {"actions": [{"type": "pointer", "id": "mouse",
+                "parameters": {"pointerType": "mouse"}, "actions": [
+                    {"type": "pointerMove", "duration": 50, "origin": origin, "x": x, "y": y}]}]})
+        hover(element)
+        self.assertFalse(nav_state("return panel.hidden"))
+        hover(nav_state("return panel.querySelector('a')"))
+        time.sleep(0.25)
+        self.assertFalse(nav_state("return panel.hidden"))
+        hover("viewport", 1, 1)
+        time.sleep(0.25)
+        self.assertTrue(nav_state("return panel.hidden"))

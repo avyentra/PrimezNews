@@ -17,9 +17,10 @@ LOGO = '<img src="assets/primznews-logo-new.webp" width="1000" height="344" alt=
 LANGUAGES = ''.join(f'<button type="button" class="language" data-lang="{lang}">{name}</button>'
                     for lang, name in [('hi','हिन्दी'),('en','English'),('pa','ਪੰਜਾਬੀ')])
 HEADER = f'''<header class="pn-header">
-<div class="pn-utility"><div class="pn-topline"><strong>{label("Punjab News, Insights and Ground Reality","पंजाब की ख़बरें और ज़मीनी हक़ीक़त","ਪੰਜਾਬ ਦੀਆਂ ਖ਼ਬਰਾਂ ਤੇ ਜ਼ਮੀਨੀ ਹਕੀਕਤ")}</strong>
-<a href="login.html">{label("Sign in","साइन इन","ਸਾਈਨ ਇਨ")}</a><div class="pn-langs">{LANGUAGES}<select id="siteLanguage" data-language-switch aria-label="Website language"><option value="pa">ਪੰਜਾਬੀ</option><option value="hi">हिन्दी</option><option value="en">English</option></select></div></div></div>
-<div class="pn-panorama"><div class="pn-banner"><a class="pn-edition" href="index.html#districts"><b>⌖ {label("Punjab Network","पंजाब नेटवर्क","ਪੰਜਾਬ ਨੈੱਟਵਰਕ")} ⌄</b><small>{label("Choose your district","अपना ज़िला चुनें","ਆਪਣਾ ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ")}</small></a>
+<div class="pn-utility"><div class="pn-topline"><div class="pn-context"><strong>{label("Punjab news and ground reality","पंजाब की ख़बरें और ज़मीनी हक़ीक़त","ਪੰਜਾਬ ਦੀਆਂ ਖ਼ਬਰਾਂ ਤੇ ਜ਼ਮੀਨੀ ਹਕੀਕਤ")}</strong>
+<a class="pn-district" href="index.html#districts">⌖ {label("Select district","ज़िला चुनें","ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ")} ⌄</a></div>
+<a href="login.html">{label("Sign in","साइन इन","ਸਾਈਨ ਇਨ")}</a><div class="pn-langs"><span class="pn-channel" aria-disabled="true">◌ {label("WhatsApp channel","WhatsApp चैनल","WhatsApp ਚੈਨਲ")}</span>{LANGUAGES}<select id="siteLanguage" data-language-switch aria-label="Website language"><option value="pa">ਪੰਜਾਬੀ</option><option value="hi">हिन्दी</option><option value="en">English</option></select></div></div></div>
+<div class="pn-panorama"><div class="pn-banner"><div class="pn-edition"><b>{label("Punjab edition","पंजाब अंक","ਪੰਜਾਬ ਅੰਕ")}</b><time id="pn-date"></time><small>☀ {label("Chandigarh","चंडीगढ़","ਚੰਡੀਗੜ੍ਹ")} <span id="pn-temperature"></span></small></div>
 <a class="pn-logo" href="index.html">{LOGO}</a></div></div></header>'''
 
 def footer(has_tools):
