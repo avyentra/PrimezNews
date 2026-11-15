@@ -10,4 +10,4 @@ class NewsPages(unittest.TestCase):
   s={'id':'x','slug':'punjab-news','title':'<script>unsafe</script>','body':'A paragraph\n\nAnother paragraph','summary':'Deck','image':'news-farm','publish_at':'2026-11-14T00:00:00Z'}
   template='<html lang="pa"><head><title>News</title></head><body><section id="newsContent" aria-label="ਖ਼ਬਰਾਂ"></section></body></html>'
   out=m.page(template,s)
-  self.assertIn('rel="canonical"',out);self.assertIn('NewsArticle',out);self.assertIn('<p>A paragraph</p>',out);self.assertIn('<base href="/PrimezNews/">',out);self.assertNotIn('<h1><script>',out)
+  self.assertIn('rel="canonical"',out);self.assertIn('NewsArticle',out);self.assertIn('<p>A paragraph</p>',out);self.assertIn('<base href="../../">',out);self.assertNotIn('<h1><script>',out)

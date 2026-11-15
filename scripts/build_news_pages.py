@@ -33,7 +33,7 @@ def page(template,s):
     data={'@context':'https://schema.org','@type':'NewsArticle','headline':title,'description':desc,'mainEntityOfPage':url,'image':[photo],'datePublished':s.get('publish_at') or s.get('published'),'dateModified':s.get('updated_at') or s.get('publish_at') or s.get('published'),'author':{'@type':'Person','name':s.get('author') or s.get('source') or 'PrimezNews Editorial Desk'},'publisher':{'@type':'NewsMediaOrganization','name':'PrimezNews','url':BASE,'logo':{'@type':'ImageObject','url':BASE+'assets/primznews-logo-new.webp'}},'inLanguage':'pa'}
     metadata+='<script type="application/ld+json">'+json.dumps({'@context':'https://schema.org','@graph':[data,{'@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':1,'name':'PrimezNews','item':BASE},{'@type':'ListItem','position':2,'name':'News','item':BASE+'news.html'},{'@type':'ListItem','position':3,'name':title,'item':url}]}]},ensure_ascii=False).replace('<','\\u003c')+'</script>'
     template=re.sub(r'<link rel="canonical"[^>]*>|<meta (?:property="og:[^"]+"|name="twitter:[^"]+")[^>]*>','',template)
-    out=template.replace('<html lang="pa">','<html lang="pa" data-story-id="'+escape(s['id'])+'">').replace('<head>','<head><base href="/PrimezNews/">'+metadata)
+    out=template.replace('<html lang="pa">','<html lang="pa" data-story-id="'+escape(s['id'])+'">').replace('<head>','<head><base href="../../">'+metadata)
     out=re.sub(r'<title>.*?</title>',lambda _: '<title>'+escape(title)+' | PrimezNews</title>',out,count=1)
     out=re.sub(r'<meta name="description" content="[^"]*">',lambda _: '<meta name="description" content="'+escape(desc)+'">',out,count=1)
     body='<header class="reader-article-header"><nav class="reader-breadcrumb"><a href="index.html">ਮੁੱਖ ਪੰਨਾ</a> / <a href="news.html">ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ</a></nav><h1>'+escape(title)+'</h1>'
@@ -43,7 +43,7 @@ def page(template,s):
     body+=''.join('<p>'+escape(p)+'</p>' for p in s.get('body','').split('\n\n') if p.strip())+'</div>'
     if s.get('sourceUrl'):body+='<p>Source: <a rel="noopener noreferrer" href="'+escape(s['sourceUrl'])+'">'+escape(s['source'])+'</a> · Curated news brief. Photograph is illustrative.</p>'
     out=out.replace('<section id="newsContent" aria-label="ਖ਼ਬਰਾਂ"></section>','<section id="newsContent" class="reader-article" aria-label="ਖ਼ਬਰਾਂ">'+body+'</section>').replace('ਖ਼ਬਰਾਂ ਲੋਡ ਹੋ ਰਹੀਆਂ ਹਨ…','')
-    return out
+    return out.replace('<use href="#', '<use href="assets/reader-icons.svg#')
 
 def build():
     rows=fetch(); seen={s['slug'] for s in rows}
@@ -70,8 +70,8 @@ def build():
     manifest.write_text(json.dumps(paths,ensure_ascii=False,indent=2)+'\n')
     (ROOT/'assets/js/news-routes.js').write_text('window.PRIMEZ_NEWS_ROUTES='+json.dumps(routes,ensure_ascii=False,separators=(',',':'))+';\n')
     fallback_template=re.sub(r'<meta name="robots"[^>]*>','',template)
-    fallback=fallback_template.replace('<html lang="pa">','<html lang="pa" data-news-fallback="true">').replace('<head>','<head><base href="/PrimezNews/"><meta name="robots" content="noindex">')
-    (ROOT/'404.html').write_text(fallback)
+    fallback=fallback_template.replace('<html lang="pa">','<html lang="pa" data-news-fallback="true">').replace('<head>','<head><base href="/"><script>if(location.hostname==="avyentra.github.io")document.querySelector("base").href="/PrimezNews/";</script><meta name="robots" content="noindex">')
+    (ROOT/'404.html').write_text(fallback.replace('<use href="#', '<use href="assets/reader-icons.svg#'))
     # Only genuine public articles and established public pages enter the sitemap.
     pages=['','news.html','rashi.html','dharm.html','about-us.html','editorial-policy.html','privacy-policy.html','grievance-redressal.html','contact.html','advertise.html']
     urls=[BASE+p for p in pages]+[BASE+'news/'+quote(s['slug'])+'/' for s in rows]
