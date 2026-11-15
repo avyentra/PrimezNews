@@ -23,6 +23,7 @@
     a:hover,button:hover{background:#faf7ef}a[aria-current]{box-shadow:inset 0 -3px #dfa421}
     a:focus-visible,button:focus-visible{outline:2px solid #765014;outline-offset:-3px}
     svg{width:19px;height:19px;flex:none}.district{margin-left:auto;font-size:14px}
+    ${document.querySelector('.pn-header') ? '.district{display:none}.items{margin-inline:auto}' : ''}
     button{display:none;padding:10px 8px;min-height:44px;align-items:center;gap:8px}
     @media(max-width:1050px){nav{flex-wrap:wrap}button{display:flex}.district{order:1}.items{display:none;order:2;width:100%;max-height:65vh;overflow:auto}.items.open{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.items a::after{display:none}.items a{border-top:1px solid #eee}}
     </style><nav><button type="button" aria-expanded="false" aria-controls="sections"><span aria-hidden="true">☰</span><span></span></button><div class="items" id="sections"></div><a class="district" href="index.html#districts"></a><slot></slot></nav>`;

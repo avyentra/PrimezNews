@@ -73,6 +73,11 @@ class MobileLanguageTest(unittest.TestCase):
                     command(f"{base}/element/{next(iter(option.values()))}/click", {})
                     state = command(base + "/execute/sync", {"args": [], "script": """
                         const root = document.documentElement;
+                        const frame = ['.pn-header', '.pn-footer'].map(selector =>
+                            document.querySelector(selector + ' [data-frame-lang="' + root.lang + '"]'));
+                        if (frame.some(el => !el || !el.getClientRects().length)) {
+                            throw Error('Selected language missing from public header or footer');
+                        }
                         return [root.lang, root.clientWidth, root.scrollWidth,
                                 document.querySelector('h1').innerText.trim(),
                                 document.querySelector('main p').innerText.trim()];
