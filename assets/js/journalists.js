@@ -43,12 +43,17 @@
         image.hidden=false;approve.disabled=decline.disabled=false;
       }),image,approve,decline);queue.append(card);
     }
-    const reports=result(await db.from('journalist_reports').select('headline,body,submitted_at,journalist_applications(name,district)').order('submitted_at',{ascending:false}).limit(100));
+    const reports=result(await db.from('journalist_reports').select('*,journalist_applications(name,district)').order('submitted_at',{ascending:false}).limit(100));
     el('reports').replaceChildren();
     if(!reports.length) el('reports').textContent='No reports submitted.';
     reports.forEach(r=>{
       const article=document.createElement('article'),h=document.createElement('strong'),by=document.createElement('small'),p=document.createElement('p');
-      h.textContent=r.headline;by.textContent=[r.journalist_applications?.name,r.journalist_applications?.district].filter(Boolean).join(' · ');p.textContent=r.body;article.append(h,by,p);el('reports').append(article);
+      h.textContent=r.headline;by.textContent=[r.journalist_applications?.name,r.journalist_applications?.district].filter(Boolean).join(' · ');p.textContent=r.body;article.append(h,by,p);
+      /* desk: move report through the workflow (needs backend/journalist-dashboard.sql) */
+      if(r.image){const im=document.createElement('img');im.src=r.image;im.alt='';im.loading='lazy';article.append(im);}
+      if('status' in r){const bar=document.createElement('div');bar.className='report-status';const lab=document.createElement('small');lab.textContent='Status: '+r.status;bar.append(lab);
+        [['in_review','In review'],['approved','Approve'],['published','Mark published'],['returned','Return with note']].forEach(([st,txt])=>{if(st===r.status)return;bar.append(button(txt,async()=>{const note=st==='returned'?(window.prompt('Note for the journalist:')||''):'';result(await db.rpc('set_report_status',{report:r.id,new_status:st,note}));await showQueue();}));});
+        article.append(bar);}el('reports').append(article);
     });
   }
   async function refresh() {
@@ -59,7 +64,7 @@
     el('who').textContent=session.user.email;el('session').hidden=false;
     if(result(await db.rpc('journalist_reviewer'))){el('review').hidden=false;await showQueue();return;}
     const row=result(await db.from('journalist_applications').select('status').eq('user_id',session.user.id).maybeSingle());
-    currentStatus=row?.status;renderStatus();el('application').hidden=!!row;el('report').hidden=currentStatus!=='approved';
+    currentStatus=row?.status;if(currentStatus==='approved'){location.replace('journalist.html');return;}renderStatus();el('application').hidden=!!row;el('report').hidden=currentStatus!=='approved';
   }
   const credentials=()=>({email:el('em').value.trim(),password:el('pw').value});
   el('account').onsubmit=e=>{e.preventDefault();run(el('signin'),async()=>{

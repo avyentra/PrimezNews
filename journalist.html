@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pa">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Primez · ਪੱਤਰਕਾਰ ਡੈਸ਼ਬੋਰਡ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/journalist-dashboard.css">
+<script defer src="assets/js/backend-config.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js"></script>
+<script defer src="assets/js/newsroom-api.js"></script>
+<script defer src="assets/js/journalist-dashboard.js"></script>
+</head>
+<body class="jd">
+<div class="jd-app">
+  <aside class="jd-side" id="side">
+    <a class="jd-logo" href="index.html"><img src="assets/newsroom-logo.webp" width="1000" height="334" alt="Primez News"></a>
+    <nav class="jd-nav" aria-label="Dashboard">
+      <button type="button" class="active" data-view="board"><i class="ic ic-grid"></i><span data-t="dashboard"></span></button>
+      <button type="button" data-view="new"><i class="ic ic-plus"></i><span data-t="submit"></span></button>
+      <button type="button" data-view="returned"><i class="ic ic-flag"></i><span data-t="returnedNav"></span><em id="returnedCount" hidden></em></button>
+      <button type="button" data-view="published"><i class="ic ic-check"></i><span data-t="publishedNav"></span></button>
+      <a href="index.html" target="_blank" rel="noopener"><i class="ic ic-globe"></i><span data-t="site"></span></a>
+    </nav>
+    <div class="jd-lang" role="group" aria-label="Language">
+      <button type="button" data-lang="pa">ਪੰਜਾਬੀ</button><button type="button" data-lang="hi">हिंदी</button><button type="button" data-lang="en">English</button>
+    </div>
+    <div class="jd-profile">
+      <b class="jd-avatar" id="avatar">—</b>
+      <span><strong id="userName">…</strong><small id="userEmail"></small></span>
+      <button type="button" class="jd-logout" id="logout" title="Sign out"><i class="ic ic-out"></i><span data-t="logout"></span></button>
+    </div>
+  </aside>
+
+  <main class="jd-main">
+    <header class="jd-top">
+      <button type="button" class="jd-menu" id="menuBtn" aria-label="Menu" aria-controls="side" aria-expanded="false"><i class="ic ic-menu"></i></button>
+      <div class="jd-hello"><small data-t="welcome"></small><strong id="helloName">…</strong></div>
+      <label class="jd-search"><i class="ic ic-search"></i><input id="search" type="search" autocomplete="off"></label>
+      <button type="button" class="jd-bell" id="bell" aria-label="Returned news"><i class="ic ic-bell"></i><em id="bellCount" hidden></em></button>
+      <div class="jd-user-top"><b class="jd-avatar sm" id="avatarTop">—</b><button type="button" class="jd-out-top" id="logoutTop" data-t="logout"></button></div>
+      <button type="button" class="jd-primary" id="newBtn"><i class="ic ic-plus"></i><span data-t="submit"></span></button>
+    </header>
+
+    <p class="jd-notice" id="notice" role="status" hidden></p>
+
+    <section class="jd-stats" id="stats" aria-label="Summary"></section>
+
+    <section class="jd-board" id="board" aria-live="polite">
+      <div class="jd-col" data-col="pending"><h2><span data-t="colPending"></span> <em>(0)</em></h2><div class="jd-list"></div></div>
+      <div class="jd-col" data-col="review"><h2><span data-t="colReview"></span> <em>(0)</em></h2><div class="jd-list"></div></div>
+      <div class="jd-col" data-col="approved"><h2><span data-t="colApproved"></span> <em>(0)</em></h2><div class="jd-list"></div></div>
+    </section>
+  </main>
+</div>
+
+<!-- Write / edit news -->
+<div class="jd-drawer" id="drawer" hidden>
+  <div class="jd-drawer-bg" data-close></div>
+  <form class="jd-editor" id="editor" novalidate>
+    <header><h2 id="editorTitle"></h2><button type="button" class="jd-x" data-close aria-label="Close">×</button></header>
+    <p class="jd-hint" id="editHint" hidden></p>
+    <p class="jd-note" id="editorNote" hidden></p>
+    <label><span data-t="fHeadline"></span><input id="fHeadline" required maxlength="300"></label>
+    <div class="jd-two">
+      <label><span data-t="fCategory"></span><select id="fCategory"></select></label>
+      <label><span data-t="fDistrict"></span><select id="fDistrict"></select></label>
+    </div>
+    <div class="jd-photo">
+      <span data-t="fPhoto"></span>
+      <div class="jd-drop" id="drop">
+        <img id="photoPreview" alt="" hidden>
+        <div class="jd-drop-empty" id="dropEmpty"><i class="ic ic-image"></i><b data-t="photoPick"></b><small data-t="photoRule"></small></div>
+        <input id="fPhoto" type="file" accept="image/jpeg,image/png,image/webp">
+      </div>
+      <div class="jd-photo-actions"><button type="button" id="photoChange" data-t="photoChange" hidden></button><button type="button" id="photoRemove" class="danger" data-t="photoRemove" hidden></button></div>
+    </div>
+    <label><span data-t="fBody"></span><textarea id="fBody" required maxlength="16000" rows="10"></textarea><small class="jd-count" id="bodyCount">0 / 16000</small></label>
+    <p class="jd-err" id="editorError" role="alert" hidden></p>
+    <footer><button type="button" class="jd-ghost" data-close data-t="cancel"></button><button type="submit" class="jd-primary" id="saveBtn"></button></footer>
+  </form>
+</div>
+<div class="jd-toast" id="toast" role="status" hidden></div>
+</body>
+</html>

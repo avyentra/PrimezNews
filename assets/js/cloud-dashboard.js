@@ -62,6 +62,11 @@
   const user = await api.requireEditor();
   api.db().rpc('journalist_reviewer').then(({data}) => { el('reviewJournalists').hidden = data !== true; });
   el('signedInAs').textContent = 'Signed in as ' + user.email;
+  /* header: show who is signed in */
+  { const meta = user.user_metadata || {}; const base = (user.email || '').split('@')[0].replace(/[._-]+/g, ' ').replace(/\d+/g, '').trim();
+    const name = (meta.full_name || meta.name || base.replace(/\b\w/g, c => c.toUpperCase()) || 'Editor').slice(0, 40);
+    el('userName').textContent = name; el('userEmail').textContent = user.email || ''; el('userChip').title = user.email || '';
+    el('userInitials').textContent = name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase(); el('userChip').hidden = false; }
   el('accessMessage').hidden = true; el('workspace').hidden = false;
   cats.forEach(c => { const label = document.createElement('label'), checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.value = c; checkbox.onchange = primaryOptions; label.append(checkbox,document.createTextNode(' '+c)); el('categories').append(label); });
   districts.forEach(d => el('district').append(option(d))); slots.forEach(s => el('adSlot').append(option(s)));

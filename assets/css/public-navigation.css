@@ -27,3 +27,6 @@ footer{display:flex;justify-content:space-between;padding:12px 20px;background:#
 .headlines .marquee a{margin-right:28px}
 @keyframes pn-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.headlines .marquee{animation-duration:calc(var(--dur,40s)*2)}}
+
+/* Menu: Punjabi/Hindi same look & feel as English (same font family, lighter weight) */
+:host(:not([data-lang="en"])) #sections a:not(:first-child):not(.live){font-weight:500;letter-spacing:.1px;color:#24211e}

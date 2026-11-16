@@ -65,3 +65,9 @@ Email sign-in is supported. To enable User ID `Gurlal`, set
 Aliases and their email addresses are public configuration; never put passwords
 in this file. Create/set the password in Supabase Authentication, not GitHub.
 The alias does not bypass editor membership or password checks.
+
+## Journalist dashboard (journalist.html)
+1. Supabase SQL Editor → run `backend/journalist-dashboard.sql` once (after `journalist-applications.sql`).
+2. Approved journalists are sent to `journalist.html` after login. They can write news, **edit their own news after posting** (it goes back to the desk for review) and **upload one photo** (JPG/PNG/WebP, max 1 MB, bucket `journalist-media`).
+3. Desk/admin moves a report on `join-newsroom.html#review`: In review → Approve → Mark published, or Return with a note.
+4. Design preview without login (only on your own computer): `http://localhost:8000/journalist.html?demo=1`.

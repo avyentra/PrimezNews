@@ -8,3 +8,25 @@
 .join #register,.join #logout{background:white;color:#14233a}
 .join #review img{max-width:100%;max-height:400px;object-fit:contain}
 .join p,.join article{overflow-wrap:anywhere;white-space:pre-line}
+
+/* ---- Join page: account card (create account first, sign in on choice) ---- */
+.join{margin-inline:auto;padding-top:28px;padding-bottom:40px}
+.join>h1{text-align:center;font-size:clamp(28px,3vw,38px);margin:0 0 10px}
+.join>p:first-of-type{text-align:center;max-width:620px;margin:0 auto 6px;color:#4a5263;line-height:1.7}
+.join #account{max-width:480px;margin:26px auto;gap:16px;border:1px solid #e3e6ee;border-radius:18px;padding:34px 34px 28px;box-shadow:0 18px 44px rgba(16,24,43,.10);position:relative;overflow:hidden}
+.join #account::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,#14233a,#d9ad4e)}
+.join .jm-title{margin:0;font-size:24px;font-weight:800;color:#14233a;text-align:center}
+.join .jm-sub{margin:-6px 0 4px;text-align:center;color:#5d6577;font-size:14.5px;line-height:1.6;white-space:normal}
+.join #account label{font-size:14.5px;color:#1f2a3d}
+.join #account input{padding:13px 14px;border:1px solid #cfd5e1;border-radius:10px;background:#f8f9fc;transition:border-color .15s,box-shadow .15s}
+.join #account input:focus{outline:0;border-color:#14233a;background:#fff;box-shadow:0 0 0 3px rgba(217,173,78,.28)}
+.join #account>div{display:grid;gap:10px;margin-top:4px}
+.join #account #signin,.join #account #register{margin:0;width:100%;padding:13px 16px;border-radius:10px;font-weight:700;font-size:16px;background:#14233a;color:#fff;border:1px solid #14233a}
+.join #account #signin:hover,.join #account #register:hover{background:#0b1626}
+.join .jm-switch{margin:2px 0 0;text-align:center;font-size:14.5px;color:#5d6577;white-space:normal}
+.join .jm-link{background:none!important;border:0!important;color:#9a6a12!important;font-weight:700;padding:0!important;margin:0 0 0 4px!important;text-decoration:underline;text-underline-offset:3px}
+.join #account.mode-register .jm-log,.join #account.mode-register #signin,
+.join #account.mode-login .jm-reg,.join #account.mode-login #register{display:none!important}
+.join #status{text-align:center}
+@media(max-width:560px){.join #account{padding:26px 20px 22px;border-radius:14px}}
+.join #message,.join #status{text-align:center;white-space:normal}
