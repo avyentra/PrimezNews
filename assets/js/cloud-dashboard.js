@@ -10,8 +10,9 @@
  const chosen = () => [...document.querySelectorAll('#categories input:checked')].map(input => input.value);
  function primaryOptions() {
   const previous = el('primaryCategory').value;
-  el('primaryCategory').replaceChildren(...chosen().map(c => option(c)));
-  if (chosen().includes(previous)) el('primaryCategory').value = previous;
+  /* show ALL categories; picking one also ticks it in Categories */
+  el('primaryCategory').replaceChildren(...cats.map(c => option(c)));
+  el('primaryCategory').value = cats.includes(previous) && chosen().includes(previous) ? previous : (chosen()[0] || previous || 'Punjab');
  }
  function updateImage() { el('storyPreview').src = api.image(image); el('storyPreview').hidden = !image; }
  function istInput(iso) { return iso ? new Date(Date.parse(iso) + 19800000).toISOString().slice(0,16) : ''; }
