@@ -1,0 +1,42 @@
+name: Refresh Chandigarh market rates
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/update_market_rates.py'
+      - '.github/workflows/market-rates.yml'
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: chandigarh-market-rates
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - id: refresh
+        continue-on-error: true
+        run: python3 scripts/update_market_rates.py
+      - name: Publish changed rates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add data/market-rates.json
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'Refresh Chandigarh retail prices'
+            git pull --rebase origin main
+            git push origin HEAD:main
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent
+          fi
+      - if: steps.refresh.outcome == 'failure'
+        run: exit 1
