@@ -164,3 +164,6 @@
   }).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
   fetch('data/header-news.json').then(r=>r.ok?r.json():[]).then(rows=>{stories=rows;renderHeadlines();}).catch(()=>{});
 })();
+
+/* Nav: mark page language on the component so Punjabi/Hindi menu can match English look */
+(()=>{const set=()=>{const l=['pa','hi','en'].includes(document.documentElement.lang)?document.documentElement.lang:'pa';document.querySelectorAll('primez-site-nav').forEach(n=>n.setAttribute('data-lang',l))};set();document.addEventListener('DOMContentLoaded',set);new MutationObserver(set).observe(document.documentElement,{attributes:true,attributeFilter:['lang']})})();
