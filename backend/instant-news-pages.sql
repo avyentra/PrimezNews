@@ -9,7 +9,7 @@
 --    (the token is kept encrypted in Supabase Vault, never in the website code):
 --
 --    select vault.create_secret('PASTE_GITHUB_TOKEN_HERE', 'github_dispatch_token');
---    select vault.create_secret('OWNER/REPO', 'github_repo');      -- e.g. 'gurlal/PrimezNews'
+--    select vault.create_secret('OWNER/REPO', 'github_repo');      -- aapki repo: 'avyentra/PrimezNews'
 --
 -- 3) Run this whole file.
 begin;
