@@ -10,6 +10,8 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 
 SIZE = (1200, 630)
 LIMIT = 8 * 1024 * 1024
+MAX_CARD = 280 * 1024
+KEEP_OLD = 3
 
 
 def preview(root, article_dir, source, base, storage_origin):
@@ -17,7 +19,7 @@ def preview(root, article_dir, source, base, storage_origin):
     try:
         if source.startswith(base + 'assets/') and re.fullmatch(r'[\w-]+\.webp', source.split('/')[-1]):
             raw = (root / 'assets' / source.split('/')[-1]).read_bytes()
-        elif source.startswith(storage_origin + '/storage/v1/object/public/newsroom-media/'):
+        elif source.startswith(storage_origin + '/storage/v1/object/public/newsroom-media/') or source.startswith(storage_origin + '/storage/v1/object/public/journalist-media/'):
             with urlopen(source, timeout=15) as response:
                 raw = response.read(LIMIT + 1)
         else:
@@ -28,15 +30,23 @@ def preview(root, article_dir, source, base, storage_origin):
             if image.width * image.height > 40_000_000:
                 raise ValueError('source exceeds pixel limit')
             thumbnail = ImageOps.fit(ImageOps.exif_transpose(image).convert('RGB'), SIZE)
-        output = io.BytesIO()
-        thumbnail.save(output, 'JPEG', quality=80, optimize=True)
-        data = output.getvalue()
+        # WhatsApp shows the big photo only for small files: keep every card under ~280 KB
+        for quality in (80, 72, 64, 56, 50):
+            output = io.BytesIO()
+            thumbnail.save(output, 'JPEG', quality=quality, optimize=True, progressive=False)
+            data = output.getvalue()
+            if len(data) <= MAX_CARD:
+                break
         digest = hashlib.sha256(data).hexdigest()[:16]
         filename = 'share-' + digest + '.jpg'
-        (article_dir / filename).write_bytes(data)
-        for old in article_dir.glob('share-*.jpg'):
-            if old.name != filename:
-                old.unlink()
+        target = article_dir / filename
+        if not target.exists():
+            target.write_bytes(data)
+        # Never delete a card that may already be cached by WhatsApp/Facebook:
+        # keep the newest KEEP_OLD cards, remove only older extras.
+        cards = sorted(article_dir.glob('share-*.jpg'), key=lambda f: f.stat().st_mtime, reverse=True)
+        for old in [c for c in cards if c.name != filename][KEEP_OLD:]:
+            old.unlink()
         return base + str((article_dir / filename).relative_to(root))
     except (OSError, URLError, ValueError, Image.DecompressionBombError, UnidentifiedImageError) as error:
         logging.warning('Thumbnail for %s: %s', article_dir.name, type(error).__name__)
