@@ -19,3 +19,11 @@ footer{display:flex;justify-content:space-between;padding:12px 20px;background:#
 .market>div{gap:8px 14px;padding-block:5px}.market .quote{white-space:nowrap}
 .market .quote-source{display:block;font-size:11px;color:#c9d4e2}
 @media(max-width:700px){.market>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 8px}.market strong{grid-column:1/3}.market>div>a{grid-column:3;grid-row:1;text-align:right}.market .quote{grid-row:2;white-space:normal}.market .quote b{display:block}.market .quote-source{font-size:10px}}
+
+/* ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ – moving headlines (right to left) */
+.headlines.moving{overflow:hidden;flex:1;-webkit-mask:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);mask:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
+.headlines .marquee{display:inline-flex;gap:0;white-space:nowrap;animation:pn-marquee var(--dur,40s) linear infinite;will-change:transform}
+.headlines.moving:hover .marquee,.headlines.moving:focus-within .marquee{animation-play-state:paused}
+.headlines .marquee a{margin-right:28px}
+@keyframes pn-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.headlines .marquee{animation-duration:calc(var(--dur,40s)*2)}}

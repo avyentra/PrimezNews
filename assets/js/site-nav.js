@@ -99,7 +99,7 @@
   }
   let stories=[];
   function renderHeadlines(){
-    q('.headlines').replaceChildren(...stories.slice(0,4).map(s=>anchor('news/'+encodeURIComponent(s.slug)+'/',s[locale()]||s.title||s.pa)));
+    /* ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ: headlines move right → left (marquee); hover pauses */const box=q('.headlines'),list=stories.slice(0,8),make=(dup)=>list.map(s=>{const a=anchor('news/'+encodeURIComponent(s.slug)+'/',s[locale()]||s.title||s.pa);if(dup){a.tabIndex=-1;a.setAttribute('aria-hidden','true')}return a});if(list.length){const track=document.createElement('span');track.className='marquee';track.append(...make(false),...make(true));box.replaceChildren(track);box.classList.add('moving');requestAnimationFrame(()=>{const w=track.scrollWidth/2;track.style.setProperty('--dur',Math.max(20,Math.round(w/60))+'s')})}else{box.classList.remove('moving');box.replaceChildren()}
     if(!stories.length)q('.headlines').append(anchor('news.html',t('ਸਾਰੀਆਂ ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ ਪੜ੍ਹੋ','सभी ताज़ा खबरें पढ़ें','Read the latest news')));
   }
   const weather = document.querySelector('#pn-temperature');

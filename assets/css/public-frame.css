@@ -51,3 +51,15 @@ footer.pn-footer{position:relative;z-index:76;background:#191d36;color:#f8f8fb;b
 .pn-footer a:hover,.pn-footer button:hover{text-decoration:underline}.pn-footer :focus-visible{outline:2px solid #ffcf56;outline-offset:3px}
 @media(max-width:850px){.pn-footgrid{grid-template-columns:repeat(3,minmax(0,1fr))}.pn-footbrand{grid-column:span 2}.pn-legal>div{align-items:flex-start}}
 @media(max-width:580px){.pn-footlead{align-items:flex-start;flex-direction:column;padding-block:24px}.pn-footgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;padding-block:24px}.pn-footbrand,.pn-footads{grid-column:1/-1}.pn-footlinks a{padding:7px 0}.pn-footactions{justify-content:flex-start}.pn-legal a,.pn-legal button{padding:5px 0}}
+
+/* Footer content = same width as page content (.wrap), left & right edges aligned */
+.pn-footinner,.pn-legal>div{max-width:1280px;width:calc(100% - 80px);padding-inline:0;margin-inline:auto;box-sizing:border-box}
+.pn-footgrid{padding-inline:0}
+@media(min-width:1440px){.pn-footinner,.pn-legal>div{width:calc(100% - 328px);max-width:1280px}}
+@media(max-width:1200px){.pn-footinner,.pn-legal>div{width:calc(100% - 56px)}}
+@media(max-width:640px){.pn-footinner,.pn-legal>div{width:calc(100% - 36px)}}
+
+/* Feed cards (ਪੰਜਾਬ ਭਰ ਤੋਂ): title max 2 lines, smaller font */
+.feed-grid .feed-card h3{font-size:18px!important;line-height:1.6!important;letter-spacing:0!important;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:1200px){.feed-grid .feed-card h3{font-size:17px!important}}
+@media(max-width:640px){.feed-grid .feed-card h3{font-size:16px!important}}
