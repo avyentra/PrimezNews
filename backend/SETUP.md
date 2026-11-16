@@ -71,3 +71,9 @@ The alias does not bypass editor membership or password checks.
 2. Approved journalists are sent to `journalist.html` after login. They can write news, **edit their own news after posting** (it goes back to the desk for review) and **upload one photo** (JPG/PNG/WebP, max 1 MB, bucket `journalist-media`).
 3. Desk/admin moves a report on `join-newsroom.html#review`: In review → Approve → Mark published, or Return with a note.
 4. Design preview without login (only on your own computer): `http://localhost:8000/journalist.html?demo=1`.
+
+## WhatsApp / Facebook share photo — permanent setup
+- `scripts/social_preview.py`: every news gets a 1200×630 share photo under 280 KB (WhatsApp big-photo limit). Old share photos are **kept** (never deleted), so links already shared on WhatsApp keep their photo. Journalist photos are supported too.
+- Instant pages: run `backend/instant-news-pages.sql` (steps inside). When a story is published, Supabase starts the GitHub build immediately (≈1–3 min) instead of waiting for the timer.
+- Admin "published" popup checks the live page + photo and unlocks the share buttons only when both are ready.
+- If a link was shared earlier without a photo, WhatsApp remembers that. Share it once with `?v=2` at the end to refresh.
