@@ -75,10 +75,10 @@
   await refresh(); ads = await api.ads(); select(rows[0]);
  } catch (error) {
   el('accessMessage').textContent = error.message;
-  const a = document.createElement('a'); a.href = 'login.html'; a.textContent = ' Sign in →'; el('accessMessage').append(a); return;
+  const a = document.createElement('a'); a.href = 'login'; a.textContent = ' Sign in →'; el('accessMessage').append(a); return;
  }
- el('logout').onclick = async () => { if (dirty && !confirm('Discard unsaved changes and sign out?')) return; try { await api.logout(); location.replace('login.html'); } catch(error) { feedback(error.message); } };
- api.db().auth.onAuthStateChange(event => { if (event === 'SIGNED_OUT') location.replace('login.html'); });
+ el('logout').onclick = async () => { if (dirty && !confirm('Discard unsaved changes and sign out?')) return; try { await api.logout(); location.replace('login'); } catch(error) { feedback(error.message); } };
+ api.db().auth.onAuthStateChange(event => { if (event === 'SIGNED_OUT') location.replace('login'); });
  el('cloudStoryForm').addEventListener('input', () => { dirty = true; });
  el('cloudStoryForm').onsubmit = event => { event.preventDefault(); save('draft'); };
  document.querySelectorAll('input[name=mode]').forEach(r => { r.onchange = mode; });

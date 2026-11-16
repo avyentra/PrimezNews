@@ -5,7 +5,7 @@
  function href(story){
   const id=story.cloudId||story.id;
   const slug=story.slug||routes[id];
-  return slug?'news/'+encodeURIComponent(slug)+'/':(story.cloudId?'news.html?story=':'home-v2.html?story=')+encodeURIComponent(id);
+  return slug?'news/'+encodeURIComponent(slug)+'/':(story.cloudId?'news/?story=':'home-v2?story=')+encodeURIComponent(id);
  }
  function publicHref(story){
   return (root.PRIMEZ_PUBLIC_BASE || '') + href(story);

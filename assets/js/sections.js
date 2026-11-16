@@ -6,7 +6,7 @@
  const grid=document.getElementById('zodiacGrid');
  if(grid){
   grid.replaceChildren();
-  signs.forEach((name,index)=>{const a=node('a',null,'zodiac-tile');a.href='rashi.html?sign='+index;const symbol=node('span',null,'zodiac-symbol');symbol.setAttribute('aria-hidden','true');if(window.PrimezHomeZodiac)symbol.append(window.PrimezHomeZodiac(index));a.append(symbol,node('span',name,'zodiac-name'));grid.append(a);});
+  signs.forEach((name,index)=>{const a=node('a',null,'zodiac-tile');a.href='rashi?sign='+index;const symbol=node('span',null,'zodiac-symbol');symbol.setAttribute('aria-hidden','true');if(window.PrimezHomeZodiac)symbol.append(window.PrimezHomeZodiac(index));a.append(symbol,node('span',name,'zodiac-name'));grid.append(a);});
   const more=document.getElementById('showAllSigns');if(more)more.onclick=()=>{const expanded=more.getAttribute('aria-expanded')!=='true';more.setAttribute('aria-expanded',String(expanded));grid.classList.toggle('expanded',expanded);more.textContent=expanded?'कम राशियाँ दिखाएँ ↑':'सभी 12 राशियाँ देखें →';};
  }
  const date=document.getElementById('rashiHomeDate');if(date)date.textContent=new Date().toLocaleDateString('hi-IN',{timeZone:'Asia/Kolkata',day:'numeric',month:'long',year:'numeric'});

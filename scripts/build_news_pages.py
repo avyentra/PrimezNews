@@ -43,7 +43,7 @@ def page(template,s,share_image=None):
     out=template.replace('<html lang="pa">','<html lang="pa" data-story-id="'+escape(s['id'])+'">').replace('<head>','<head><meta charset="utf-8"><base href="../../">'+metadata)
     out=re.sub(r'<title>.*?</title>',lambda _: '<title>'+escape(title)+' | PrimezNews</title>',out,count=1)
     out=re.sub(r'<meta name="description" content="[^"]*">',lambda _: '<meta name="description" content="'+escape(desc)+'">',out,count=1)
-    body='<header class="reader-article-header"><nav class="reader-breadcrumb"><a href="index.html">ਮੁੱਖ ਪੰਨਾ</a> / <a href="news.html">ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ</a></nav><h1>'+escape(title)+'</h1>'
+    body='<header class="reader-article-header"><nav class="reader-breadcrumb"><a href="./">ਮੁੱਖ ਪੰਨਾ</a> / <a href="news/">ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ</a></nav><h1>'+escape(title)+'</h1>'
     if summary.strip('* ')!=title.strip('* '):body+='<p class="reader-deck">'+escape(s.get('summary',''))+'</p>'
     body+='<p class="reader-meta">'+escape(s.get('author') or s.get('source') or 'PrimezNews')+' · '+escape(s.get('district'))+' · '+escape(s.get('publish_at') or s.get('published'))+'</p></header>'
     body+='<figure class="reader-figure"><img class="reader-hero-image" fetchpriority="high" decoding="async" src="'+escape(photo)+'" alt="'+escape(title)+'"></figure><div class="reader-body">'
@@ -51,6 +51,11 @@ def page(template,s,share_image=None):
     if s.get('sourceUrl'):body+='<p>Source: <a rel="noopener noreferrer" href="'+escape(s['sourceUrl'])+'">'+escape(s['source'])+'</a> · Curated news brief. Photograph is illustrative.</p>'
     out=out.replace('<section id="newsContent" aria-label="ਖ਼ਬਰਾਂ"></section>','<section id="newsContent" class="reader-article" aria-label="ਖ਼ਬਰਾਂ">'+body+'</section>').replace('ਖ਼ਬਰਾਂ ਲੋਡ ਹੋ ਰਹੀਆਂ ਹਨ…','')
     return out.replace('<use href="#', '<use href="assets/reader-icons.svg#')
+
+def write_news_index(template):
+    """/news/ = the latest-news list (same page as news.html), so the browser never shows .html."""
+    page_html=template.replace('<head>','<head><base href="../">',1)
+    (ROOT/'news'/'index.html').write_text(page_html.replace('<use href="#', '<use href="assets/reader-icons.svg#'))
 
 def build():
     from social_preview import preview
@@ -84,8 +89,10 @@ def build():
     fallback_template=re.sub(r'<meta name="robots"[^>]*>','',template)
     fallback=fallback_template.replace('<html lang="pa">','<html lang="pa" data-news-fallback="true">').replace('<head>','<head><base href="/"><script>if(location.hostname==="avyentra.github.io")document.querySelector("base").href="/PrimezNews/";</script><meta name="robots" content="noindex">')
     (ROOT/'404.html').write_text(fallback.replace('<use href="#', '<use href="assets/reader-icons.svg#'))
+    write_news_index(template)
     # Only genuine public articles and established public pages enter the sitemap.
-    pages=['','news.html','rashi.html','dharm.html','about-us.html','editorial-policy.html','privacy-policy.html','grievance-redressal.html','contact.html','advertise.html','join-newsroom.html']
+    # Clean URLs (no .html): GitHub Pages serves about-us.html at /about-us
+    pages=['','news/','rashi','dharm','jobs','health-beauty','nri','videos','mandi-bhav','hukamnama','sarkari-yojana','about-us','editorial-policy','privacy-policy','grievance-redressal','contact','advertise','join-newsroom']
     urls=[BASE+p for p in pages]+[BASE+'news/'+quote(s['slug'])+'/' for s in rows]
     (ROOT/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+escape(u)+'</loc></url>' for u in urls)+'</urlset>\n')
     print(f'Built {len(rows)} public headline pages')

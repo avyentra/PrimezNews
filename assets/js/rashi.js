@@ -34,7 +34,7 @@
   document.title=el('signTitle').textContent+' | PrimezNews';
   el('signLinks').replaceChildren();
   signs.forEach((sign,index)=>{
-   const a=document.createElement('a');a.href='rashi.html?sign='+index;a.className='zodiac-tile'+(index===selected?' active':'');if(index===selected)a.setAttribute('aria-current','page');
+   const a=document.createElement('a');a.href='rashi?sign='+index;a.className='zodiac-tile'+(index===selected?' active':'');if(index===selected)a.setAttribute('aria-current','page');
    const icon=document.createElement('span');icon.className='zodiac-symbol';icon.append(zodiac(index));icon.setAttribute('aria-hidden','true');const label=document.createElement('span');label.className='zodiac-name';label.textContent=display(index);a.append(icon,label);
    a.addEventListener('click',event=>{event.preventDefault();selectSign(index,true);});el('signLinks').append(a);
   });

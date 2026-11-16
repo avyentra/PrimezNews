@@ -24,7 +24,7 @@
  function image(s){try{return window.PrimezHomeModel.image(s);}catch{return s.image||'assets/news-farm.webp';}}
  function chip(label,value){const b=node('button',label,'dn-chip'+(selected===value?' active':''));b.type='button';b.setAttribute('aria-pressed',String(selected===value));b.addEventListener('click',()=>{selected=value;render();});return b;}
  function render(){
-  const head=node('div',undefined,'dn-head');const h=node('h2',tr('Your district'));h.id='districtNewsTitle';const all=node('a',tr('View all →'),'dn-all');all.href='news.html';head.append(h,all);
+  const head=node('div',undefined,'dn-head');const h=node('h2',tr('Your district'));h.id='districtNewsTitle';const all=node('a',tr('View all →'),'dn-all');all.href='news/';head.append(h,all);
   const chips=node('div',undefined,'dn-chips');chips.append(chip(tr('All'),''));MAIN.forEach(([v,l])=>chips.append(chip(tr(l||v),v)));
   const more=node('div',undefined,'dn-more');const mb=node('button',OTHER.includes(selected)?tr(short(selected)):tr('More districts'),'dn-chip'+(OTHER.includes(selected)?' active':''));mb.type='button';mb.setAttribute('aria-expanded','false');
   const menu=node('div',undefined,'dn-menu');OTHER.forEach(d=>{const o=node('button',tr(short(d)),selected===d?'active':'');o.type='button';o.addEventListener('click',()=>{selected=d;render();});menu.append(o);});
@@ -32,7 +32,7 @@
   more.append(mb,menu);chips.append(more);
   const grid=node('div',undefined,'dn-grid');const rows=pool().filter(s=>!selected||s.district===selected).slice(0,4);
   if(!rows.length)grid.append(node('p',tr('News from this district is coming soon.'),'dn-empty'));
-  rows.forEach(s=>{const a=node('a',undefined,'dn-card');a.href=window.PrimezNewsURLs?window.PrimezNewsURLs.href(s):'news.html';
+  rows.forEach(s=>{const a=node('a',undefined,'dn-card');a.href=window.PrimezNewsURLs?window.PrimezNewsURLs.href(s):'news/';
    const pic=node('span',undefined,'dn-img');const img=node('img');img.src=image(s);img.alt=s.photoCaption||title(s);img.loading='lazy';img.decoding='async';img.addEventListener('error',()=>{if(!img.dataset.f){img.dataset.f='1';img.src='assets/news-farm.webp';}});pic.append(img);
    a.append(pic,node('span',tr(short(s.district)),'dn-tag'),node('h3',title(s)),node('span',ago(s),'dn-time'));grid.append(a);});
   box.replaceChildren(head,chips,grid);

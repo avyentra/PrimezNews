@@ -224,7 +224,7 @@
   });
 
   /* ---------- logout ---------- */
-  async function logout() { try { if (db) await db.auth.signOut(); } catch {} location.replace('login.html'); }
+  async function logout() { try { if (db) await db.auth.signOut(); } catch {} location.replace('login'); }
   $('logout').addEventListener('click', logout); $('logoutTop').addEventListener('click', logout);
 
   /* ---------- data ---------- */
@@ -250,10 +250,10 @@
     try {
       db = window.PrimezAPI.db();
       const session = result(await db.auth.getSession()).session;
-      if (!session) { location.replace('login.html'); return; }
+      if (!session) { location.replace('login'); return; }
       user = session.user;
       const app = result(await db.from('journalist_applications').select('name,district,status').eq('user_id', user.id).maybeSingle());
-      if (!app || app.status !== 'approved') { location.replace('join-newsroom.html'); return; }
+      if (!app || app.status !== 'approved') { location.replace('join-newsroom'); return; }
       const key = Object.keys(DISTRICTS).find(k => k.toLowerCase() === String(app.district || '').trim().toLowerCase() || (DISTRICTS[k] || []).includes(String(app.district || '').trim()));
       profile = { name: app.name, districtKey: key || '' };
       showProfile(); applyText();

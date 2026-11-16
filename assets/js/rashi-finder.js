@@ -20,7 +20,7 @@
 
  function result(container,heading,description,indices){
   container.replaceChildren();const h=document.createElement('h3');h.textContent=heading;const p=document.createElement('p');p.textContent=description;container.append(h,p);
-  indices.forEach(index=>{const a=document.createElement('a');a.className='finder-view';a.href='rashi.html?sign='+index;a.textContent=signName(index)+localized(' ਦਾ ਰਾਸ਼ੀਫਲ ਵੇਖੋ ↓',' का राशिफल देखें ↓',' horoscope ↓');a.addEventListener('click',event=>{if(window.PrimezRashiView){event.preventDefault();selectBelow(index);}});container.append(a);});container.hidden=false;
+  indices.forEach(index=>{const a=document.createElement('a');a.className='finder-view';a.href='rashi?sign='+index;a.textContent=signName(index)+localized(' ਦਾ ਰਾਸ਼ੀਫਲ ਵੇਖੋ ↓',' का राशिफल देखें ↓',' horoscope ↓');a.addEventListener('click',event=>{if(window.PrimezRashiView){event.preventDefault();selectBelow(index);}});container.append(a);});container.hidden=false;
  }
  el('nameRashiForm').onsubmit=event=>{event.preventDefault();el('nameFeedback').textContent='';el('nameResult').hidden=true;try{if(!el('finderName').value.trim())throw new Error('अपना पहला नाम भरें।');const found=api.nameSign(el('nameSound').value);result(el('nameResult'),'नाम राशि: '+found.name,'पुष्टि की गई पहली ध्वनि: '+found.sound+'। यह पारंपरिक नाम-ध्वनि mapping है, जन्म की चंद्र राशि नहीं।',[found.index]);selectBelow(found.index);}catch(error){el('nameFeedback').textContent=error.message;}};
  ['birthDate','birthTime'].forEach(id=>el(id).addEventListener('input',()=>{el('birthOccurrence').value='';el('occurrenceField').hidden=true;el('birthResult').hidden=true;}));

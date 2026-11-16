@@ -3,24 +3,24 @@
   const host = document.querySelector('primez-site-nav');
   if (!host) return;
   const root = host.attachShadow({mode:'open'});
-  const home = 'index.html', category = key => 'home-v2.html?category=' + key;
+  const home = './', category = key => 'home-v2?category=' + key;
   const search = term => home + '?headerSearch=' + encodeURIComponent(term);
   const sections = [
     [home,'⌂','⌂','⌂'], [category('Punjab'),'ਪੰਜਾਬ','पंजाब','Punjab'],
-    [category('Agriculture'),'ਖੇਤੀਬਾੜੀ','कृषि','Agriculture'],['https://www.pgrkam.com/','ਰੁਜ਼ਗਾਰ','रोज़गार','Jobs'],
-    ['rashi.html','ਰਾਸ਼ੀਫਲ','राशिफल','Horoscope'],[category('Sports'),'ਖੇਡਾਂ','खेल','Sports'],
-    [category('Politics'),'ਸਿਆਸਤ','राजनीति','Politics'],[search('ਸਿਹਤ'),'ਸਿਹਤ ਤੇ ਸੁੰਦਰਤਾ','स्वास्थ्य व सौंदर्य','Health & Beauty'],
-    [search('NRI'),'NRI ਖ਼ਬਰਾਂ','NRI खबरें','NRI News'],[home+'#videos','ਵੀਡੀਓ','वीडियो','Video']
+    [category('Agriculture'),'ਖੇਤੀਬਾੜੀ','कृषि','Agriculture'],['jobs','ਰੁਜ਼ਗਾਰ','रोज़गार','Jobs'],
+    ['rashi','ਰਾਸ਼ੀਫਲ','राशिफल','Horoscope'],[category('Sports'),'ਖੇਡਾਂ','खेल','Sports'],
+    [category('Politics'),'ਸਿਆਸਤ','राजनीति','Politics'],['health-beauty','ਸਿਹਤ ਤੇ ਸੁੰਦਰਤਾ','स्वास्थ्य व सौंदर्य','Health & Beauty'],
+    ['nri','NRI ਖ਼ਬਰਾਂ','NRI खबरें','NRI News'],['videos','ਵੀਡੀਓ','वीडियो','Video']
   ];
   const more = [
-    ['https://agmarknet.gov.in/','▥','ਮੰਡੀ ਭਾਅ','मंडी भाव','Market rates','ਅੱਜ ਦੇ ਫ਼ਸਲਾਂ ਦੇ ਰੇਟ','आज के फसल भाव','Crop prices'],
-    ['https://sgpc.net/','▤','ਹੁਕਮਨਾਮਾ','हुकमनामा','Hukamnama','ਸ੍ਰੀ ਦਰਬਾਰ ਸਾਹਿਬ ਤੋਂ','श्री दरबार साहिब से','From Sri Darbar Sahib'],
-    ['https://www.myscheme.gov.in/','⌂','ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ','सरकारी योजनाएँ','Government schemes','ਸਕੀਮਾਂ ਅਤੇ ਅਪਲਾਈ ਕਰਨ ਦਾ ਤਰੀਕਾ','योजनाएँ और आवेदन','Schemes and applications'],
+    ['mandi-bhav','▥','ਮੰਡੀ ਭਾਅ','मंडी भाव','Market rates','ਅੱਜ ਦੇ ਫ਼ਸਲਾਂ ਦੇ ਰੇਟ','आज के फसल भाव','Crop prices'],
+    ['hukamnama','▤','ਹੁਕਮਨਾਮਾ','हुकमनामा','Hukamnama','ਸ੍ਰੀ ਦਰਬਾਰ ਸਾਹਿਬ ਤੋਂ','श्री दरबार साहिब से','From Sri Darbar Sahib'],
+    ['sarkari-yojana','⌂','ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ','सरकारी योजनाएँ','Government schemes','ਸਕੀਮਾਂ ਅਤੇ ਅਪਲਾਈ ਕਰਨ ਦਾ ਤਰੀਕਾ','योजनाएँ और आवेदन','Schemes and applications'],
     [category('Education'),'◇','ਸਿੱਖਿਆ','शिक्षा','Education','ਸਕੂਲ, ਕਾਲਜ ਅਤੇ ਨਤੀਜੇ','स्कूल, कॉलेज और नतीजे','Schools, colleges and results'],
     [category('Crime'),'⬡','ਅਪਰਾਧ ਤੇ ਸੁਰੱਖਿਆ','अपराध व सुरक्षा','Crime & Safety','ਪੁਲਿਸ ਅਤੇ ਅਦਾਲਤ ਦੀਆਂ ਖ਼ਬਰਾਂ','पुलिस और अदालत की खबरें','Police and court news'],
-    ['dharm.html','♧','ਆਸਥਾ ਤੇ ਸੱਭਿਆਚਾਰ','आस्था व संस्कृति','Faith & Culture','ਗੁਰਪੁਰਬ, ਤਿਉਹਾਰ ਅਤੇ ਵਿਰਾਸਤ','पर्व, त्योहार और विरासत','Festivals and heritage']
+    ['dharm','♧','ਆਸਥਾ ਤੇ ਸੱਭਿਆਚਾਰ','आस्था व संस्कृति','Faith & Culture','ਗੁਰਪੁਰਬ, ਤਿਉਹਾਰ ਅਤੇ ਵਿਰਾਸਤ','पर्व, त्योहार और विरासत','Festivals and heritage']
   ];
-  root.innerHTML = `<link rel="stylesheet" href="assets/css/public-navigation.css"><nav><button class="mobile" aria-expanded="false" aria-controls="sections">☰ <span></span></button><div id="sections"></div><a class="live" href="news.html">◉ LIVE</a><button class="more" aria-controls="panel" aria-expanded="false"></button><button class="search" aria-label="Search" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><div id="panel" hidden><div class="cols"></div><footer></footer></div></nav><div class="wire"><div><b></b><div class="headlines"></div></div></div><div class="market"><div></div></div>`;
+  root.innerHTML = `<link rel="stylesheet" href="assets/css/public-navigation.css"><nav><button class="mobile" aria-expanded="false" aria-controls="sections">☰ <span></span></button><div id="sections"></div><a class="live" href="news/">◉ LIVE</a><button class="more" aria-controls="panel" aria-expanded="false"></button><button class="search" aria-label="Search" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><div id="panel" hidden><div class="cols"></div><footer></footer></div></nav><div class="wire"><div><b></b><div class="headlines"></div></div></div><div class="market"><div></div></div>`;
   const q = s => root.querySelector(s);
   const locale = () => ['pa','hi','en'].includes(document.documentElement.lang) ? document.documentElement.lang : 'pa';
   const t = (...words) => words[['pa','hi','en'].indexOf(locale())];
@@ -92,7 +92,7 @@
       }
       q('.cols').append(col);
     }
-    q('footer').replaceChildren(anchor('contact.html',t('ਆਪਣੀ ਖ਼ਬਰ ਭੇਜੋ','अपनी खबर भेजें','Tell your story')+' →'),anchor('advertise.html',t('ਇਸ਼ਤਿਹਾਰ ਦਿਓ','विज्ञापन दें','Advertise')+' →'));
+    q('footer').replaceChildren(anchor('contact',t('ਆਪਣੀ ਖ਼ਬਰ ਭੇਜੋ','अपनी खबर भेजें','Tell your story')+' →'),anchor('advertise',t('ਇਸ਼ਤਿਹਾਰ ਦਿਓ','विज्ञापन दें','Advertise')+' →'));
     q('.wire b').textContent=t('ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ','ताज़ा खबरें','Latest news');
     renderRates();
     renderHeadlines();
@@ -100,7 +100,7 @@
   let stories=[];
   function renderHeadlines(){
     /* ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ: headlines move right → left (marquee); hover pauses */const box=q('.headlines'),list=stories.slice(0,8),make=(dup)=>list.map(s=>{const a=anchor('news/'+encodeURIComponent(s.slug)+'/',s[locale()]||s.title||s.pa);if(dup){a.tabIndex=-1;a.setAttribute('aria-hidden','true')}return a});if(list.length){const track=document.createElement('span');track.className='marquee';track.append(...make(false),...make(true));box.replaceChildren(track);box.classList.add('moving');requestAnimationFrame(()=>{const w=track.scrollWidth/2;track.style.setProperty('--dur',Math.max(20,Math.round(w/60))+'s')})}else{box.classList.remove('moving');box.replaceChildren()}
-    if(!stories.length)q('.headlines').append(anchor('news.html',t('ਸਾਰੀਆਂ ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ ਪੜ੍ਹੋ','सभी ताज़ा खबरें पढ़ें','Read the latest news')));
+    if(!stories.length)q('.headlines').append(anchor('news/',t('ਸਾਰੀਆਂ ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ ਪੜ੍ਹੋ','सभी ताज़ा खबरें पढ़ें','Read the latest news')));
   }
   const weather = document.querySelector('#pn-temperature');
   if(weather){

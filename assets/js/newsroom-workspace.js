@@ -9,7 +9,7 @@
   el('previousStep').hidden=index===0;el('nextStep').hidden=index===steps.length-1;
   el('nextStep').textContent=index===0?'Article →':'Publishing →';
   if(focus)el('step-'+name).focus();
-  document.dispatchEvent(new CustomEvent('primez-step',{detail:{name,index,last:index===steps.length-1}}));
+  if(typeof CustomEvent==='function'&&document.dispatchEvent)document.dispatchEvent(new CustomEvent('primez-step',{detail:{name,index,last:index===steps.length-1}}));
  }
  function validate() {
   const invalid=[...el('cloudStoryForm').querySelectorAll('input,select,textarea')].find(input=>!input.disabled && !input.checkValidity());

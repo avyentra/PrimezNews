@@ -64,9 +64,9 @@
     configured, db, requireEditor, validateStory, istToISO, safeUrl, image,
     async login(identifier, password, remember = false) { localStorage.setItem('primezRemember', remember ? 'yes' : 'no'); const email = identifier.includes('@') ? identifier.trim() : cfg.usernames?.[identifier.trim().toLowerCase()]; if (!email) throw new Error('User ID is not configured. Sign in with your email address.'); const {user} = check(await db().auth.signInWithPassword({ email, password }));
       const editor = check(await db().from('newsroom_editors').select('user_id').eq('user_id', user.id).maybeSingle());
-      if (editor) return 'admin.html';
+      if (editor) return 'admin';
       const app = check(await db().from('journalist_applications').select('status').eq('user_id', user.id).maybeSingle());
-      return app && app.status === 'approved' ? 'journalist.html' : 'join-newsroom.html'; },
+      return app && app.status === 'approved' ? 'journalist' : 'join-newsroom'; },
     async logout() { check(await db().auth.signOut()); },
     async recover(email) { check(await db().auth.resetPasswordForEmail(email, { redirectTo: new URL('reset-password.html', location.href).href })); },
     async reset(password) { check(await db().auth.updateUser({ password })); },

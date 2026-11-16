@@ -6,7 +6,7 @@
   event.preventDefault(); if (!recovery) return;
   if (el('newPassword').value !== el('confirmPassword').value) { el('resetFeedback').textContent = 'Passwords do not match.'; return; }
   el('resetButton').disabled = true;
-  try { await api.reset(el('newPassword').value); await api.logout(); location.replace('login.html'); }
+  try { await api.reset(el('newPassword').value); await api.logout(); location.replace('login'); }
   catch (error) { el('resetFeedback').textContent = error.message; el('resetButton').disabled = false; }
  };
 })();

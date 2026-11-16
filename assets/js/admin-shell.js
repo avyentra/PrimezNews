@@ -96,7 +96,7 @@
   };
   function absolute(href) { try { return new URL(href, location.href).href; } catch { return href; } }
   function open(story) {
-    const href = (window.PrimezNewsURLs ? (window.PrimezNewsURLs.publicHref || window.PrimezNewsURLs.href)({ ...story, cloudId: story.id }) : 'news.html?story=' + encodeURIComponent(story.id));
+    const href = (window.PrimezNewsURLs ? (window.PrimezNewsURLs.publicHref || window.PrimezNewsURLs.href)({ ...story, cloudId: story.id }) : 'news/?story=' + encodeURIComponent(story.id));
     const url = absolute(href), title = story.title || story.en || '';
     const enc = encodeURIComponent(url);
     q('.pub-head').textContent = title;

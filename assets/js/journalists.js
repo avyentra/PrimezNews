@@ -64,7 +64,7 @@
     el('who').textContent=session.user.email;el('session').hidden=false;
     if(result(await db.rpc('journalist_reviewer'))){el('review').hidden=false;await showQueue();return;}
     const row=result(await db.from('journalist_applications').select('status').eq('user_id',session.user.id).maybeSingle());
-    currentStatus=row?.status;if(currentStatus==='approved'){location.replace('journalist.html');return;}renderStatus();el('application').hidden=!!row;el('report').hidden=currentStatus!=='approved';
+    currentStatus=row?.status;if(currentStatus==='approved'){location.replace('journalist');return;}renderStatus();el('application').hidden=!!row;el('report').hidden=currentStatus!=='approved';
   }
   const credentials=()=>({email:el('em').value.trim(),password:el('pw').value});
   el('account').onsubmit=e=>{e.preventDefault();run(el('signin'),async()=>{
