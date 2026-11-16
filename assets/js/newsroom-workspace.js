@@ -9,6 +9,7 @@
   el('previousStep').hidden=index===0;el('nextStep').hidden=index===steps.length-1;
   el('nextStep').textContent=index===0?'Article →':'Publishing →';
   if(focus)el('step-'+name).focus();
+  document.dispatchEvent(new CustomEvent('primez-step',{detail:{name,index,last:index===steps.length-1}}));
  }
  function validate() {
   const invalid=[...el('cloudStoryForm').querySelectorAll('input,select,textarea')].find(input=>!input.disabled && !input.checkValidity());
@@ -19,6 +20,9 @@
  el('previousStep').onclick=()=>show(steps[Math.max(0,index-1)],true);
  el('nextStep').onclick=()=>show(steps[Math.min(2,index+1)],true);
  el('toggleStories').onclick=()=>{const open=el('toggleStories').getAttribute('aria-expanded')!=='true';el('toggleStories').setAttribute('aria-expanded',String(open));el('storyRailContent').classList.toggle('rail-open',open);};
- window.PrimezWorkspace={show,validate,closeRail(){el('toggleStories').setAttribute('aria-expanded','false');el('storyRailContent').classList.remove('rail-open');}};
+ /* validate only the fields of the current step (used by Continue) */
+ function validateStep(){const panel=el('panel-'+steps[index]);const bad=[...panel.querySelectorAll('input,select,textarea')].find(i=>!i.disabled&&!i.checkValidity());if(bad){bad.reportValidity();return false;}return true;}
+ function next(){if(!validateStep())return false;show(steps[Math.min(2,index+1)],true);return true;}
+ window.PrimezWorkspace={show,validate,validateStep,next,current:()=>steps[index],closeRail(){el('toggleStories').setAttribute('aria-expanded','false');el('storyRailContent').classList.remove('rail-open');}};
  show('details');
 })();

@@ -25,6 +25,7 @@
    b.append(strong,small); b.onclick = () => { if (!saving && (!dirty || confirm('Discard unsaved changes?'))) select(story); }; el('storyList').append(b);
   });
   if (!rows.length) el('storyList').textContent = 'No stories yet. Create your first story.';
+  document.dispatchEvent(new CustomEvent('primez-admin-stories', { detail: rows.map(s => s.status) }));
  }
  function select(story) {
   selected = story || null; const s = story || {};
