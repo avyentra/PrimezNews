@@ -17,21 +17,7 @@ html[lang=pa] [data-frame-lang=pa],html[lang=hi] [data-frame-lang=hi],html[lang=
 .pn-logo img{display:block;width:clamp(215px,24vw,365px);height:auto;max-height:140px;object-fit:contain}
 .pn-header .pn-edition{position:absolute;left:4%;top:15%;color:white;background:#071427d9;border:1px solid #c0a261;border-radius:6px;padding:6px 12px}
 .pn-edition small{display:block;font-size:12px}
-footer.pn-footer{background:linear-gradient(#061932f2,#0a2241e8),url('../punjab-panorama.webp') center 75%/cover;border-top:3px solid #e8b232}
-.pn-footgrid{display:grid;grid-template-columns:1fr 1.3fr .9fr 1fr 1.28fr;gap:20px;padding-block:22px;align-items:center}
-.pn-footgrid> :not(:first-child){border-left:1px solid #a78949;padding-left:20px}
-.pn-footgrid img{max-width:100%;height:auto;width:220px;display:block}
-.pn-footgrid p,.pn-footgrid h2{margin:0;color:inherit}.pn-footgrid p{font:inherit}
-.pn-footgrid h2{color:#ffcf53;font:bold 17px/1.4 system-ui,sans-serif;margin-bottom:4px}
-.pn-footgrid div>a{display:block;font-size:14px;line-height:1.6}.pn-footgrid div>a:before{content:'›';padding-right:7px;color:#ffd46c}
-.pn-footer a:hover{text-decoration:underline}
-.pn-footgrid>strong{font-size:clamp(18px,1.65vw,28px);font-style:italic;line-height:1.18}
-.pn-footgrid>strong:after{content:'';display:block;width:74px;border-top:4px solid #f0be38;border-radius:100%;margin:10px 0 0 20px;transform:rotate(-5deg)}
-.pn-legal{border-top:1px solid #a9b4c7}
-.pn-legal>div,.pn-legal>div>div{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 17px}
-.pn-legal>div{padding-block:13px;font-size:13px}
-@media(max-width:760px){.pn-topline{display:flex;justify-content:space-between}.pn-topline strong{font-size:11px;flex:1}.pn-langs button{display:none}.pn-langs select{display:block;color:white;background:#102541;border:1px solid #657389;border-radius:4px;padding:5px}.pn-header .pn-edition{position:static;justify-self:start;max-width:130px;font-size:12px}.pn-banner{grid-template-columns:1fr 1.5fr;height:100px}.pn-logo img{width:min(43vw,220px)}.pn-footgrid{grid-template-columns:1fr 1fr;gap:18px}.pn-footgrid> :not(:first-child){border:0;padding:0}.pn-footgrid>strong{grid-column:1/-1}.pn-footgrid img{width:160px}.pn-legal>div{align-items:start;flex-direction:column}}
-.pn-footgrid button{display:block;padding:0;border:0;background:none;color:white;font:inherit;font-size:14px;cursor:pointer}.pn-footgrid button:hover{text-decoration:underline}
+@media(max-width:760px){.pn-topline{display:flex;justify-content:space-between}.pn-topline strong{font-size:11px;flex:1}.pn-langs button{display:none}.pn-langs select{display:block;color:white;background:#102541;border:1px solid #657389;border-radius:4px;padding:5px}.pn-header .pn-edition{position:static;justify-self:start;max-width:130px;font-size:12px}.pn-banner{grid-template-columns:1fr 1.5fr;height:100px}.pn-logo img{width:min(43vw,220px)}}
 
 .pn-utility{background:#0c1731}
 .pn-topline,.pn-banner{max-width:1380px;padding-inline:16px}
@@ -43,3 +29,25 @@ footer.pn-footer{background:linear-gradient(#061932f2,#0a2241e8),url('../punjab-
 .pn-edition b{color:#ffd25b}.pn-edition time{display:block}
 main>.briefing{display:none}
 @media(max-width:760px){.pn-topline{gap:8px;min-height:38px}.pn-context strong,.pn-channel{display:none}.pn-banner{display:flex;justify-content:center;height:104px}.pn-logo img{width:154px}.pn-header .pn-edition{display:none}.pn-langs{gap:4px}}
+
+footer.pn-footer{position:relative;z-index:76;background:#191d36;color:#f8f8fb;border-top:3px solid #dfa522;line-height:1.55}
+.pn-footinner,.pn-legal>div{max-width:1120px;margin:auto;padding-inline:18px}
+.pn-footlead,.pn-footactions,.pn-legal>div,.pn-legal>div>div{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pn-footlead{padding-block:34px 29px;border-bottom:1px solid #33364d}
+.pn-footlead strong{border-left:2px solid #daa324;padding-left:18px;font:bold italic clamp(21px,2vw,28px)/1.25 system-ui,sans-serif}
+.pn-footlead strong::after{content:"";display:block;width:92px;height:5px;border-top:3px solid #d8a02e;border-radius:50%;transform:rotate(-2deg);margin-top:8px}
+.pn-footactions>*{padding:8px 14px;border-radius:6px;font-size:14px;font-weight:600}
+.pn-footactions a{border:1px solid #687088}.pn-footchannel{background:#087b49;color:white}
+.pn-footgrid{max-width:none;padding:32px 0;display:grid;grid-template-columns:1.45fr repeat(3,1fr) 1.12fr;gap:clamp(16px,2.4vw,38px);align-items:start}
+.pn-footgrid h2{font:bold 15px/1.5 system-ui,sans-serif;color:#efc15d;margin:0 0 10px}
+.pn-footgrid p,.pn-footgrid a,.pn-legal a,.pn-legal small{font-size:14px}
+.pn-footgrid p{color:#ced0dd;margin:10px 0 12px}
+.pn-footbrand img{display:block;width:154px;max-width:100%;height:auto}
+.pn-footlinks a{display:block;padding:3px 0;color:#d6d8e2}
+.pn-footads>div{background:#252940;border:1px solid #393d54;border-radius:9px;padding:15px}
+.pn-footads p{margin:0 0 14px}.pn-footads a{display:block;background:#dfa324;color:#171923;text-align:center;border-radius:6px;padding:8px;font-weight:700}
+.pn-legal{background:transparent;border-top:1px solid #34384d;color:#c4c7d6}.pn-legal>div{padding-block:17px}.pn-legal>div>div{justify-content:flex-start}
+.pn-legal button{border:0;background:none;color:inherit;font:inherit;font-size:13px;cursor:pointer;padding:0}
+.pn-footer a:hover,.pn-footer button:hover{text-decoration:underline}.pn-footer :focus-visible{outline:2px solid #ffcf56;outline-offset:3px}
+@media(max-width:850px){.pn-footgrid{grid-template-columns:repeat(3,minmax(0,1fr))}.pn-footbrand{grid-column:span 2}.pn-legal>div{align-items:flex-start}}
+@media(max-width:580px){.pn-footlead{align-items:flex-start;flex-direction:column;padding-block:24px}.pn-footgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px;padding-block:24px}.pn-footbrand,.pn-footads{grid-column:1/-1}.pn-footlinks a{padding:7px 0}.pn-footactions{justify-content:flex-start}.pn-legal a,.pn-legal button{padding:5px 0}}

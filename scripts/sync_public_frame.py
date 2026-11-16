@@ -24,28 +24,42 @@ HEADER = f'''<header class="pn-header">
 <a class="pn-logo" href="index.html">{LOGO}</a></div></div></header>'''
 
 def footer(has_tools):
-    explore = [('home-v2.html?category=Punjab','Punjab News','पंजाब समाचार','ਪੰਜਾਬ ਦੀਆਂ ਖ਼ਬਰਾਂ'),
-               ('home-v2.html?category=Politics','Political Updates','राजनीति','ਸਿਆਸਤ'),
-               ('home-v2.html?category=Agriculture','Agriculture','कृषि','ਖੇਤੀਬਾੜੀ'),
-               ('home-v2.html?category=Education','Education','शिक्षा','ਸਿੱਖਿਆ'),
-               ('home-v2.html?category=Crime','Crime & Safety','अपराध व सुरक्षा','ਅਪਰਾਧ ਤੇ ਸੁਰੱਖਿਆ')]
-    local = [('news.html','Latest News','ताज़ा ख़बरें','ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ'),
-             ('index.html#districts','News by District','ज़िले की ख़बरें','ਜ਼ਿਲ੍ਹੇ ਦੀਆਂ ਖ਼ਬਰਾਂ'),
-             ('rashi.html','Horoscope','राशिफल','ਰਾਸ਼ੀਫਲ'),
-             ('dharm.html','Faith & Culture','आस्था और संस्कृति','ਆਸਥਾ ਤੇ ਸੱਭਿਆਚਾਰ')]
-    policies = [('about-us.html','About Us','हमारे बारे में','ਸਾਡੇ ਬਾਰੇ'),('contact.html','Contact Us','संपर्क','ਸੰਪਰਕ'),
-                ('privacy-policy.html','Privacy Policy','निजता नीति','ਨਿੱਜਤਾ ਨੀਤੀ'),('editorial-policy.html','Editorial Policy','संपादकीय नीति','ਸੰਪਾਦਕੀ ਨੀਤੀ'),
-                ('grievance-redressal.html','Grievance','शिकायत','ਸ਼ਿਕਾਇਤ'),('advertise.html','Advertise','विज्ञापन','ਇਸ਼ਤਿਹਾਰ')]
+    groups = [
+        (("News", "ख़बरें", "ਖ਼ਬਰਾਂ"), [
+            ('home-v2.html?category=Punjab','Punjab','पंजाब','ਪੰਜਾਬ'),
+            ('home-v2.html?category=Agriculture','Agriculture','कृषि','ਖੇਤੀਬਾੜੀ'),
+            ('https://www.pgrkam.com/','Jobs','रोज़गार','ਰੁਜ਼ਗਾਰ'),
+            ('home-v2.html?category=Politics','Politics','राजनीति','ਸਿਆਸਤ'),
+            ('home-v2.html?category=Sports','Sports','खेल','ਖੇਡਾਂ'),
+            ('index.html?headerSearch=NRI','NRI News','NRI समाचार','NRI ਖ਼ਬਰਾਂ')]),
+        (("See more", "और देखें", "ਹੋਰ ਵੇਖੋ"), [
+            ('rashi.html','Horoscope','राशिफल','ਰਾਸ਼ੀਫਲ'),
+            ('index.html?headerSearch=ਸਿਹਤ','Health & beauty','स्वास्थ्य और सौंदर्य','ਸਿਹਤ ਤੇ ਸੁੰਦਰਤਾ'),
+            ('https://agmarknet.gov.in/','Market prices','मंडी भाव','ਮੰਡੀ ਭਾਅ'),
+            ('https://sgpc.net/','Hukamnama','हुकमनामा','ਹੁਕਮਨਾਮਾ'),
+            ('https://www.myscheme.gov.in/','Government schemes','सरकारी योजनाएँ','ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ'),
+            ('index.html#videos','Video news','वीडियो समाचार','ਵੀਡੀਓ ਖ਼ਬਰਾਂ')]),
+        (("Near you", "आपके पास", "ਤੁਹਾਡੇ ਨੇੜੇ"), [
+            ('index.html#districts','Your district','आपका ज़िला','ਤੁਹਾਡਾ ਜ਼ਿਲ੍ਹਾ'),
+            ('home-v2.html?category=Education','Education','शिक्षा','ਸਿੱਖਿਆ'),
+            ('home-v2.html?category=Crime','Crime & safety','अपराध और सुरक्षा','ਅਪਰਾਧ ਤੇ ਸੁਰੱਖਿਆ'),
+            ('dharm.html','Faith & culture','आस्था और संस्कृति','ਆਸਥਾ ਤੇ ਸੱਭਿਆਚਾਰ'),
+            ('index.html#tipOpen','Tell your story','अपनी ख़बर भेजें','ਆਪਣੀ ਖ਼ਬਰ ਭੇਜੋ')])]
+    columns = ''.join('<div class="pn-footlinks"><h2>'+label(*title)+'</h2>'+
+                      ''.join(link(*item) for item in items)+'</div>' for title,items in groups)
     tools = ''
     if has_tools:
         tools = (f'<button type="button" id="searchOpen">{label("Search","खोज","ਖੋਜ")}</button>'
                  f'<button type="button" id="savedOpen">{label("Saved stories","सहेजी ख़बरें","ਸੰਭਾਲੀਆਂ ਖ਼ਬਰਾਂ")} <span id="savedCount">0</span></button>')
-    return f'''<footer class="pn-footer"><div class="pn-footgrid"><a href="index.html">{LOGO}</a>
-<p>{label("PrimezNews brings you in-depth news, analysis and ground reports from Punjab.","पंजाब से गहन समाचार, विश्लेषण और ज़मीनी रिपोर्ट पढ़ें।","ਪੰਜਾਬ ਦੀਆਂ ਖ਼ਬਰਾਂ, ਵਿਸ਼ਲੇਸ਼ਣ ਤੇ ਜ਼ਮੀਨੀ ਰਿਪੋਰਟਾਂ ਪੜ੍ਹੋ।")}</p>
-<div><h2>{label("Explore","और पढ़ें","ਹੋਰ ਵੇਖੋ")}</h2>{''.join(link(*row) for row in explore)}</div>
-<div><h2>{label("Closer to you","आपके करीब","ਤੁਹਾਡੇ ਨੇੜੇ")}</h2>{''.join(link(*row) for row in local)}{tools}<a id="tipFooter" href="contact.html">{label("Share your story","अपनी खबर भेजें","ਆਪਣੀ ਖ਼ਬਰ ਭੇਜੋ")}</a></div>
-<strong>{label("A clearer view.","एक स्पष्ट नज़रिया।","ਇੱਕ ਸਪਸ਼ਟ ਨਜ਼ਰੀਆ।")}<br>{label("A closer connection.","एक गहरा जुड़ाव।","ਇੱਕ ਨੇੜਲਾ ਜੁੜਾਅ।")}</strong></div>
-<div class="pn-legal"><div><span>© 2026 PrimezNews. {label("All rights reserved.","सर्वाधिकार सुरक्षित।","ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।")}</span><div>{''.join(link(*row) for row in policies)}</div></div></div></footer>'''
+    policies = [('about-us.html','About us','हमारे बारे में','ਸਾਡੇ ਬਾਰੇ'),('editorial-policy.html','Editorial policy','संपादकीय नीति','ਸੰਪਾਦਕੀ ਨੀਤੀ'),
+                ('privacy-policy.html','Privacy','निजता','ਨਿੱਜਤਾ'),('grievance-redressal.html','Complaint','शिकायत','ਸ਼ਿਕਾਇਤ'),
+                ('advertise.html','Advertise','विज्ञापन दें','ਇਸ਼ਤਿਹਾਰ ਦਿਓ'),('contact.html','Contact','संपर्क','ਸੰਪਰਕ')]
+    return f'''<footer class="pn-footer"><div class="pn-footinner">
+<div class="pn-footlead"><strong>{label("A clear vision.","एक स्पष्ट नज़रिया।","ਇੱਕ ਸਪਸ਼ਟ ਨਜ਼ਰੀਆ।")}<br>{label("A close connection.","एक करीबी जुड़ाव।","ਇੱਕ ਨੇੜਲਾ ਜੁੜਾਅ।")}</strong>
+<div class="pn-footactions"><span class="pn-footchannel" aria-disabled="true">◌ {label("WhatsApp channel · coming soon","WhatsApp चैनल · जल्द","WhatsApp ਚੈਨਲ · ਜਲਦੀ")}</span><a id="tipFooter" href="index.html#tipOpen">✎ {label("Tell your story","अपनी ख़बर भेजें","ਆਪਣੀ ਖ਼ਬਰ ਭੇਜੋ")}</a></div></div>
+<div class="pn-footgrid"><div class="pn-footbrand"><a href="index.html">{LOGO}</a><p>{label("Independent reporting from Punjab, its districts and villages.","पंजाब, उसके ज़िलों और गाँवों की स्वतंत्र ख़बरें।","ਪੰਜਾਬ, ਇਸ ਦੇ ਜ਼ਿਲ੍ਹਿਆਂ ਅਤੇ ਪਿੰਡਾਂ ਦੀਆਂ ਸੁਤੰਤਰ ਖ਼ਬਰਾਂ।")}</p>{link("about-us.html","Read more →","और पढ़ें →","ਹੋਰ ਪੜ੍ਹੋ →")}</div>
+{columns}<div class="pn-footads"><h2>{label("Advertise","विज्ञापन दें","ਇਸ਼ਤਿਹਾਰ ਦਿਓ")}</h2><div><p>{label("Reach readers across Punjab. Get in touch about government and business advertising.","पंजाब के पाठकों तक पहुँचें। सरकारी और व्यावसायिक विज्ञापनों के लिए संपर्क करें।","ਪੰਜਾਬ ਦੇ ਪਾਠਕਾਂ ਤੱਕ ਆਪਣੀ ਗੱਲ ਪਹੁੰਚਾਓ। ਸਰਕਾਰੀ ਅਤੇ ਕਾਰੋਬਾਰੀ ਇਸ਼ਤਿਹਾਰਾਂ ਲਈ ਸੰਪਰਕ ਕਰੋ।")}</p>{link("advertise.html","Advertise with us →","विज्ञापन दें →","ਸਾਡੇ ਨਾਲ ਇਸ਼ਤਿਹਾਰ ਦਿਓ →")}</div></div></div></div>
+<div class="pn-legal"><div><small>© 2026 PrimezNews · {label("A digital news portal operated by SHARVIX Studio.","SHARVIX Studio द्वारा संचालित डिजिटल समाचार पोर्टल।","SHARVIX Studio ਵੱਲੋਂ ਚਲਾਇਆ ਜਾਂਦਾ ਡਿਜੀਟਲ ਖ਼ਬਰ ਪੋਰਟਲ।")}</small><div>{''.join(link(*row) for row in policies)}{tools}</div></div></div></footer>'''
 
 def sync():
     for path in list(ROOT.glob('*.html')) + list((ROOT/'news').glob('*/index.html')):
