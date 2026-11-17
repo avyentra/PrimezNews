@@ -1,0 +1,395 @@
+{
+ "tags": {
+  "fitness": {
+   "pa": "ਫਿਟਨੈੱਸ",
+   "hi": "फिटनेस",
+   "en": "Fitness"
+  },
+  "mind": {
+   "pa": "ਮਾਨਸਿਕ ਸਿਹਤ",
+   "hi": "मानसिक स्वास्थ्य",
+   "en": "Mental health"
+  },
+  "diet": {
+   "pa": "ਖੁਰਾਕ",
+   "hi": "आहार",
+   "en": "Diet"
+  },
+  "beauty": {
+   "pa": "ਸੁੰਦਰਤਾ",
+   "hi": "सौंदर्य",
+   "en": "Beauty"
+  },
+  "care": {
+   "pa": "ਦੇਖਭਾਲ",
+   "hi": "देखभाल",
+   "en": "Self-care"
+  }
+ },
+ "posts": [
+  {
+   "slug": "daily-30-minute-walk-benefits",
+   "image": "fields",
+   "date": "2026-11-17",
+   "author": {
+    "pa": "PrimezNews ਸਿਹਤ ਡੈਸਕ",
+    "hi": "PrimezNews हेल्थ डेस्क",
+    "en": "PrimezNews Health Desk"
+   },
+   "tag": "fitness",
+   "minutes": 4,
+   "title": {
+    "pa": "ਰੋਜ਼ 30 ਮਿੰਟ ਤੁਰਨਾ: ਛੋਟੀ ਆਦਤ, ਵੱਡਾ ਫ਼ਾਇਦਾ",
+    "hi": "रोज़ 30 मिनट चलना: छोटी आदत, बड़ा फ़ायदा",
+    "en": "A 30-minute daily walk: a small habit with big benefits"
+   },
+   "excerpt": {
+    "pa": "ਨਾ ਜਿਮ, ਨਾ ਖ਼ਰਚਾ — ਬੱਸ ਤੇਜ਼ ਤੁਰਨਾ। ਜਾਣੋ ਕਿਵੇਂ ਸ਼ੁਰੂ ਕਰੀਏ ਅਤੇ ਕਿਹੜੀਆਂ ਗੱਲਾਂ ਦਾ ਧਿਆਨ ਰੱਖੀਏ।",
+    "hi": "न जिम, न खर्च — बस तेज़ चलना। जानें कैसे शुरू करें और किन बातों का ध्यान रखें।",
+    "en": "No gym, no cost — just brisk walking. How to start and what to keep in mind."
+   },
+   "points": [
+    {
+     "pa": "ਹਫ਼ਤੇ ਵਿੱਚ ਘੱਟੋ-ਘੱਟ 150 ਮਿੰਟ ਦਰਮਿਆਨੀ ਕਸਰਤ ਦੀ ਸਲਾਹ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ",
+     "hi": "हफ़्ते में कम से कम 150 मिनट मध्यम व्यायाम की सलाह दी जाती है",
+     "en": "At least 150 minutes of moderate activity a week is widely recommended"
+    },
+    {
+     "pa": "ਤੇਜ਼ ਤੁਰਨਾ ਇਸ ਦਾ ਸਭ ਤੋਂ ਆਸਾਨ ਤਰੀਕਾ ਹੈ",
+     "hi": "तेज़ चलना इसका सबसे आसान तरीका है",
+     "en": "Brisk walking is the easiest way to get there"
+    },
+    {
+     "pa": "ਹੌਲੀ ਸ਼ੁਰੂ ਕਰੋ, ਹਰ ਹਫ਼ਤੇ ਥੋੜ੍ਹਾ ਵਧਾਓ",
+     "hi": "धीरे शुरू करें, हर हफ़्ते थोड़ा बढ़ाएँ",
+     "en": "Start slow and add a little each week"
+    }
+   ],
+   "body": [
+    {
+     "p": {
+      "pa": "ਸਿਹਤਮੰਦ ਰਹਿਣ ਲਈ ਮਹਿੰਗੇ ਜਿਮ ਦੀ ਲੋੜ ਨਹੀਂ। ਰੋਜ਼ਾਨਾ ਅੱਧਾ ਘੰਟਾ ਤੇਜ਼ ਤੁਰਨਾ ਉਹ ਆਦਤ ਹੈ ਜੋ ਪਿੰਡ ਹੋਵੇ ਜਾਂ ਸ਼ਹਿਰ, ਹਰ ਕੋਈ ਅੱਜ ਤੋਂ ਸ਼ੁਰੂ ਕਰ ਸਕਦਾ ਹੈ।",
+      "hi": "सेहतमंद रहने के लिए महँगे जिम की ज़रूरत नहीं। रोज़ आधा घंटा तेज़ चलना वह आदत है जो गाँव हो या शहर, हर कोई आज से शुरू कर सकता है।",
+      "en": "You don’t need an expensive gym to stay healthy. A brisk half-hour walk is a habit anyone, in a village or a city, can start today."
+     }
+    },
+    {
+     "h2": {
+      "pa": "ਤੁਰਨ ਨਾਲ ਕੀ ਫ਼ਾਇਦਾ ਹੁੰਦਾ ਹੈ?",
+      "hi": "चलने से क्या फ़ायदा होता है?",
+      "en": "What does walking do for you?"
+     }
+    },
+    {
+     "ul": [
+      {
+       "pa": "ਦਿਲ ਅਤੇ ਸਾਹ ਦੀ ਤਾਕਤ ਵਧਦੀ ਹੈ",
+       "hi": "दिल और साँस की ताक़त बढ़ती है",
+       "en": "Builds heart and lung fitness"
+      },
+      {
+       "pa": "ਭਾਰ ਤੇ ਸ਼ੂਗਰ ਨੂੰ ਕਾਬੂ ਰੱਖਣ ਵਿੱਚ ਮਦਦ ਮਿਲਦੀ ਹੈ",
+       "hi": "वज़न व शुगर को काबू रखने में मदद मिलती है",
+       "en": "Helps manage weight and blood sugar"
+      },
+      {
+       "pa": "ਮਨ ਹਲਕਾ ਹੁੰਦਾ ਹੈ ਅਤੇ ਨੀਂਦ ਚੰਗੀ ਆਉਂਦੀ ਹੈ",
+       "hi": "मन हल्का होता है और नींद अच्छी आती है",
+       "en": "Lifts mood and helps you sleep better"
+      },
+      {
+       "pa": "ਜੋੜਾਂ ਤੇ ਮਾਸਪੇਸ਼ੀਆਂ ਵਿੱਚ ਲਚਕ ਰਹਿੰਦੀ ਹੈ",
+       "hi": "जोड़ों व मांसपेशियों में लचक रहती है",
+       "en": "Keeps joints and muscles flexible"
+      }
+     ]
+    },
+    {
+     "h2": {
+      "pa": "ਸ਼ੁਰੂ ਕਿਵੇਂ ਕਰੀਏ?",
+      "hi": "शुरुआत कैसे करें?",
+      "en": "How to start"
+     }
+    },
+    {
+     "ol": [
+      {
+       "pa": "ਪਹਿਲੇ ਹਫ਼ਤੇ ਰੋਜ਼ 10–15 ਮਿੰਟ ਆਰਾਮ ਨਾਲ ਤੁਰੋ",
+       "hi": "पहले हफ़्ते रोज़ 10–15 मिनट आराम से चलें",
+       "en": "Walk 10–15 minutes at an easy pace in week one"
+      },
+      {
+       "pa": "ਹਰ ਹਫ਼ਤੇ 5 ਮਿੰਟ ਵਧਾਓ, 30 ਮਿੰਟ ਤੱਕ",
+       "hi": "हर हफ़्ते 5 मिनट बढ़ाएँ, 30 मिनट तक",
+       "en": "Add 5 minutes a week until you reach 30"
+      },
+      {
+       "pa": "ਰਫ਼ਤਾਰ ਇੰਨੀ ਰੱਖੋ ਕਿ ਗੱਲ ਕਰ ਸਕੋ, ਪਰ ਗਾ ਨਾ ਸਕੋ",
+       "hi": "रफ़्तार इतनी रखें कि बात कर सकें, पर गा न सकें",
+       "en": "Walk fast enough that you can talk but not sing"
+      },
+      {
+       "pa": "ਅਰਾਮਦਾਇਕ ਜੁੱਤੀ ਪਾਓ ਅਤੇ ਪਾਣੀ ਨਾਲ ਰੱਖੋ",
+       "hi": "आरामदायक जूते पहनें और पानी साथ रखें",
+       "en": "Wear comfortable shoes and carry water"
+      }
+     ]
+    },
+    {
+     "tip": {
+      "pa": "ਸਮਾਂ ਨਹੀਂ ਮਿਲਦਾ? ਖਾਣੇ ਤੋਂ ਬਾਅਦ 10-10 ਮਿੰਟ ਤਿੰਨ ਵਾਰ ਤੁਰੋ — ਇਹ ਵੀ ਗਿਣਿਆ ਜਾਂਦਾ ਹੈ।",
+      "hi": "समय नहीं मिलता? खाने के बाद 10-10 मिनट तीन बार चलें — यह भी गिना जाता है।",
+      "en": "Short on time? Three 10-minute walks after meals count too."
+     }
+    },
+    {
+     "h2": {
+      "pa": "ਇਹ ਗੱਲਾਂ ਧਿਆਨ ਰੱਖੋ",
+      "hi": "इन बातों का ध्यान रखें",
+      "en": "Keep in mind"
+     }
+    },
+    {
+     "p": {
+      "pa": "ਧੂੰਏਂ ਜਾਂ ਸਮੌਗ ਵਾਲੇ ਦਿਨਾਂ ਵਿੱਚ ਸਵੇਰੇ ਬਾਹਰ ਦੀ ਬਜਾਏ ਘਰ ਵਿੱਚ ਜਾਂ ਛੱਤ ’ਤੇ ਤੁਰੋ। ਜੇ ਛਾਤੀ ਵਿੱਚ ਦਰਦ, ਚੱਕਰ ਜਾਂ ਸਾਹ ਬਹੁਤ ਫੁੱਲੇ ਤਾਂ ਰੁਕ ਜਾਓ ਅਤੇ ਡਾਕਟਰ ਨੂੰ ਦਿਖਾਓ। ਦਿਲ, ਸ਼ੂਗਰ ਜਾਂ ਗੋਡਿਆਂ ਦੀ ਤਕਲੀਫ਼ ਹੋਵੇ ਤਾਂ ਪਹਿਲਾਂ ਡਾਕਟਰ ਦੀ ਸਲਾਹ ਲਓ।",
+      "hi": "धुएँ या स्मॉग वाले दिनों में सुबह बाहर की बजाय घर में या छत पर चलें। सीने में दर्द, चक्कर या साँस बहुत फूले तो रुक जाएँ और डॉक्टर को दिखाएँ। दिल, शुगर या घुटनों की तकलीफ़ हो तो पहले डॉक्टर से सलाह लें।",
+      "en": "On smoky or smoggy days, walk indoors or on the roof instead. Stop and see a doctor if you feel chest pain, dizziness or severe breathlessness. With heart disease, diabetes or knee problems, ask your doctor first."
+     }
+    }
+   ]
+  },
+  {
+   "slug": "simple-ways-to-reduce-stress",
+   "image": "people",
+   "date": "2026-11-16",
+   "author": {
+    "pa": "PrimezNews ਸਿਹਤ ਡੈਸਕ",
+    "hi": "PrimezNews हेल्थ डेस्क",
+    "en": "PrimezNews Health Desk"
+   },
+   "tag": "mind",
+   "minutes": 4,
+   "title": {
+    "pa": "ਤਣਾਅ ਘਟਾਉਣ ਦੇ 6 ਆਸਾਨ ਤਰੀਕੇ",
+    "hi": "तनाव घटाने के 6 आसान तरीके",
+    "en": "6 simple ways to reduce stress"
+   },
+   "excerpt": {
+    "pa": "ਕੰਮ, ਪੜ੍ਹਾਈ ਜਾਂ ਘਰ ਦੀ ਚਿੰਤਾ — ਤਣਾਅ ਸਭ ਨੂੰ ਹੁੰਦਾ ਹੈ। ਇਹ ਛੋਟੀਆਂ ਆਦਤਾਂ ਮਨ ਨੂੰ ਹਲਕਾ ਰੱਖਦੀਆਂ ਹਨ।",
+    "hi": "काम, पढ़ाई या घर की चिंता — तनाव सबको होता है। ये छोटी आदतें मन को हल्का रखती हैं।",
+    "en": "Work, studies or family worries — everyone feels stress. These small habits help keep the mind light."
+   },
+   "points": [
+    {
+     "pa": "ਗੱਲ ਕਰਨਾ ਤਣਾਅ ਦਾ ਸਭ ਤੋਂ ਵਧੀਆ ਇਲਾਜ ਹੈ",
+     "hi": "बात करना तनाव का सबसे अच्छा इलाज है",
+     "en": "Talking is one of the best stress relievers"
+    },
+    {
+     "pa": "ਨੀਂਦ, ਕਸਰਤ ਤੇ ਫ਼ੋਨ ਤੋਂ ਛੁੱਟੀ ਮਦਦ ਕਰਦੇ ਹਨ",
+     "hi": "नींद, व्यायाम व फ़ोन से छुट्टी मदद करते हैं",
+     "en": "Sleep, exercise and phone breaks help"
+    },
+    {
+     "pa": "ਮੁਫ਼ਤ ਸਲਾਹ: ਟੈਲੀ-ਮਾਨਸ 14416",
+     "hi": "मुफ़्त सलाह: टेली-मानस 14416",
+     "en": "Free counselling: Tele-MANAS 14416"
+    }
+   ],
+   "body": [
+    {
+     "p": {
+      "pa": "ਥੋੜ੍ਹਾ ਤਣਾਅ ਆਮ ਗੱਲ ਹੈ, ਪਰ ਜਦੋਂ ਇਹ ਹਰ ਰੋਜ਼ ਰਹਿਣ ਲੱਗੇ ਤਾਂ ਨੀਂਦ, ਭੁੱਖ ਅਤੇ ਰਿਸ਼ਤਿਆਂ ’ਤੇ ਅਸਰ ਪੈਂਦਾ ਹੈ। ਇਹ ਛੇ ਆਸਾਨ ਤਰੀਕੇ ਅਜ਼ਮਾਓ।",
+      "hi": "थोड़ा तनाव आम बात है, पर जब यह रोज़ रहने लगे तो नींद, भूख और रिश्तों पर असर पड़ता है। ये छह आसान तरीके आज़माएँ।",
+      "en": "A little stress is normal, but when it stays every day it affects sleep, appetite and relationships. Try these six simple steps."
+     }
+    },
+    {
+     "h2": {
+      "pa": "1. ਕਿਸੇ ਨਾਲ ਗੱਲ ਕਰੋ",
+      "hi": "1. किसी से बात करें",
+      "en": "1. Talk to someone"
+     }
+    },
+    {
+     "p": {
+      "pa": "ਪਰਿਵਾਰ, ਦੋਸਤ ਜਾਂ ਕਿਸੇ ਭਰੋਸੇਮੰਦ ਬੰਦੇ ਨਾਲ ਦਿਲ ਦੀ ਗੱਲ ਸਾਂਝੀ ਕਰਨ ਨਾਲ ਬੋਝ ਹਲਕਾ ਹੁੰਦਾ ਹੈ।",
+      "hi": "परिवार, दोस्त या किसी भरोसेमंद व्यक्ति से दिल की बात साझा करने से बोझ हल्का होता है।",
+      "en": "Sharing what’s on your mind with family, a friend or someone you trust lightens the load."
+     }
+    },
+    {
+     "h2": {
+      "pa": "2. ਡੂੰਘੇ ਸਾਹ ਲਓ",
+      "hi": "2. गहरी साँस लें",
+      "en": "2. Breathe slowly"
+     }
+    },
+    {
+     "p": {
+      "pa": "4 ਗਿਣਤੀ ਤੱਕ ਸਾਹ ਅੰਦਰ, 4 ਤੱਕ ਰੋਕੋ, 6 ਤੱਕ ਬਾਹਰ — ਇਹ 5 ਵਾਰ ਕਰੋ।",
+      "hi": "4 गिनती तक साँस अंदर, 4 तक रोकें, 6 तक बाहर — यह 5 बार करें।",
+      "en": "Breathe in for 4, hold for 4, out for 6 — repeat five times."
+     }
+    },
+    {
+     "h2": {
+      "pa": "3–6. ਰੋਜ਼ ਦੀਆਂ ਆਦਤਾਂ",
+      "hi": "3–6. रोज़ की आदतें",
+      "en": "3–6. Everyday habits"
+     }
+    },
+    {
+     "ul": [
+      {
+       "pa": "ਰੋਜ਼ 20–30 ਮਿੰਟ ਤੁਰੋ ਜਾਂ ਯੋਗ ਕਰੋ",
+       "hi": "रोज़ 20–30 मिनट चलें या योगासन करें",
+       "en": "Walk or do yoga for 20–30 minutes daily"
+      },
+      {
+       "pa": "7–8 ਘੰਟੇ ਦੀ ਨੀਂਦ ਪੂਰੀ ਕਰੋ",
+       "hi": "7–8 घंटे की नींद पूरी करें",
+       "en": "Get 7–8 hours of sleep"
+      },
+      {
+       "pa": "ਸੌਣ ਤੋਂ ਇੱਕ ਘੰਟਾ ਪਹਿਲਾਂ ਫ਼ੋਨ ਬੰਦ",
+       "hi": "सोने से एक घंटा पहले फ़ोन बंद",
+       "en": "Phone off an hour before bed"
+      },
+      {
+       "pa": "ਨਸ਼ੇ ਜਾਂ ਸ਼ਰਾਬ ਨਾਲ ਤਣਾਅ ਨਾ ਘਟਾਓ — ਇਹ ਵਧਾਉਂਦੇ ਹਨ",
+       "hi": "नशे या शराब से तनाव न घटाएँ — ये बढ़ाते हैं",
+       "en": "Don’t use alcohol or drugs to cope — they make it worse"
+      }
+     ]
+    },
+    {
+     "tip": {
+      "pa": "ਜੇ ਉਦਾਸੀ ਦੋ ਹਫ਼ਤੇ ਤੋਂ ਵੱਧ ਰਹੇ ਜਾਂ ਆਪਣੇ ਆਪ ਨੂੰ ਨੁਕਸਾਨ ਪਹੁੰਚਾਉਣ ਦੇ ਖ਼ਿਆਲ ਆਉਣ, ਤਾਂ ਤੁਰੰਤ ਟੈਲੀ-ਮਾਨਸ 14416 ’ਤੇ ਮੁਫ਼ਤ ਕਾਲ ਕਰੋ ਜਾਂ ਨੇੜਲੇ ਹਸਪਤਾਲ ਜਾਓ। ਮਦਦ ਮੰਗਣਾ ਹਿੰਮਤ ਦੀ ਗੱਲ ਹੈ।",
+      "hi": "अगर उदासी दो हफ़्ते से ज़्यादा रहे या ख़ुद को नुक़सान पहुँचाने के ख़याल आएँ, तो तुरंत टेली-मानस 14416 पर मुफ़्त कॉल करें या नज़दीकी अस्पताल जाएँ। मदद माँगना हिम्मत की बात है।",
+      "en": "If sadness lasts more than two weeks or you have thoughts of harming yourself, call Tele-MANAS 14416 (free) or go to the nearest hospital. Asking for help takes courage."
+     }
+    }
+   ]
+  },
+  {
+   "slug": "winter-punjabi-diet-tips",
+   "image": "wheat",
+   "date": "2026-11-15",
+   "author": {
+    "pa": "PrimezNews ਸਿਹਤ ਡੈਸਕ",
+    "hi": "PrimezNews हेल्थ डेस्क",
+    "en": "PrimezNews Health Desk"
+   },
+   "tag": "diet",
+   "minutes": 3,
+   "title": {
+    "pa": "ਸਰਦੀਆਂ ਦੀ ਪੰਜਾਬੀ ਖੁਰਾਕ: ਸੁਆਦ ਵੀ, ਸਿਹਤ ਵੀ",
+    "hi": "सर्दियों का पंजाबी खाना: स्वाद भी, सेहत भी",
+    "en": "Winter Punjabi food: tasty and healthy"
+   },
+   "excerpt": {
+    "pa": "ਸਰ੍ਹੋਂ ਦਾ ਸਾਗ, ਮੱਕੀ ਦੀ ਰੋਟੀ, ਗਾਜਰ ਤੇ ਮੌਸਮੀ ਫਲ — ਸਰਦੀਆਂ ਦੀ ਥਾਲੀ ਨੂੰ ਸੰਤੁਲਿਤ ਕਿਵੇਂ ਰੱਖੀਏ।",
+    "hi": "सरसों का साग, मक्की की रोटी, गाजर व मौसमी फल — सर्दियों की थाली को संतुलित कैसे रखें।",
+    "en": "Sarson da saag, makki di roti, carrots and seasonal fruit — keeping the winter plate balanced."
+   },
+   "points": [
+    {
+     "pa": "ਮੌਸਮੀ ਸਬਜ਼ੀਆਂ ਤੇ ਫਲ ਸਭ ਤੋਂ ਤਾਜ਼ਾ ਤੇ ਸਸਤੇ",
+     "hi": "मौसमी सब्ज़ियाँ व फल सबसे ताज़ा व सस्ते",
+     "en": "Seasonal produce is freshest and cheapest"
+    },
+    {
+     "pa": "ਘਿਓ-ਮੱਖਣ ਥੋੜ੍ਹਾ, ਸਬਜ਼ੀ ਜ਼ਿਆਦਾ",
+     "hi": "घी-मक्खन थोड़ा, सब्ज़ी ज़्यादा",
+     "en": "A little ghee or butter, more vegetables"
+    },
+    {
+     "pa": "ਸਰਦੀਆਂ ਵਿੱਚ ਵੀ ਪਾਣੀ ਪੀਣਾ ਨਾ ਭੁੱਲੋ",
+     "hi": "सर्दियों में भी पानी पीना न भूलें",
+     "en": "Keep drinking water in winter too"
+    }
+   ],
+   "body": [
+    {
+     "p": {
+      "pa": "ਸਰਦੀਆਂ ਪੰਜਾਬੀ ਰਸੋਈ ਦਾ ਸਭ ਤੋਂ ਸੁਆਦੀ ਮੌਸਮ ਹੈ। ਥੋੜ੍ਹੀ ਸਮਝਦਾਰੀ ਨਾਲ ਇਹੀ ਖਾਣਾ ਸਿਹਤ ਲਈ ਵੀ ਵਧੀਆ ਬਣ ਸਕਦਾ ਹੈ।",
+      "hi": "सर्दियाँ पंजाबी रसोई का सबसे स्वादिष्ट मौसम हैं। थोड़ी समझदारी से यही खाना सेहत के लिए भी अच्छा बन सकता है।",
+      "en": "Winter is the tastiest season in a Punjabi kitchen. With a little care, the same food can be good for your health too."
+     }
+    },
+    {
+     "h2": {
+      "pa": "ਥਾਲੀ ਵਿੱਚ ਕੀ ਰੱਖੀਏ",
+      "hi": "थाली में क्या रखें",
+      "en": "What to put on the plate"
+     }
+    },
+    {
+     "ul": [
+      {
+       "pa": "ਸਾਗ, ਪਾਲਕ, ਮੇਥੀ ਵਰਗੀਆਂ ਹਰੀਆਂ ਪੱਤੇਦਾਰ ਸਬਜ਼ੀਆਂ",
+       "hi": "साग, पालक, मेथी जैसी हरी पत्तेदार सब्ज़ियाँ",
+       "en": "Leafy greens like saag, spinach and methi"
+      },
+      {
+       "pa": "ਗਾਜਰ, ਮੂਲੀ, ਸ਼ਲਗਮ ਤੇ ਮਟਰ",
+       "hi": "गाजर, मूली, शलगम व मटर",
+       "en": "Carrots, radish, turnip and peas"
+      },
+      {
+       "pa": "ਦਾਲਾਂ, ਛੋਲੇ ਤੇ ਰਾਜਮਾਂਹ ਤੋਂ ਪ੍ਰੋਟੀਨ",
+       "hi": "दालें, छोले व राजमा से प्रोटीन",
+       "en": "Protein from dal, chickpeas and rajma"
+      },
+      {
+       "pa": "ਮੌਸਮੀ ਫਲ: ਸੰਤਰਾ, ਕਿੰਨੂ, ਅਮਰੂਦ",
+       "hi": "मौसमी फल: संतरा, किन्नू, अमरूद",
+       "en": "Seasonal fruit: oranges, kinnow, guava"
+      }
+     ]
+    },
+    {
+     "h2": {
+      "pa": "ਕਿਸ ਚੀਜ਼ ਦਾ ਧਿਆਨ ਰੱਖੀਏ",
+      "hi": "किस चीज़ का ध्यान रखें",
+      "en": "What to watch"
+     }
+    },
+    {
+     "ul": [
+      {
+       "pa": "ਮੱਖਣ, ਘਿਓ ਤੇ ਤਲੀਆਂ ਪਿੰਨੀਆਂ-ਪਕੌੜੇ ਸੰਜਮ ਨਾਲ",
+       "hi": "मक्खन, घी और तली चीज़ें संयम से",
+       "en": "Butter, ghee and fried snacks in moderation"
+      },
+      {
+       "pa": "ਗੁੜ ਤੇ ਮਿਠਾਈ ਵੀ ਖੰਡ ਹੀ ਹੈ — ਸ਼ੂਗਰ ਵਾਲੇ ਧਿਆਨ ਰੱਖਣ",
+       "hi": "गुड़ व मिठाई भी चीनी ही है — शुगर वाले ध्यान रखें",
+       "en": "Jaggery and sweets are still sugar — take care if diabetic"
+      },
+      {
+       "pa": "ਰਾਤ ਦਾ ਖਾਣਾ ਹਲਕਾ ਅਤੇ ਸੌਣ ਤੋਂ 2 ਘੰਟੇ ਪਹਿਲਾਂ",
+       "hi": "रात का खाना हल्का और सोने से 2 घंटे पहले",
+       "en": "A light dinner, two hours before bed"
+      }
+     ]
+    },
+    {
+     "tip": {
+      "pa": "ਪਿਆਸ ਘੱਟ ਲੱਗਣ ’ਤੇ ਵੀ ਦਿਨ ਭਰ ਪਾਣੀ, ਗਰਮ ਪਾਣੀ ਜਾਂ ਸੂਪ ਲੈਂਦੇ ਰਹੋ।",
+      "hi": "प्यास कम लगने पर भी दिन भर पानी, गुनगुना पानी या सूप लेते रहें।",
+      "en": "Even when you feel less thirsty, keep taking water, warm water or soup through the day."
+     }
+    },
+    {
+     "p": {
+      "pa": "ਕਿਸੇ ਖ਼ਾਸ ਬਿਮਾਰੀ ਵਿੱਚ ਖੁਰਾਕ ਬਦਲਣ ਤੋਂ ਪਹਿਲਾਂ ਡਾਕਟਰ ਜਾਂ ਡਾਇਟੀਸ਼ੀਅਨ ਦੀ ਸਲਾਹ ਲਓ।",
+      "hi": "किसी ख़ास बीमारी में आहार बदलने से पहले डॉक्टर या डाइटीशियन से सलाह लें।",
+      "en": "If you have a medical condition, check with a doctor or dietitian before changing your diet."
+     }
+    }
+   ]
+  }
+ ]
+}
