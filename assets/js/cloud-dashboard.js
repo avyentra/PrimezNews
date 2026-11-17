@@ -1,7 +1,7 @@
 (async function () {
  'use strict';
  const api = window.PrimezAPI, el = id => document.getElementById(id);
- const cats = ['Agriculture','Education','Politics','Sports','Faith','Crime','Punjab'];
+ const cats = ['Agriculture','Education','Politics','Sports','Faith','Crime','Punjab','Business','Health','Jobs','NRI','Entertainment','National','World','Weather','Technology'];
  const districts = ['Amritsar','Barnala','Bathinda','Faridkot','Fatehgarh Sahib','Fazilka','Ferozepur','Gurdaspur','Hoshiarpur','Jalandhar','Kapurthala','Ludhiana','Malerkotla','Mansa','Moga','Sri Muktsar Sahib','Pathankot','Patiala','Rupnagar','SAS Nagar (Mohali)','Sangrur','SBS Nagar','Tarn Taran','Chandigarh'];
  const slots = ['left-skin','right-skin','top-leaderboard','after-headlines','news-sidebar','before-video','after-video'];
  let rows = [], ads = [], selected = null, image = 'fields', dirty = false, saving = false;

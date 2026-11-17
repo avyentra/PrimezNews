@@ -97,7 +97,7 @@
   }
   function validateStory(story, now = Date.now()) {
     if (!story.en.trim() || !story.title.trim() || !story.summary.trim()) throw new Error('Add both headlines and a summary.');
-    const allowed = ['Agriculture','Education','Politics','Sports','Faith','Crime','Punjab'];
+    const allowed = ['Agriculture','Education','Politics','Sports','Faith','Crime','Punjab','Business','Health','Jobs','NRI','Entertainment','National','World','Weather','Technology'];
     if (!Array.isArray(story.categories) || !story.categories.length) throw new Error('Select at least one category.');
     if (story.categories.some(c => !allowed.includes(c)) || new Set(story.categories).size !== story.categories.length || story.category !== story.categories[0]) throw new Error('Choose valid categories and a primary category.');
     for (const [field, limit] of [['title',500],['en',500],['summary',3000],['body',100000]]) {

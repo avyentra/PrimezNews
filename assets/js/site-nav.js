@@ -22,9 +22,15 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
     ['sarkari-yojana','⌂','ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ','सरकारी योजनाएँ','Government schemes','ਸਕੀਮਾਂ ਅਤੇ ਅਪਲਾਈ ਕਰਨ ਦਾ ਤਰੀਕਾ','योजनाएँ और आवेदन','Schemes and applications'],
     [category('Education'),'◇','ਸਿੱਖਿਆ','शिक्षा','Education','ਸਕੂਲ, ਕਾਲਜ ਅਤੇ ਨਤੀਜੇ','स्कूल, कॉलेज और नतीजे','Schools, colleges and results'],
     [category('Crime'),'⬡','ਅਪਰਾਧ ਤੇ ਸੁਰੱਖਿਆ','अपराध व सुरक्षा','Crime & Safety','ਪੁਲਿਸ ਅਤੇ ਅਦਾਲਤ ਦੀਆਂ ਖ਼ਬਰਾਂ','पुलिस और अदालत की खबरें','Police and court news'],
-    ['dharm','♧','ਆਸਥਾ ਤੇ ਸੱਭਿਆਚਾਰ','आस्था व संस्कृति','Faith & Culture','ਗੁਰਪੁਰਬ, ਤਿਉਹਾਰ ਅਤੇ ਵਿਰਾਸਤ','पर्व, त्योहार और विरासत','Festivals and heritage']
+    ['dharm','♧','ਆਸਥਾ ਤੇ ਸੱਭਿਆਚਾਰ','आस्था व संस्कृति','Faith & Culture','ਗੁਰਪੁਰਬ, ਤਿਉਹਾਰ ਅਤੇ ਵਿਰਾਸਤ','पर्व, त्योहार और विरासत','Festivals and heritage'],
+    [category('Business'),'₹','ਵਪਾਰ','व्यापार','Business','ਬਾਜ਼ਾਰ, ਉਦਯੋਗ ਤੇ ਕਾਰੋਬਾਰ','बाज़ार, उद्योग और कारोबार','Markets, industry and trade'],
+    [category('National'),'◎','ਦੇਸ਼','देश','National','ਦੇਸ਼ ਭਰ ਦੀਆਂ ਵੱਡੀਆਂ ਖ਼ਬਰਾਂ','देश भर की बड़ी खबरें','Top stories from India'],
+    [category('World'),'◍','ਦੁਨੀਆ','दुनिया','World','ਵਿਦੇਸ਼ਾਂ ਦੀਆਂ ਖ਼ਬਰਾਂ','विदेश की खबरें','News from abroad'],
+    [category('Entertainment'),'✦','ਮਨੋਰੰਜਨ','मनोरंजन','Entertainment','ਫ਼ਿਲਮਾਂ, ਸੰਗੀਤ ਤੇ ਕਲਾਕਾਰ','फ़िल्में, संगीत और कलाकार','Films, music and artists'],
+    [category('Weather'),'☁','ਮੌਸਮ','मौसम','Weather','ਮੀਂਹ, ਠੰਢ ਤੇ ਮੌਸਮ ਦੀ ਜਾਣਕਾਰੀ','बारिश, ठंड और मौसम की जानकारी','Rain, cold and forecasts'],
+    [category('Technology'),'⌘','ਤਕਨੀਕ','तकनीक','Technology','ਫ਼ੋਨ, ਇੰਟਰਨੈੱਟ ਤੇ ਨਵੀਂ ਤਕਨੀਕ','फ़ोन, इंटरनेट और नई तकनीक','Phones, internet and new tech']
   ];
-  root.innerHTML = `<link rel="stylesheet" href="assets/css/public-navigation.css"><nav><button class="mobile" aria-expanded="false" aria-controls="sections">☰ <span></span></button><div id="sections"></div><a class="live" href="news/">◉ LIVE</a><button class="more" aria-controls="panel" aria-expanded="false"></button><button class="search" aria-label="Search" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><div id="panel" hidden><div class="cols"></div><footer></footer></div></nav><div class="wire"><div><b></b><div class="headlines"></div></div></div><div class="market"><div></div></div>`;
+  root.innerHTML = `<link rel="stylesheet" href="assets/css/public-navigation.css?v=20261118a"><nav><button class="mobile" aria-expanded="false" aria-controls="sections">☰ <span></span></button><div id="sections"></div><a class="live" href="news/">◉ LIVE</a><button class="more" aria-controls="panel" aria-expanded="false"></button><button class="search" aria-label="Search" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><div id="panel" hidden><div class="cols"></div><footer></footer></div></nav><div class="wire"><div><b></b><div class="headlines"></div></div></div><div class="market"><div></div></div>`;
   const q = s => root.querySelector(s);
   const locale = () => ['pa','hi','en'].includes(document.documentElement.lang) ? document.documentElement.lang : 'pa';
   const t = (...words) => words[['pa','hi','en'].indexOf(locale())];
@@ -90,7 +96,8 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
     for(let n=0;n<2;n++){
       const col=document.createElement('section'),heading=document.createElement('strong');
       heading.textContent=n?t('ਹੋਰ ਸ਼੍ਰੇਣੀਆਂ','अन्य श्रेणियाँ','More sections'):t('ਰੋਜ਼ਾਨਾ ਜਾਣਕਾਰੀ','रोज़ाना जानकारी','Daily information');col.append(heading);
-      for(const [url,icon,pa,hi,en,...desc] of more.slice(n*3,n*3+3)){
+      if(n)col.className='compact';   // 'More sections' holds every other category in a compact 2-column grid
+      for(const [url,icon,pa,hi,en,...desc] of (n?more.slice(3):more.slice(0,3))){
         const a=anchor(url,''),symbol=document.createElement('i'),name=document.createElement('b'),detail=document.createElement('small');
         symbol.textContent=icon;symbol.setAttribute('aria-hidden','true');name.textContent=t(pa,hi,en);detail.textContent=t(...desc);name.append(detail);a.append(symbol,name);col.append(a);
       }
