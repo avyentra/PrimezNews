@@ -34,10 +34,10 @@ class HealthBlog(unittest.TestCase):
         for slug in slugs:
             page = (ROOT / 'health-blog' / slug / 'index.html').read_text()
             self.assertIn(f'<link rel="canonical" href="https://primeznews.com/health-blog/{slug}/"', page)
-            self.assertIn(f'content="https://primeznews.com/assets/images/share/blog-{slug}.jpg"', page)
+            self.assertIn(f'content="https://primeznews.com/media/share/blog-{slug}.jpg"', page)
             self.assertIn('<base href="../../">', page)
             self.assertNotRegex(page, r'href="[^"]*\.html[\"#?]', 'blog links must not show .html')
-            share = ROOT / 'assets' / 'images' / 'share' / f'blog-{slug}.jpg'
+            share = ROOT / 'media' / 'share' / f'blog-{slug}.jpg'
             self.assertLessEqual(share.stat().st_size, 280 * 1024)
         self.assertIn('<!--blog-latest--><section', (ROOT / 'health-beauty.html').read_text())
 

@@ -3,7 +3,7 @@
 Writes from data/health-blog.json:
   health-blog/index.html          -> https://primeznews.com/health-blog/        (blog list)
   health-blog/<slug>/index.html   -> https://primeznews.com/health-blog/<slug>/ (one post)
-  assets/images/share/blog-<slug>.jpg -> 1200x630 WhatsApp/Facebook photo (< 280 KB)
+  media/share/blog-<slug>.jpg -> 1200x630 WhatsApp/Facebook photo (< 280 KB)
 
 To add a post: add an entry to data/health-blog.json (pa/hi/en text) and push to main —
 the "Publish readable news URLs" workflow runs this script.  Locally: python scripts/build_health_blog.py
@@ -164,16 +164,16 @@ def build():
     list_desc = 'Simple health, fitness, diet, mental-health and beauty articles from PrimezNews in Punjabi, Hindi and English.'
     ld = {'@context': 'https://schema.org', '@type': 'Blog', 'name': 'PrimezNews Health & Beauty Blog', 'url': f'{SITE}/health-blog/', 'inLanguage': ['pa', 'hi', 'en'],
           'blogPost': [{'@type': 'BlogPosting', 'headline': p['title']['en'], 'url': f'{SITE}/health-blog/{p["slug"]}/', 'datePublished': p['date']} for p in posts]}
-    h = set_meta(head, '../', list_title, list_desc, f'{SITE}/health-blog/', f'{SITE}/assets/images/share/blog-{lead["slug"]}.jpg', 'website',
+    h = set_meta(head, '../', list_title, list_desc, f'{SITE}/health-blog/', f'{SITE}/media/share/blog-{lead["slug"]}.jpg', 'website',
                  '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace('</', '<\\/') + '</script>')
     (OUT / 'index.html').write_text(h + '</head>\n' + pre + list_main + '\n' + post_html)
 
     # ---- post pages ----
     for i, p in enumerate(posts):
         folder = OUT / p['slug']; folder.mkdir(exist_ok=True)
-        share_dir = ROOT / 'assets' / 'images' / 'share'; share_dir.mkdir(parents=True, exist_ok=True)
+        share_dir = ROOT / 'media' / 'share'; share_dir.mkdir(parents=True, exist_ok=True)
         share_card(ROOT / image_path(p['image']), share_dir / f'blog-{p["slug"]}.jpg')
-        share_url = f'{SITE}/assets/images/share/blog-{p["slug"]}.jpg'
+        share_url = f'{SITE}/media/share/blog-{p["slug"]}.jpg'
         url = f'{SITE}/health-blog/{p["slug"]}/'
         tag = tags[p['tag']]
         related = [q for q in posts if q is not p][:2]

@@ -15,7 +15,7 @@ KEEP_OLD = 3
 
 
 def share_folder(root):
-    folder = root / 'assets' / 'images' / 'share'
+    folder = root / 'media' / 'share'
     folder.mkdir(parents=True, exist_ok=True)
     return folder
 
@@ -45,7 +45,7 @@ def preview(root, article_dir, source, base, storage_origin):
                 break
         digest = hashlib.sha256(data).hexdigest()[:16]
         share_dir = share_folder(root)
-        filename = article_dir.name + '--' + digest + '.jpg'      # all photos live in assets/images/
+        filename = article_dir.name + '--' + digest + '.jpg'      # share cards live outside assets: media/share/
         target = share_dir / filename
         if not target.exists():
             target.write_bytes(data)

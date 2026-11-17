@@ -12,6 +12,11 @@ from threading import Thread
 import socket
 import time
 
+try:  # local machines: Playwright brings its own matching browser
+    from playwright.sync_api import sync_playwright
+except ImportError:  # GitHub runner: ChromeDriver below
+    sync_playwright = None
+
 ROOT = Path(__file__).resolve().parents[1]
 PAGES = ("about-us", "contact", "editorial-policy", "privacy-policy",
          "grievance-redressal", "advertise")
@@ -20,6 +25,8 @@ DRIVER = shutil.which("chromedriver")
 
 class MobileLanguageTest(unittest.TestCase):
     def test_language_switch_and_layout(self):
+        if sync_playwright and not os.environ.get("GITHUB_ACTIONS"):
+            return self._run_with_playwright()
         if not DRIVER:
             if os.environ.get("GITHUB_ACTIONS"):
                 self.fail("ChromeDriver is required on the CI runner")
@@ -130,3 +137,77 @@ class MobileLanguageTest(unittest.TestCase):
         hover("viewport", 1, 1)
         time.sleep(0.25)
         self.assertTrue(nav_state("return panel.hidden"))
+
+    # Same checks as above, driven by Playwright. Used locally, where the installed
+    # ChromeDriver and Chrome versions often do not match.
+    def _run_with_playwright(self):
+        server = ThreadingHTTPServer(("127.0.0.1", 0),
+                                     partial(SimpleHTTPRequestHandler, directory=str(ROOT)))
+        self.addCleanup(server.server_close)
+        Thread(target=server.serve_forever, daemon=True).start()
+        self.addCleanup(server.shutdown)
+        origin = f"http://127.0.0.1:{server.server_port}"
+        nav_js = ("const root=document.querySelector('primez-site-nav').shadowRoot;"
+                  "const trigger=root.querySelector('.more'),panel=root.querySelector('#panel');")
+        with sync_playwright() as pw:
+            try:
+                browser = pw.chromium.launch()
+            except Exception:
+                browser = pw.chromium.launch(executable_path=shutil.which("google-chrome") or "google-chrome")
+            mobile = browser.new_page(viewport={"width": 390, "height": 844},
+                                      device_scale_factor=2, is_mobile=True, has_touch=True)
+            for page in PAGES:
+                with self.subTest(page=page):
+                    mobile.goto(f"{origin}/{page}.html")
+                    headings, paragraphs = set(), set()
+                    for lang in ("hi", "en", "pa"):
+                        mobile.select_option("select[data-language-switch]", lang)
+                        state = mobile.evaluate("""() => {
+                            const root = document.documentElement;
+                            const frame = ['.pn-header', '.pn-footer'].map(selector =>
+                                [...document.querySelectorAll(selector + ' [data-frame-lang="' + root.lang + '"]')].find(el => el.getClientRects().length));
+                            if (frame.some(el => !el || !el.getClientRects().length)) {
+                                throw Error('Selected language missing from public header or footer');
+                            }
+                            return [root.lang, root.clientWidth, root.scrollWidth,
+                                    document.querySelector('h1').innerText.trim(),
+                                    document.querySelector('main p').innerText.trim()];
+                        }""")
+                        self.assertEqual(state[:3], [lang, 390, 390], (page, lang, state))
+                        self.assertTrue(state[3] and state[4])
+                        nav = mobile.evaluate("""() => {
+                            const root = document.querySelector('primez-site-nav').shadowRoot;
+                            const toggle = root.querySelector('button');
+                            toggle.click();
+                            const links = [...root.querySelectorAll('#sections a')];
+                            const first = links[0];
+                            const result = [toggle.getAttribute('aria-expanded'),
+                                links.length, first.getAttribute('aria-label'), first.getBoundingClientRect().width,
+                                new URL(links[2].href).searchParams.get('category')];
+                            toggle.click();
+                            return result;
+                        }""")
+                        self.assertEqual(nav[:3], ["true", 10, {"en": "Home", "hi": "होम", "pa": "ਮੁੱਖ ਪੰਨਾ"}[lang]])
+                        self.assertGreater(nav[3], 0)
+                        self.assertEqual(nav[4], "Agriculture")
+                        headings.add(state[3])
+                        paragraphs.add(state[4])
+                    self.assertEqual(len(headings), 3)
+                    self.assertEqual(len(paragraphs), 3)
+            state = lambda page, script: page.evaluate("() => {" + nav_js + script + "}")
+            self.assertTrue(state(mobile, "return panel.hidden"))
+            self.assertFalse(state(mobile, "trigger.click(); return panel.hidden"))
+            self.assertTrue(state(mobile, "trigger.click(); return panel.hidden"))
+            self.assertEqual(state(mobile, "return document.querySelector('.pn-edition').getBoundingClientRect().width"), 0)
+            desktop = browser.new_page(viewport={"width": 1440, "height": 900})
+            desktop.goto(f"{origin}/about-us.html")
+            self.assertTrue(state(desktop, "return panel.hidden"))
+            more = desktop.locator("primez-site-nav").locator(".more")
+            more.hover()
+            self.assertFalse(state(desktop, "return panel.hidden"))
+            desktop.locator("primez-site-nav").locator("#panel a").first.hover()
+            time.sleep(0.25)
+            self.assertFalse(state(desktop, "return panel.hidden"))
+            desktop.mouse.move(1, 1)
+            time.sleep(0.25)
+            self.assertTrue(state(desktop, "return panel.hidden"))

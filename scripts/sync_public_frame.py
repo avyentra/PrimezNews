@@ -50,7 +50,8 @@ def footer(has_tools):
     tools = ''
     if has_tools:
         tools = (f'<button type="button" id="searchOpen">{label("Search","खोज","ਖੋਜ")}</button>'
-                 f'<button type="button" id="savedOpen">{label("Saved stories","सहेजी ख़बरें","ਸੰਭਾਲੀਆਂ ਖ਼ਬਰਾਂ")} <span id="savedCount">0</span></button>')
+                 f'<span class="pn-visitors" data-site-visitors>{label("Total visitors","कुल विज़िटर","ਕੁੱਲ ਵਿਜ਼ਿਟਰ")} <b data-visitor-count>…</b></span>'
+                 '<button type="button" id="savedOpen" hidden><span id="savedCount">0</span></button>')
     policies = [('about-us','About us','हमारे बारे में','ਸਾਡੇ ਬਾਰੇ'),('editorial-policy','Editorial policy','संपादकीय नीति','ਸੰਪਾਦਕੀ ਨੀਤੀ'),
                 ('privacy-policy','Privacy','निजता','ਨਿੱਜਤਾ'),('grievance-redressal','Complaint','शिकायत','ਸ਼ਿਕਾਇਤ'),
                 ('advertise','Advertise','विज्ञापन दें','ਇਸ਼ਤਿਹਾਰ ਦਿਓ'),('contact','Contact','संपर्क','ਸੰਪਰਕ')]
