@@ -2,6 +2,7 @@
 No secret key. Abort on fetch failure; never replace good pages with an error response.
 """
 import html, json, re, subprocess, urllib.request, shutil
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
 ROOT=Path(__file__).resolve().parents[1]
@@ -13,7 +14,7 @@ def slugify(text):
 def escape(value):return html.escape(str(value or ''),quote=True)
 def image(s):
     value=s.get('image') or ''
-    return value if value.startswith('https://') else BASE+'assets/'+(value if re.fullmatch('[a-z0-9-]+',value) else 'news-farm')+'.webp'
+    return value if value.startswith('https://') else BASE+'assets/images/'+(value if re.fullmatch('[a-z0-9-]+',value) else 'news-farm')+'.webp'
 def fetch():
     cfg=(ROOT/'assets/js/backend-config.js').read_text()
     url=re.search(r"url: '([^']+)'",cfg)[1]; key=re.search(r"publicKey: '([^']+)'",cfg)[1]
@@ -24,6 +25,16 @@ def fetch():
 def seeds():
     code="global.window={};require('./assets/js/news-seed.js');console.log(JSON.stringify(window.PRIMEZ_SEED_STORIES))"
     return json.loads(subprocess.check_output(['node','-e',code],cwd=ROOT))
+PA_MONTHS=['ਜਨਵਰੀ','ਫ਼ਰਵਰੀ','ਮਾਰਚ','ਅਪ੍ਰੈਲ','ਮਈ','ਜੂਨ','ਜੁਲਾਈ','ਅਗਸਤ','ਸਤੰਬਰ','ਅਕਤੂਬਰ','ਨਵੰਬਰ','ਦਸੰਬਰ']
+def nice_date(value):
+    """'2026-11-15T16:07:34+00:00' -> '15 ਨਵੰਬਰ 2026' (India time); anything unreadable is shown as-is."""
+    try:
+        from datetime import timedelta
+        d=datetime.fromisoformat(str(value).replace('Z','+00:00'))
+        if d.tzinfo: d=d.astimezone(timezone(timedelta(hours=5,minutes=30)))
+        return f'{d.day} {PA_MONTHS[d.month-1]} {d.year}'
+    except (ValueError, TypeError):
+        return str(value or '')
 def page(template,s,share_image=None):
     title=s.get('pa') or s['title'];url=BASE+'news/'+quote(s['slug'])+'/'
     photo=image(s)
@@ -36,7 +47,7 @@ def page(template,s,share_image=None):
     metadata='<link rel="canonical" href="'+url+'">'
     for key,value in [('og:type','article'),('og:title',title),('og:description',desc),('og:url',url),('og:image',share_image),('og:image:secure_url',share_image),('og:image:type','image/jpeg'),('og:image:width','1200'),('og:image:height','630'),('og:image:alt',title),('og:locale','pa_IN'),('og:site_name','PrimezNews'),('twitter:card','summary_large_image'),('twitter:title',title),('twitter:description',desc),('twitter:image',share_image),('twitter:image:alt',title)]:
         metadata+='<meta '+('name' if key.startswith('twitter:') else 'property')+'="'+key+'" content="'+escape(value)+'">'
-    data={'@context':'https://schema.org','@type':'NewsArticle','headline':title,'description':desc,'url':url,'mainEntityOfPage':url,'image':[share_image],'datePublished':s.get('publish_at') or s.get('published'),'dateModified':s.get('updated_at') or s.get('publish_at') or s.get('published'),'author':{'@type':'Person','name':s.get('author') or s.get('source') or 'PrimezNews Editorial Desk'},'publisher':{'@type':'NewsMediaOrganization','name':'PrimezNews','url':BASE,'logo':{'@type':'ImageObject','url':BASE+'assets/primznews-logo-new.webp'}},'inLanguage':'pa'}
+    data={'@context':'https://schema.org','@type':'NewsArticle','headline':title,'description':desc,'url':url,'mainEntityOfPage':url,'image':[share_image],'datePublished':s.get('publish_at') or s.get('published'),'dateModified':s.get('updated_at') or s.get('publish_at') or s.get('published'),'author':{'@type':'Person','name':s.get('author') or s.get('source') or 'PrimezNews Editorial Desk'},'publisher':{'@type':'NewsMediaOrganization','name':'PrimezNews','url':BASE,'logo':{'@type':'ImageObject','url':BASE+'assets/images/primznews-logo-new.webp'}},'inLanguage':'pa'}
     metadata+='<script type="application/ld+json">'+json.dumps({'@context':'https://schema.org','@graph':[data,{'@type':'BreadcrumbList','itemListElement':[{'@type':'ListItem','position':1,'name':'PrimezNews','item':BASE},{'@type':'ListItem','position':2,'name':'News','item':BASE+'news.html'},{'@type':'ListItem','position':3,'name':title,'item':url}]}]},ensure_ascii=False).replace('<','\\u003c')+'</script>'
     template=re.sub(r'<link rel="canonical"[^>]*>|<meta (?:property="og:[^"]+"|name="twitter:[^"]+")[^>]*>','',template)
     template=template.replace('<meta charset="utf-8">','')
@@ -45,17 +56,36 @@ def page(template,s,share_image=None):
     out=re.sub(r'<meta name="description" content="[^"]*">',lambda _: '<meta name="description" content="'+escape(desc)+'">',out,count=1)
     body='<header class="reader-article-header"><nav class="reader-breadcrumb"><a href="./">ਮੁੱਖ ਪੰਨਾ</a> / <a href="news/">ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ</a></nav><h1>'+escape(title)+'</h1>'
     if summary.strip('* ')!=title.strip('* '):body+='<p class="reader-deck">'+escape(s.get('summary',''))+'</p>'
-    body+='<p class="reader-meta">'+escape(s.get('author') or s.get('source') or 'PrimezNews')+' · '+escape(s.get('district'))+' · '+escape(s.get('publish_at') or s.get('published'))+'</p></header>'
+    body+='<p class="reader-meta">'+escape(s.get('author') or s.get('source') or 'PrimezNews')+' · '+escape(s.get('district'))+' · '+escape(nice_date(s.get('publish_at') or s.get('published')))+'</p></header>'
     body+='<figure class="reader-figure"><img class="reader-hero-image" fetchpriority="high" decoding="async" src="'+escape(photo)+'" alt="'+escape(title)+'"></figure><div class="reader-body">'
     body+=''.join('<p>'+escape(p)+'</p>' for p in s.get('body','').split('\n\n') if p.strip())+'</div>'
     if s.get('sourceUrl'):body+='<p>Source: <a rel="noopener noreferrer" href="'+escape(s['sourceUrl'])+'">'+escape(s['source'])+'</a> · Curated news brief. Photograph is illustrative.</p>'
     out=out.replace('<section id="newsContent" aria-label="ਖ਼ਬਰਾਂ"></section>','<section id="newsContent" class="reader-article" aria-label="ਖ਼ਬਰਾਂ">'+body+'</section>').replace('ਖ਼ਬਰਾਂ ਲੋਡ ਹੋ ਰਹੀਆਂ ਹਨ…','')
-    return out.replace('<use href="#', '<use href="assets/reader-icons.svg#')
+    return out.replace('<use href="#', '<use href="assets/images/reader-icons.svg#')
 
 def write_news_index(template):
     """/news/ = the latest-news list (same page as news.html), so the browser never shows .html."""
     page_html=template.replace('<head>','<head><base href="../">',1)
-    (ROOT/'news'/'index.html').write_text(page_html.replace('<use href="#', '<use href="assets/reader-icons.svg#'))
+    (ROOT/'news'/'index.html').write_text(page_html.replace('<use href="#', '<use href="assets/images/reader-icons.svg#'))
+
+def write_lead_preload(rows):
+    """Speed (LCP): tell the browser the home page's top-story photo before any JavaScript runs."""
+    now=datetime.now(timezone.utc)
+    def when(s):
+        try: return datetime.fromisoformat(str(s.get('publish_at','')).replace('Z','+00:00'))
+        except ValueError: return None
+    live=[s for s in rows if s.get('status') in ('published','scheduled') and when(s) and when(s)<=now]
+    live.sort(key=lambda s:when(s),reverse=True)
+    lead=live[0] if live else None
+    if lead is None:
+        seed=[s for s in seeds() if s.get('id')!='video']
+        lead=seed[0] if seed else {}
+    value=str(lead.get('image') or '')
+    url=value if value.startswith('https://') else ('assets/images/'+value+'.webp' if re.fullmatch(r'[a-z0-9-]+',value,re.I) else 'assets/images/news-farm.webp')
+    home=ROOT/'index.html'; text=home.read_text()
+    tag='<!--lead-image--><link rel="preload" as="image" href="'+html.escape(url,quote=True)+'" fetchpriority="high"><!--/lead-image-->'
+    new=re.sub(r'<!--lead-image-->.*?<!--/lead-image-->',lambda m:tag,text,count=1,flags=re.S)
+    if new!=text: home.write_text(new)
 
 def build():
     from social_preview import preview
@@ -88,11 +118,14 @@ def build():
     (ROOT/'assets/js/news-routes.js').write_text('window.PRIMEZ_NEWS_ROUTES='+json.dumps(routes,ensure_ascii=False,separators=(',',':'))+';\nwindow.PRIMEZ_PUBLIC_BASE='+json.dumps(BASE)+';\n')
     fallback_template=re.sub(r'<meta name="robots"[^>]*>','',template)
     fallback=fallback_template.replace('<html lang="pa">','<html lang="pa" data-news-fallback="true">').replace('<head>','<head><base href="/"><script>if(location.hostname==="avyentra.github.io")document.querySelector("base").href="/PrimezNews/";</script><meta name="robots" content="noindex">')
-    (ROOT/'404.html').write_text(fallback.replace('<use href="#', '<use href="assets/reader-icons.svg#'))
+    (ROOT/'404.html').write_text(fallback.replace('<use href="#', '<use href="assets/images/reader-icons.svg#'))
     write_news_index(template)
+    write_lead_preload(rows)
     # Only genuine public articles and established public pages enter the sitemap.
     # Clean URLs (no .html): GitHub Pages serves about-us.html at /about-us
-    pages=['','news/','rashi','dharm','jobs','health-beauty','nri','videos','mandi-bhav','hukamnama','sarkari-yojana','about-us','editorial-policy','privacy-policy','grievance-redressal','contact','advertise','join-newsroom']
+    pages=['','news/','rashi','dharm','jobs','health-beauty','health-blog/','nri','videos','mandi-bhav','hukamnama','sarkari-yojana','about-us','editorial-policy','privacy-policy','grievance-redressal','contact','advertise','join-newsroom']
+    try: pages+=['health-blog/'+p['slug']+'/' for p in json.loads((ROOT/'data'/'health-blog.json').read_text())['posts']]
+    except (OSError, ValueError, KeyError): pass
     urls=[BASE+p for p in pages]+[BASE+'news/'+quote(s['slug'])+'/' for s in rows]
     (ROOT/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+escape(u)+'</loc></url>' for u in urls)+'</urlset>\n')
     print(f'Built {len(rows)} public headline pages')

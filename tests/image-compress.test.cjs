@@ -1,0 +1,6 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const vm=require('node:vm');
+function load(){const window={PRIMEZ_BACKEND:{url:'https://example.supabase.co',publicKey:'k'}};vm.runInNewContext(fs.readFileSync('assets/js/newsroom-api.js','utf8'),{window,URL,Date,crypto:globalThis.crypto,globalThis:{}});return window.PrimezImage;}
+test('automatic photo compression is part of newsroom-api.js',()=>{const img=load();assert.equal(typeof img.compress,'function');assert.deepEqual([...img.TYPES],['image/jpeg','image/png','image/webp']);assert.equal(img.INPUT_LIMIT,25*1024*1024);});
+test('rejects files that are not photos',async()=>{await assert.rejects(load().compress({type:'application/pdf',size:10}),/JPG, PNG or WebP/);});
+test('rejects photos over 25 MB',async()=>{await assert.rejects(load().compress({type:'image/jpeg',size:26*1024*1024}),/too large/);});
+test('uploads go through compression first',()=>{const api=fs.readFileSync('assets/js/newsroom-api.js','utf8');assert.match(api,/window\.PrimezImage\.compress\(file, options\)/);const jd=fs.readFileSync('assets/js/journalist-dashboard.js','utf8');assert.match(jd,/PrimezImage\.compress\(file\)/);for(const p of ['admin.html','journalist.html'])assert.match(fs.readFileSync(p,'utf8'),/assets\/js\/newsroom-api\.js/);});

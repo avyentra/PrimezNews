@@ -14,11 +14,17 @@ MAX_CARD = 280 * 1024
 KEEP_OLD = 3
 
 
+def share_folder(root):
+    folder = root / 'assets' / 'images' / 'share'
+    folder.mkdir(parents=True, exist_ok=True)
+    return folder
+
+
 def preview(root, article_dir, source, base, storage_origin):
-    fallback = base + 'assets/og-image.jpg'
+    fallback = base + 'assets/images/og-image.jpg'
     try:
-        if source.startswith(base + 'assets/') and re.fullmatch(r'[\w-]+\.webp', source.split('/')[-1]):
-            raw = (root / 'assets' / source.split('/')[-1]).read_bytes()
+        if source.startswith(base + 'assets/images/') and re.fullmatch(r'[\w-]+\.webp', source.split('/')[-1]):
+            raw = (root / 'assets' / 'images' / source.split('/')[-1]).read_bytes()
         elif source.startswith(storage_origin + '/storage/v1/object/public/newsroom-media/') or source.startswith(storage_origin + '/storage/v1/object/public/journalist-media/'):
             with urlopen(source, timeout=15) as response:
                 raw = response.read(LIMIT + 1)
@@ -38,17 +44,18 @@ def preview(root, article_dir, source, base, storage_origin):
             if len(data) <= MAX_CARD:
                 break
         digest = hashlib.sha256(data).hexdigest()[:16]
-        filename = 'share-' + digest + '.jpg'
-        target = article_dir / filename
+        share_dir = share_folder(root)
+        filename = article_dir.name + '--' + digest + '.jpg'      # all photos live in assets/images/
+        target = share_dir / filename
         if not target.exists():
             target.write_bytes(data)
         # Never delete a card that may already be cached by WhatsApp/Facebook:
         # keep the newest KEEP_OLD cards, remove only older extras.
-        cards = sorted(article_dir.glob('share-*.jpg'), key=lambda f: f.stat().st_mtime, reverse=True)
+        cards = sorted(share_dir.glob(article_dir.name + '--*.jpg'), key=lambda f: f.stat().st_mtime, reverse=True)
         for old in [c for c in cards if c.name != filename][KEEP_OLD:]:
             old.unlink()
-        return base + str((article_dir / filename).relative_to(root))
+        return base + str(target.relative_to(root))
     except (OSError, URLError, ValueError, Image.DecompressionBombError, UnidentifiedImageError) as error:
         logging.warning('Thumbnail for %s: %s', article_dir.name, type(error).__name__)
-        previous = next(article_dir.glob('share-*.jpg'), None)
+        previous = next(share_folder(root).glob(article_dir.name + '--*.jpg'), None)
         return base + str(previous.relative_to(root)) if previous else fallback

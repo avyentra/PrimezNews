@@ -13,7 +13,7 @@ def label(en, hi, pa):
 def link(url, *words):
     return f'<a href="{escape(url)}">{label(*words)}</a>'
 
-LOGO = '<img src="assets/primznews-logo-new.webp" width="1000" height="344" alt="PrimezNews — Punjab · Pulse of Pind">'
+LOGO = '<img src="assets/images/primznews-logo-new.webp" width="1000" height="344" alt="PrimezNews — Punjab · Pulse of Pind">'
 LANGUAGES = ''.join(f'<button type="button" class="language" data-lang="{lang}">{name}</button>'
                     for lang, name in [('hi','हिन्दी'),('en','English'),('pa','ਪੰਜਾਬੀ')])
 HEADER = f'''<header class="pn-header">
@@ -34,7 +34,7 @@ def footer(has_tools):
             ('nri','NRI News','NRI समाचार','NRI ਖ਼ਬਰਾਂ')]),
         (("See more", "और देखें", "ਹੋਰ ਵੇਖੋ"), [
             ('rashi','Horoscope','राशिफल','ਰਾਸ਼ੀਫਲ'),
-            ('health-beauty','Health & beauty','स्वास्थ्य और सौंदर्य','ਸਿਹਤ ਤੇ ਸੁੰਦਰਤਾ'),
+            ('health-beauty','Health & Beauty','स्वास्थ्य और सौंदर्य','ਸਿਹਤ ਤੇ ਸੁੰਦਰਤਾ'),
             ('mandi-bhav','Market prices','मंडी भाव','ਮੰਡੀ ਭਾਅ'),
             ('hukamnama','Hukamnama','हुकमनामा','ਹੁਕਮਨਾਮਾ'),
             ('sarkari-yojana','Government schemes','सरकारी योजनाएँ','ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ'),

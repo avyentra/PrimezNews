@@ -22,8 +22,8 @@ def normalize(name):
  esc=lambda x:html.escape(html.unescape(x),quote=True)
  meta='<title>'+esc(title)+'</title>\n<meta name="description" content="'+esc(description)+'">\n<link rel="canonical" href="'+canonical+'">\n'
  meta+='<meta name="robots" content="'+('noindex, follow' if name=='home-v2.html' else 'index, follow, max-image-preview:large')+'">\n'
- for key,value in [('og:type','website'),('og:site_name','PrimezNews'),('og:title',title),('og:description',description),('og:url',canonical),('og:image',BASE+'assets/og-image.jpg'),('og:image:width','1200'),('og:image:height','630')]:meta+='<meta property="'+key+'" content="'+esc(value)+'">\n'
- for key,value in [('card','summary_large_image'),('title',title),('description',description),('image',BASE+'assets/og-image.jpg')]:meta+='<meta name="twitter:'+key+'" content="'+esc(value)+'">\n'
+ for key,value in [('og:type','website'),('og:site_name','PrimezNews'),('og:title',title),('og:description',description),('og:url',canonical),('og:image',BASE+'assets/images/og-image.jpg'),('og:image:width','1200'),('og:image:height','630')]:meta+='<meta property="'+key+'" content="'+esc(value)+'">\n'
+ for key,value in [('card','summary_large_image'),('title',title),('description',description),('image',BASE+'assets/images/og-image.jpg')]:meta+='<meta name="twitter:'+key+'" content="'+esc(value)+'">\n'
  p.write_text(head+meta+'</head>'+body)
 if __name__=='__main__':
  for name in PUBLIC:normalize(name)

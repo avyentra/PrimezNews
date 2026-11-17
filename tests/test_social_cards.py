@@ -15,11 +15,11 @@ class SocialCards(unittest.TestCase):
     def test_new_story_raw_html_and_image_without_javascript(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / 'assets').mkdir()
+            (root / 'assets' / 'images').mkdir(parents=True)
             article = root / 'news/example'
             article.mkdir(parents=True)
-            Image.new('RGB', (900, 900), 'green').save(root / 'assets/fields.webp')
-            photo = preview(root, article, BASE + 'assets/fields.webp', BASE, 'https://example.invalid')
+            Image.new('RGB', (900, 900), 'green').save(root / 'assets/images/fields.webp')
+            photo = preview(root, article, BASE + 'assets/images/fields.webp', BASE, 'https://example.invalid')
             with Image.open(root / photo.removeprefix(BASE)) as card:
                 self.assertEqual((card.format, card.size), ('JPEG', SIZE))
             title = 'ਪੰਜਾਬ & ਖ਼ਬਰ'
