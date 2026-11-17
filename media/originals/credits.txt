@@ -1,0 +1,29 @@
+Golden Temple photograph: Shagil Kannur, The Golden Temple of Amrithsar 7.jpg.
+Source: https://commons.wikimedia.org/wiki/File:The_Golden_Temple_of_Amrithsar_7.jpg
+License: CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
+Original image bytes retained; displayed with CSS cropping and colour overlay.
+Other illustrative photography: Unsplash.
+Phulkari-inspired geometric pattern: original SVG artwork for this homepage.
+
+Homepage faith section thumbnails (original downloaded JPEG thumbnails, CSS object-fit):
+Guru Ram Das Langar in the Golden Temple complex in Amritsar 02.jpg — Kritzolina.
+Source: https://commons.wikimedia.org/wiki/File:Guru_Ram_Das_Langar_in_the_golden_temple_complex_in_Amritsar_02.jpg
+License: CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
+Qila Mubarak, Patiala.jpg — Journojp.
+Source: https://commons.wikimedia.org/wiki/File:Qila_Mubarak,_Patiala.jpg
+License: CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
+
+Additional illustrative topic photographs (Unsplash, displayed as symbolic images, not event photographs):
+news-farm: https://images.unsplash.com/photo-1500382017468-9049fed747ef
+news-computers: https://images.unsplash.com/photo-1516321318423-f06f85e504b3
+news-school: https://images.unsplash.com/photo-1503676260728-1c00da094a0b
+news-books: https://images.unsplash.com/photo-1507842217343-583bb7270b66
+news-health: https://images.unsplash.com/photo-1576091160399-112ba8d25d1d
+License: https://unsplash.com/license
+faith-heritage.webp: resized format conversion of the Qila Mubarak image credited above; CC BY-SA 4.0.
+
+Impact UI illustrative photographs (not photographs of a reported complaint):
+School: Sourav Debnath, https://unsplash.com/photos/fUdDCNJ3uw4
+Road: https://unsplash.com/photos/El5wbLuYhBU
+Water tap: Taichi Nakamura, https://unsplash.com/photos/_QzQ-C6PkXw
+License: https://unsplash.com/license
