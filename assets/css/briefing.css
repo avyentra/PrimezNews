@@ -1,0 +1,22 @@
+/* Briefing strip ("बड़ी तस्वीर"): navy band, white label, amber marquee text. Loaded last. */
+.briefing {
+  background: #181642 !important;
+  border: 1px solid #181642 !important;
+  box-shadow: 0 6px 18px #18164233 !important;
+}
+.briefing-label,
+.briefing-label * { color: #ffffff !important; }
+.briefing .tiny-dot { background: #ffffff !important; }
+#ticker { color: #ffcf64 !important; }
+.briefing .ticker-arrows button { color: #c5cedf !important; }
+.briefing .ticker-arrows button:hover { color: #ffcf64 !important; }
+
+/* Text sizes to match the reference: label and ticker text at the same bold-ish size. */
+.briefing-label { font-size: 17px !important; font-weight: 700 !important; letter-spacing: 0 !important; }
+#ticker { font-size: 17px !important; font-weight: 500 !important; line-height: 1.5 !important; }
+@media (max-width: 720px) {
+  .briefing-label { font-size: 16px !important; }
+  #ticker { font-size: 16px !important; }
+}
+#ticker{overflow:hidden;white-space:nowrap;position:relative;min-width:0}.headline-ticker-track{display:inline-block;will-change:transform}.headline-ticker-item{display:inline-block}.headline-ticker-item a{display:inline-block;color:#ffcf64;text-decoration:none;padding:8px 0}.headline-ticker-item a:hover{text-decoration:underline;text-underline-offset:4px}.headline-ticker-item a:focus-visible{outline:2px solid #fff;outline-offset:-2px}.headline-ticker-item>span{padding:0 16px}
+@media(prefers-reduced-motion:reduce){.headline-ticker-track{will-change:auto}}

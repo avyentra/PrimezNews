@@ -1,0 +1,35 @@
+:host{display:block;position:relative;z-index:15;color:#201e1c;background:white;font:600 16px/1.35 "Noto Sans Gurmukhi",system-ui,sans-serif}
+*{box-sizing:border-box}nav,.wire>div,.market>div{max-width:1380px;margin:auto;padding:0 16px}
+nav{position:relative;display:flex;align-items:center;gap:9px;min-height:56px}a,button{font:inherit;color:inherit;text-decoration:none}
+button{cursor:pointer;background:white;border:1px solid #ded7ce;border-radius:7px;min-height:40px;padding:5px 13px}
+#sections{display:flex;align-items:stretch;flex:1;justify-content:space-between}
+#sections a{display:grid;place-items:center;position:relative;min-height:54px;padding:0 clamp(4px,.8vw,15px);white-space:nowrap}
+#sections a:first-child{font:700 26px system-ui}#sections a:not(:last-child):after{content:"";position:absolute;right:-4px;top:36%;height:14px;border-right:1px solid #d8d0c4}
+a:hover{color:#986300}.live{padding:8px 10px;border-radius:6px;color:white;background:#be1634;font:700 15px system-ui}.live:hover{color:white;background:#990e29}
+.more[aria-expanded=true]{border-color:#dfa52e;background:#fff2d8}.search{display:grid;place-items:center;width:42px;padding:0}.mobile,[hidden]{display:none!important}
+#panel{position:absolute;z-index:2;top:calc(100% + 4px);right:68px;width:min(640px,94vw);background:white;border:1px solid #ded8cf;box-shadow:0 14px 34px #17233729;border-radius:12px;overflow:hidden}
+.cols{display:grid;grid-template-columns:1fr 1fr}.cols section{padding:14px 20px}.cols section+section{border-left:1px solid #eee7dd}
+.cols strong,footer a{color:#9e650b;font-size:14px}.cols a{display:flex;align-items:center;gap:12px;padding:9px 0;min-height:55px}.cols i{display:grid;place-items:center;font:21px system-ui;color:#af7009;background:#fbefd9;width:38px;height:38px;border-radius:8px;flex:none}.cols small{display:block;color:#6f6b66;font-size:12px;font-weight:400}
+footer{display:flex;justify-content:space-between;padding:12px 20px;background:#f7f4ef;border-top:1px solid #eee7dd}
+.wire{border-block:1px solid #e6ded4}.wire>div,.headlines,.market>div{display:flex;align-items:center}.wire>div{gap:16px;min-height:44px}.wire b{background:#bf1431;color:white;padding:5px 20px 5px 13px;white-space:nowrap;clip-path:polygon(0 0,100% 0,94% 100%,0 100%)}.headlines{min-width:0;gap:20px;overflow-x:auto;scrollbar-width:none}.headlines a{white-space:nowrap;font-size:14px;font-weight:450;color:#57534d}.headlines a:before{content:"•";color:#bc1530;margin-right:8px}
+.market{background:#0d1832;color:#dbe1e9}.market>div{min-height:36px;justify-content:space-between;font-size:14px;font-weight:450}.market b,.market a{color:#f9c650}
+:focus-visible{outline:2px solid #ae7800;outline-offset:-2px}
+@media(max-width:1100px){.mobile{display:block!important;margin-right:auto}#sections{display:none}.mobile[aria-expanded=true]+#sections{position:absolute;display:grid;grid-template-columns:repeat(2,1fr);top:100%;left:0;right:0;z-index:3;background:white;border:1px solid #e5ded3;box-shadow:0 12px 18px #11203922}#sections a{justify-content:start;padding-left:18px}#sections a:after{display:none}#panel{right:12px}.wire>div{min-height:40px}}
+@media(max-width:600px){nav,.market>div,.wire>div{padding-inline:10px}.market>div{font-size:11px}.wire b{font-size:13px}.cols section{padding:12px}.cols a{gap:7px}.cols small{font-size:11px}.cols i{width:28px;height:30px}.cols b{font-size:14px}#panel{width:calc(100% - 16px);right:8px}.cols a{min-height:59px}}
+.market>div{gap:8px 14px;padding-block:5px}.market .quote{white-space:nowrap}
+.market .quote-source{display:block;font-size:11px;color:#c9d4e2}
+@media(max-width:700px){.market>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 8px}.market strong{grid-column:1/3}.market>div>a{grid-column:3;grid-row:1;text-align:right}.market .quote{grid-row:2;white-space:normal}.market .quote b{display:block}.market .quote-source{font-size:10px}}
+
+/* ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ – moving headlines (right to left) */
+.headlines.moving{overflow:hidden;flex:1;-webkit-mask:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);mask:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
+.headlines .marquee{display:inline-flex;gap:0;white-space:nowrap;animation:pn-marquee var(--dur,40s) linear infinite;will-change:transform}
+.headlines.moving:hover .marquee,.headlines.moving:focus-within .marquee{animation-play-state:paused}
+.headlines .marquee a{margin-right:28px}
+@keyframes pn-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.headlines .marquee{animation-duration:calc(var(--dur,40s)*2)}}
+
+/* Menu: Punjabi/Hindi same look & feel as English (same font family, lighter weight) */
+:host(:not([data-lang="en"])) #sections a:not(:first-child):not(.live){font-weight:500;letter-spacing:.1px;color:#24211e}
+
+/* current page in the menu: same font size/weight, only an underline + colour */
+#sections a[aria-current="page"]{color:#b4232a!important;box-shadow:inset 0 -3px 0 #d9ad4e}
