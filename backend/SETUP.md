@@ -77,3 +77,7 @@ The alias does not bypass editor membership or password checks.
 - Instant pages: run `backend/instant-news-pages.sql` (steps inside). When a story is published, Supabase starts the GitHub build immediately (≈1–3 min) instead of waiting for the timer.
 - Admin "published" popup checks the live page + photo and unlocks the share buttons only when both are ready.
 - If a link was shared earlier without a photo, WhatsApp remembers that. Share it once with `?v=2` at the end to refresh.
+
+## Super Admin (owner panel) + GIF ads
+See `backend/SUPER-ADMIN.md`. Short version: run `backend/super-admin.sql`, then its STEP 2 with the owner email,
+and `backend/ad-gif-upload.sql`. Owner then lands on `superadmin.html` after login.
