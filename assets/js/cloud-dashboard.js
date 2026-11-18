@@ -166,7 +166,7 @@
  el('adSlot').onchange = adForm; adForm();
  el('cloudAdForm').onsubmit = async event => {
   event.preventDefault(); el('saveAd').disabled = true;
-  try { let image = ads.find(a=>a.slot===el('adSlot').value)?.image; if(el('adFile').files[0]) image = await api.upload(el('adFile').files[0], { maxSide: 2200, maxBytes: 450 * 1024 }); if(!image) throw new Error('Choose a creative image first.'); await api.saveAd({slot:el('adSlot').value,image,href:el('adUrl').value.trim(),enabled:el('adEnabled').checked}); ads=await api.ads(); adForm(); el('adFeedback').textContent='Advertisement saved to database.'; }
+  try { let image = ads.find(a=>a.slot===el('adSlot').value)?.image; if(el('adFile').files[0]) image = await api.upload(el('adFile').files[0], { maxSide: 2200, maxBytes: 450 * 1024, allowGif: true }); if(!image) throw new Error('Choose a creative image first.'); await api.saveAd({slot:el('adSlot').value,image,href:el('adUrl').value.trim(),enabled:el('adEnabled').checked}); ads=await api.ads(); adForm(); el('adFeedback').textContent='Advertisement saved to database.'; }
   catch(error) { el('adFeedback').textContent=error.message; }
   finally { el('saveAd').disabled=false; }
  };

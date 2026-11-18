@@ -9,6 +9,8 @@
   catch (error) { msg(error.message || 'Sign in failed. Please try again.'); }
   finally { el('signIn').disabled = false; }
  };
+ /* Super Admin can close journalist sign-ups (site_settings.journalist_signups = false). Fail-safe: link stays if anything is missing. */
+ if (api.configured) (async () => { try { const r = await api.db().from('site_settings').select('value').eq('key', 'journalist_signups').maybeSingle(); if (!r.error && r.data && r.data.value === false) { const help = document.querySelector('.access-help'); if (help) help.hidden = true; } } catch { /* keep link */ } })();
  el('forgotPassword').onclick = async () => {
   if (!el('email').value.includes('@')) { msg('Enter your email address first.'); return; }
   el('forgotPassword').disabled = true;

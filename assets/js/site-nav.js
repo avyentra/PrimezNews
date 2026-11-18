@@ -185,3 +185,20 @@ const here=()=>{let p=clean(location.pathname);if(/\/health-blog(\/|$)/.test(p))
 function mark(nav){const root=nav.shadowRoot;if(!root)return;const cur=here();root.querySelectorAll('#sections a[href], .more-panel a[href], [role="menu"] a[href]').forEach(a=>{let u;try{u=new URL(a.getAttribute('href'),document.baseURI)}catch{return}if(u.origin!==location.origin||u.search||u.hash)return;const on=clean(u.pathname)!=='/'&&clean(u.pathname)===cur;if(on)a.setAttribute('aria-current','page');else if(a.getAttribute('aria-current')==='page')a.removeAttribute('aria-current')})}
 function watch(nav){if(nav.__pnMark)return;nav.__pnMark=true;mark(nav);if(nav.shadowRoot)new MutationObserver(()=>mark(nav)).observe(nav.shadowRoot,{childList:true,subtree:true})}
 document.querySelectorAll('primez-site-nav').forEach(watch)})();
+
+/* Super Admin site settings (backend/super-admin.sql). Fail-safe: no settings, no table or no network = site stays exactly as before. */
+(()=>{const KEY='primez.siteSettings',TTL=300000;
+function cached(){try{const c=JSON.parse(sessionStorage.getItem(KEY)||'null');return c&&Date.now()-c.t<TTL?c.v:null}catch{return null}}
+async function load(){const c=cached();if(c)return c;const cfg=window.PRIMEZ_BACKEND;if(!cfg||!cfg.url||!cfg.publicKey)return{};
+ const r=await fetch(cfg.url+'/rest/v1/site_settings?select=key,value&is_public=eq.true',{headers:{apikey:cfg.publicKey}});
+ const v={};if(r.ok){const rows=await r.json();if(Array.isArray(rows))rows.forEach(x=>{if(x&&typeof x.key==='string')v[x.key]=x.value})}
+ try{sessionStorage.setItem(KEY,JSON.stringify({t:Date.now(),v}))}catch{}return v}
+function apply(s){
+ const hide=Array.isArray(s.menu_hidden)?s.menu_hidden.filter(h=>typeof h==='string'):[];
+ if(hide.length)document.querySelectorAll('primez-site-nav').forEach(nav=>{const go=()=>{const root=nav.shadowRoot;if(!root)return;root.querySelectorAll('a[href]').forEach(a=>{if(hide.includes(a.getAttribute('href'))){const item=a.closest('li')||a;item.style.display='none'}})};go();if(nav.shadowRoot)new MutationObserver(go).observe(nav.shadowRoot,{childList:true,subtree:true})});
+ if(s.ticker_enabled===false){const t=document.getElementById('ticker');if(t)(t.closest('.briefing')||t).style.display='none'}
+ if(s.journalist_signups===false)document.querySelectorAll('a[href^="join-newsroom"]:not([href*="#review"])').forEach(a=>{a.style.display='none'});
+ const n=s.site_notice;if(n&&n.on===true&&!document.getElementById('primezSiteNotice')){const bar=document.createElement('div');bar.id='primezSiteNotice';bar.setAttribute('role','status');bar.style.cssText='background:#14233a;color:#fff;text-align:center;padding:9px 16px;font:600 14px/1.45 system-ui,"Noto Sans Gurmukhi",sans-serif';
+  const text=()=>{const l=(document.documentElement.lang||'pa').slice(0,2);bar.textContent=String(n[l]||n.pa||n.en||n.hi||'').slice(0,200)};text();if(bar.textContent){document.body.prepend(bar);new MutationObserver(text).observe(document.documentElement,{attributes:true,attributeFilter:['lang']})}}}
+function run(){load().then(apply).catch(()=>{})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run()})();

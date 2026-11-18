@@ -68,6 +68,7 @@
   const cfg = root.PRIMEZ_BACKEND || {};
   const configured = /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(cfg.url || '') && !!cfg.publicKey;
   let client;
+  const GIF_LIMIT = 3 * 1024 * 1024;
   function db() {
     if (!configured) throw new Error('Backend setup pending. Add the Supabase project URL and public key in assets/js/backend-config.js.');
     if (!root.supabase) throw new Error('Unable to load sign-in service. Check your connection and reload.');
@@ -117,11 +118,14 @@
   }
   async function upload(file, options) {
     if (!file) return '';
+    /* Animated GIF ads: uploaded as they are (compressing would stop the animation). Needs backend/ad-gif-upload.sql. */
+    const gif = !!(options && options.allowGif) && file.type === 'image/gif';
+    if (gif) { if (file.size > GIF_LIMIT) throw new Error('GIF is too large. Use a GIF under 3 MB.'); }
     /* automatic compression: big phone photos become light WebP before upload */
-    if (typeof window !== 'undefined' && window.PrimezImage) file = await window.PrimezImage.compress(file, options);
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 1000000) throw new Error('Use a JPG, PNG or WebP image under 1 MB.');
+    else if (typeof window !== 'undefined' && window.PrimezImage) file = await window.PrimezImage.compress(file, options);
+    if (!gif && (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 1000000)) throw new Error('Use a JPG, PNG or WebP image under 1 MB.');
     const user = await requireEditor();
-    const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[file.type];
+    const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' }[file.type];
     const path = user.id + '/' + crypto.randomUUID() + '.' + ext;
     check(await db().storage.from('newsroom-media').upload(path, file, { contentType: file.type, upsert: false }));
     return db().storage.from('newsroom-media').getPublicUrl(path).data.publicUrl;
@@ -129,6 +133,8 @@
   root.PrimezAPI = {
     configured, db, requireEditor, validateStory, istToISO, safeUrl, image,
     async login(identifier, password, remember = false) { localStorage.setItem('primezRemember', remember ? 'yes' : 'no'); const email = identifier.includes('@') ? identifier.trim() : cfg.usernames?.[identifier.trim().toLowerCase()]; if (!email) throw new Error('User ID is not configured. Sign in with your email address.'); const {user} = check(await db().auth.signInWithPassword({ email, password }));
+      /* Owner goes to the Super Admin panel (needs backend/super-admin.sql; if missing, normal routing continues) */
+      try { const owner = await db().rpc('is_super_admin'); if (!owner.error && owner.data === true) return 'superadmin'; } catch { /* keep normal routing */ }
       const editor = check(await db().from('newsroom_editors').select('user_id').eq('user_id', user.id).maybeSingle());
       if (editor) return 'admin';
       const app = check(await db().from('journalist_applications').select('status').eq('user_id', user.id).maybeSingle());
