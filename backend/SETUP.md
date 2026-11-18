@@ -95,3 +95,9 @@ What changes:
 - Photos and the Aadhaar number are stored privately (not readable from the website API), only reviewers can open them, and they are deleted as soon as the decision is made.
 - A declined applicant sees the editor's note and can apply again. A pending applicant can withdraw and edit.
 - Reviewers see the documents in `join-newsroom#review`; the super admin panel (Team & roles) opens the same documents.
+
+## View counters v2 (run once)
+Run `backend/view-counters-v2.sql` in the Supabase SQL Editor (last row must show `counters_v2_ok = true`).
+- Story views: +1 on every open/refresh of that story, plus 5 per hour automatically for life (from its publish time).
+- Footer total: 50,000 + visits. +1 on every refresh, every new visit and every re-opened browser; moving between pages of the site does not add.
+- If you ever re-run `super-admin.sql`, run `view-counters-v2.sql` again afterwards (it restores these two functions).
