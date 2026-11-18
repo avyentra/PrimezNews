@@ -374,12 +374,17 @@
     $('addMember').onclick = () => dialog(`<h2 style="margin:0 0 6px;font-size:18px">Add member</h2><p class="muted" style="margin:0 0 12px;font-size:13px">The person needs an account first (they apply at join-newsroom, or you create the user in Supabase → Authentication).</p><div class="stack"><label class="fld">Email<input id="mEmail" type="email" placeholder="name@example.com"></label><label class="fld">Role<select id="mRole"><option value="journalist">Journalist</option><option value="editor">Editor (stories)</option><option value="admin">Admin (stories + approvals)</option></select></label></div>`, [{ label: 'Give access', cls: 'dark', run: async () => { try { await rpc('super_admin_add_member', { member_email: $('mEmail').value.trim(), new_role: $('mRole').value }); $('dlg').close(); toast('Access given'); team().catch(fail); } catch (er) { fail(er); } } }]);
   }
   async function proof(p) {
-    dialog(`<h2 style="margin:0 0 4px;font-size:18px">${esc(p.name)}</h2><p class="muted" style="margin:0">${esc(p.email)} · ${esc(p.district)}</p><p class="notice" style="margin-top:12px">Opening proof…</p>`, []);
+    const head = `<h2 style="margin:0 0 4px;font-size:18px">${esc(p.name)}</h2><p class="muted" style="margin:0">${esc(p.email)} · ${esc(p.district)}</p>`;
+    dialog(head + '<p class="notice" style="margin-top:12px">Opening documents…</p>', []);
     try {
-      const doc = await rpc('read_journalist_proof', { applicant: p.id });
-      const ok = /^image\/(png|jpeg)$/.test(doc.mime) && /^[A-Za-z0-9+/=]+$/.test(doc.data);
-      const decide = d => async () => { try { await rpc('review_journalist', { applicant: p.id, decision: d }); $('dlg').close(); toast(d === 'approved' ? 'Approved — they can now file news' : 'Declined'); team().catch(fail); } catch (er) { fail(er); } };
-      dialog(`<h2 style="margin:0 0 4px;font-size:18px">${esc(p.name)}</h2><p class="muted" style="margin:0">${esc(p.email)} · ${esc(p.district)}</p>${ok ? `<img alt="Proof document of ${esc(p.name)}" src="data:${doc.mime};base64,${doc.data}">` : '<p class="notice warn">This proof cannot be shown here.</p>'}`,
+      const res = await rpc('read_journalist_docs', { applicant: p.id }), docs = res.docs || {};
+      const labels = { photo: 'Photo', aadhaar_front: 'Aadhaar front', aadhaar_back: 'Aadhaar back', proof: 'Press proof' };
+      const figs = ['photo', 'aadhaar_front', 'aadhaar_back', 'proof'].filter(k => docs[k] && /^image\/(png|jpeg|webp)$/.test(docs[k].mime) && /^[A-Za-z0-9+/=\s]+$/.test(docs[k].data))
+        .map(k => `<figure style="margin:0;text-align:center"><img alt="${esc(labels[k])} of ${esc(p.name)}" style="max-width:100%;max-height:220px" src="data:${docs[k].mime};base64,${docs[k].data.replace(/\s/g, '')}"><figcaption class="muted" style="font-size:12px;font-weight:800">${labels[k]}</figcaption></figure>`).join('');
+      const ident = `<p style="margin:10px 0;font-weight:800">Mobile: ${esc(res.mobile || '-')} · Aadhaar: ${esc(String(res.aadhaar || '').replace(/(\d{4})(?=\d)/g, '$1 '))}</p>`;
+      const decide = d => async () => { try { const n = $('dnote'); await rpc('review_journalist', { applicant: p.id, decision: d, note: n ? n.value.trim() : '' }); $('dlg').close(); toast(d === 'approved' ? 'Approved — they can now file news' : 'Declined'); team().catch(fail); } catch (er) { fail(er); } };
+      dialog(head + ident + (figs ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">${figs}</div>` : '<p class="notice warn">No documents found.</p>')
+        + '<textarea id="dnote" maxlength="500" rows="2" placeholder="Note for the applicant if you decline (they will see this)" style="width:100%;margin-top:10px;font:inherit;box-sizing:border-box;border:1px solid #d6dae4;border-radius:10px;padding:8px 10px"></textarea>',
         [{ label: 'Decline', cls: 'danger', run: decide('declined') }, { label: 'Approve', cls: 'green', run: decide('approved') }]);
     } catch (er) { $('dlg').close(); fail(er); }
   }
