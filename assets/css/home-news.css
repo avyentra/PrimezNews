@@ -5,3 +5,81 @@
 .hero-side-ad>small{align-self:stretch;max-width:300px;margin:0 auto;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#7a766c}
 .hero-side-ad>a{display:block;width:100%;max-width:300px;margin:0 auto;line-height:0}
 .hero-side-ad img{display:block;width:100%!important;max-width:300px!important;aspect-ratio:300/250;height:auto!important;object-fit:contain;background:#f3f1ec;border-radius:6px}
+
+/* ---------- Home lead slider (replaces the tall dark lead card) ---------- */
+.hero-section .lead-story.lead-slider,.hero-grid .lead-story.lead-slider{min-height:0!important;display:flex;flex-direction:column;justify-content:flex-start;background:#fff;border:1px solid #ece8f4!important;border-radius:18px!important;box-shadow:0 14px 34px rgba(40,16,90,.10)!important;overflow:hidden;padding:0}
+.lead-slider .ls-frame{position:relative;overflow:hidden;aspect-ratio:16/10;background:#e9e6f0}
+.lead-slider .ls-track{display:flex;height:100%;transition:transform .45s ease}
+.lead-slider .ls-slide{position:relative;flex:0 0 100%;height:100%;display:block}
+.lead-slider .ls-slide img{width:100%;height:100%;object-fit:cover;display:block}
+.lead-slider .ls-slide::after{content:"";position:absolute;inset:auto 0 0 0;height:30%;background:linear-gradient(180deg,transparent,rgba(10,14,30,.35));pointer-events:none}
+.lead-slider .ls-tags{position:absolute;left:16px;bottom:16px;display:flex;flex-wrap:wrap;gap:8px;z-index:1}
+.lead-slider .ls-tag{background:#f7c934;color:#1a1530;font-weight:800;font-size:13px;padding:5px 12px;border-radius:8px}
+.lead-slider .ls-place{background:rgba(20,18,40,.72);color:#fff;font-weight:700;font-size:13px;padding:5px 12px;border-radius:8px}
+.lead-slider .ls-place:empty{display:none}
+.lead-slider .ls-icons{position:absolute;top:12px;left:12px;display:flex;gap:6px;z-index:2;pointer-events:none}
+.lead-slider .ls-icons i{width:34px;height:30px;border-radius:7px;background:rgba(20,20,28,.55);color:#fff;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.lead-slider .ls-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:44px;height:44px;border-radius:50%;border:0;background:rgba(20,20,28,.5);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s}
+.lead-slider .ls-arrow:hover,.lead-slider .ls-arrow:focus-visible{background:rgba(20,20,28,.82)}
+.lead-slider .ls-arrow:focus-visible,.lead-slider .ls-dots button:focus-visible{outline:3px solid #f7c934;outline-offset:2px}
+.lead-slider .ls-prev{left:10px}.lead-slider .ls-next{right:10px}
+.lead-slider .ls-dots{position:absolute;right:14px;bottom:14px;z-index:2;display:flex;gap:4px}
+.lead-slider .ls-dots button{width:24px;height:24px;border:0;padding:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lead-slider .ls-dots button::before{content:"";width:8px;height:8px;border-radius:99px;background:rgba(255,255,255,.6);transition:width .25s}
+.lead-slider .ls-dots button[aria-current=true]::before{width:22px;background:#f7c934}
+.lead-slider .ls-content{padding:16px 20px 18px;display:flex;flex-direction:column;gap:8px;color:#16192b}
+.lead-slider .ls-headline{text-decoration:none;color:inherit}
+.lead-slider .ls-headline h2{margin:0;font-size:24px;line-height:1.45;font-weight:800;color:#1a1530;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.lead-slider .ls-headline h2 .hl-accent{color:inherit}
+.lead-slider .ls-headline:hover h2{color:#6d28d9}
+.lead-slider .ls-summary{margin:0;font-size:15px;line-height:1.7;color:#4a4f63;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lead-slider .ls-summary:empty{display:none}
+.lead-slider .ls-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:10px;border-top:1px solid #f0edf5;margin-top:2px}
+.lead-slider .ls-by{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#1a1530;min-width:0}
+.lead-slider .ls-by .avatar{width:34px;height:34px;border-radius:50%;background:#3b2a86;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none}
+.lead-slider .ls-by small{color:#6b6f80;font-weight:600;font-size:13px;white-space:nowrap}
+.lead-slider .ls-more{color:#e2541b;font-weight:800;font-size:15px;text-decoration:none;white-space:nowrap}
+.lead-slider .ls-more:hover{text-decoration:underline;text-underline-offset:4px}
+@media(max-width:720px){.lead-slider .ls-headline h2{font-size:19px}.lead-slider .ls-content{padding:12px 14px 14px}.lead-slider .ls-arrow{width:38px;height:38px}.lead-slider .ls-summary{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.lead-slider .ls-track{transition:none}}
+.lead-slider .ls-headline h2{text-shadow:none!important;letter-spacing:0!important}
+@media(min-width:721px){.hero-section .lead-story.lead-slider .ls-frame,.hero-grid .lead-story.lead-slider .ls-frame{flex:1 1 auto;aspect-ratio:auto;min-height:380px}}
+/* match the reference slider: photo, bold headline, "ਪੂਰਾ ਵੇਰਵਾ" link — nothing else */
+.lead-slider .ls-summary,.lead-slider .ls-by,.lead-slider .ls-dots{display:none!important}
+.lead-slider .ls-content{padding:14px 18px 16px;gap:6px}
+.lead-slider .ls-headline h2{font-size:25px;line-height:1.4;color:#14112b}
+.lead-slider .ls-foot{border-top:0;padding-top:0;margin-top:0;justify-content:flex-end}
+.lead-slider .ls-more{font-size:16px}
+.lead-slider .ls-arrow{width:34px;height:52px;border-radius:6px;background:rgba(255,255,255,.18);color:#fff;box-shadow:none}
+.lead-slider .ls-arrow svg{width:26px;height:26px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.lead-slider .ls-arrow:hover,.lead-slider .ls-arrow:focus-visible{background:rgba(0,0,0,.35)}
+.lead-slider .ls-prev{left:6px}.lead-slider .ls-next{right:6px}
+.lead-slider .ls-icons i{width:34px;height:30px;border-radius:5px;background:rgba(60,60,60,.7)}
+.lead-slider .ls-frame{background:#e6e6e6}
+@media(max-width:720px){.lead-slider .ls-headline h2{font-size:19px}.lead-slider .ls-arrow{width:30px;height:46px}}
+/* photo size: wide 16:9 box (not stretched to the column height) */
+@media(min-width:721px){.hero-section .lead-story.lead-slider,.hero-grid .lead-story.lead-slider{align-self:start;height:auto}.hero-section .lead-story.lead-slider .ls-frame,.hero-grid .lead-story.lead-slider .ls-frame{flex:none;aspect-ratio:16/9;min-height:0}}
+/* more top stories under the slider (fills the column; tap one to show it in the slider) */
+.lead-slider .ls-list{display:flex;flex-direction:column;border-top:1px solid #f0edf5;margin:0 18px 8px}
+.lead-slider .ls-item{display:flex;align-items:center;gap:14px;width:100%;padding:12px 0;border:0;border-bottom:1px solid #f0edf5;background:none;text-align:left;cursor:pointer;font:inherit;color:#14112b}
+.lead-slider .ls-item:last-child{border-bottom:0}
+.lead-slider .ls-item[hidden]{display:none}
+.lead-slider .ls-item img{width:96px;height:60px;border-radius:8px;object-fit:cover;flex:none;background:#eee}
+.lead-slider .ls-item span{font-size:15.5px;font-weight:700;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lead-slider .ls-item:hover span{color:#6d28d9}
+.lead-slider .ls-item:focus-visible{outline:3px solid #f7c934;outline-offset:2px;border-radius:8px}
+@media(max-width:720px){.lead-slider .ls-list{display:none}}
+/* side cards (beside the slider): headline 2 lines like the latest-news list, summary 2 lines */
+.hero-section .hero-grid .secondary-card h3,.hero-grid .secondary-card .headline-button h3{font-size:19px!important;line-height:1.5!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;max-height:none!important;margin:0!important}
+.hero-section .hero-grid .secondary-card .secondary-summary,.hero-grid .secondary-card .secondary-summary{display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;max-height:none!important}
+/* Desktop: heading + PUNJAB label span the two news columns; the right column (ad + latest) starts at the very top */
+@media(min-width:1101px){
+ .hero-section{display:grid!important;grid-template-columns:1.8fr 1fr .95fr;column-gap:22px;align-items:start}
+ .hero-section>.section-line{grid-column:1/3;grid-row:1}
+ .hero-section>.hero-grid{display:contents!important}
+ .hero-section>.hero-grid>.lead-story{grid-column:1;grid-row:2}
+ .hero-section>.hero-grid>.secondary-stories{grid-column:2;grid-row:2;align-self:stretch}
+ .hero-section>.hero-grid>.latest-panel{grid-column:3;grid-row:1/span 2;align-self:start}
+}
+/* slider headline: 2 lines, then … */
+.lead-slider .ls-headline h2{-webkit-line-clamp:2!important}
