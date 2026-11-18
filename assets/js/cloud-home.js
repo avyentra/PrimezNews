@@ -46,7 +46,7 @@
   const next=node('button',undefined,'ls-arrow ls-next');next.type='button';next.setAttribute('aria-label','Next story');next.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
   const dots=node('div',undefined,'ls-dots');slides.forEach((s,k)=>{const d=node('button');d.type='button';d.setAttribute('aria-label','Story '+(k+1));d.onclick=()=>go(k);dots.append(d);});
   frame.append(track,icons);if(slides.length>1)frame.append(prev,next,dots);article.append(frame);
-  const content=node('div',undefined,'ls-content');const headingLink=link(lead,'ls-headline');const byline=node('div',undefined,'ls-foot');const by=node('span',undefined,'ls-by');const more=link(lead,'ls-more');more.textContent='→ ਪੂਰਾ ਵੇਰਵਾ';content.append(headingLink,node('p',undefined,'ls-summary'),byline);byline.append(by,more);article.append(content);const list=node('div',undefined,'ls-list');list.setAttribute('aria-label','More top stories');slides.forEach((s,k)=>{const b=node('button',undefined,'ls-item');b.type='button';const im=photo(s);im.alt='';const t=node('span',title(s));b.append(im,t);b.onclick=()=>go(k,true);list.append(b);});if(slides.length>1)article.append(list);
+  const content=node('div',undefined,'ls-content');const headingLink=link(lead,'ls-headline');const byline=node('div',undefined,'ls-foot');const by=node('span',undefined,'ls-by');const more=link(lead,'ls-more');content.append(headingLink,node('p',undefined,'ls-summary'),byline);byline.append(by);article.append(content);const list=node('div',undefined,'ls-list');list.setAttribute('aria-label','More top stories');slides.forEach((s,k)=>{const b=node('button',undefined,'ls-item');b.type='button';const im=photo(s);im.alt='';const t=node('span',title(s));b.append(im,t);b.onclick=()=>go(k,true);list.append(b);});if(slides.length>1)article.append(list);
   function go(k,user){slideAt=(k+slides.length)%slides.length;const s=slides[slideAt];track.style.transform='translateX('+(-100*slideAt)+'%)';[...track.children].forEach((a,n)=>{if(n===slideAt){a.removeAttribute('aria-hidden');a.removeAttribute('tabindex');}else{a.setAttribute('aria-hidden','true');a.tabIndex=-1;}});[...dots.children].forEach((d,n)=>d.setAttribute('aria-current',n===slideAt?'true':'false'));article.querySelectorAll('.ls-item').forEach((b,n)=>{b.hidden=n===slideAt;});headingLink.href=more.href=href(s);headingLink.replaceChildren(splitTitle(title(s)));content.querySelector('.ls-summary').textContent=s.summary||'';by.replaceChildren(node('span','PN','avatar'),node('span',s.author||s.source||'Primez Newsroom'),(()=>{const t=node('small',ago(s));t.setAttribute('data-no-translate','');t.title=date(s);return t;})());if(user)restart();}
   function restart(){clearInterval(slideTimer);if(slides.length>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)slideTimer=setInterval(()=>{if(!document.hidden&&!article.matches(':hover,:focus-within'))go(slideAt+1);},6000);}
   prev.onclick=()=>go(slideAt-1,true);next.onclick=()=>go(slideAt+1,true);
@@ -65,4 +65,39 @@
  let homeAds=[];function applyAds(){for(const ad of homeAds){if(!api.safeUrl(ad.image))continue;const host=[...document.querySelectorAll('[data-ad-slot]')].find(el=>el.dataset.adSlot===ad.slot);if(!host)continue;const label=node('small','Advertisement'),img=node('img');img.src=api.safeUrl(ad.image);img.alt='Advertisement';img.style.cssText='display:block;max-width:100%;height:auto';host.replaceChildren(label);if(api.safeUrl(ad.href)){const a=node('a');a.href=api.safeUrl(ad.href);a.rel='sponsored noopener';a.target='_blank';a.append(img);host.append(a);}else host.append(img);host.hidden=false;}}
  document.addEventListener('primez-home-stories',applyAds);
  if(api?.configured)(async()=>{try{const{data,error}=await api.db().from('advertisements').select('*').eq('enabled',true);if(error)throw error;homeAds=Array.isArray(data)?data:[];applyAds();}catch{/* Retain configured advertisement placements. */}})();
+})();
+
+/* Desktop side ads: start under the market strip, then glide up and stay stuck at the top while scrolling */
+(function(){
+  const root=document.documentElement;
+  function place(){
+    if(innerWidth<1440){root.style.removeProperty('--skin-start');return}
+    const m=document.querySelector('primez-site-nav');
+    const base=m?m.getBoundingClientRect().bottom+scrollY+14:190;
+    root.style.setProperty('--skin-start',Math.max(12,base-scrollY)+'px');
+  }
+  addEventListener('scroll',place,{passive:true});addEventListener('resize',place);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',place);else place();
+  setTimeout(place,800);
+})();
+
+/* Move the Chandigarh / gold / petrol market strip below the top-news block (it lives in the nav's shadow DOM, so it gets its own shadow host + stylesheet) */
+(function(){
+  let done=false;
+  function mv(){
+    if(done)return;
+    const nav=document.querySelector('primez-site-nav'),h=document.querySelector('.hero-section');
+    const m=nav&&nav.shadowRoot&&nav.shadowRoot.querySelector('.market');
+    if(!m||!h)return;
+    const host=document.createElement('div');host.className='wrap market-moved';host.style.cssText='margin-top:26px;margin-bottom:6px;display:block;border-radius:14px;overflow:hidden';
+    const sr=host.attachShadow({mode:'open'});
+    const l=document.createElement('link');l.rel='stylesheet';l.href='assets/css/public-navigation.css?v=20261118a';
+    const st=document.createElement('style');st.textContent='.market{border-radius:0}';
+    sr.append(l,st,m);h.after(host);nav.style.minHeight='0';done=true;
+    window.dispatchEvent(new Event('resize'));
+  }
+  mv();
+  const mo=new MutationObserver(mv);mo.observe(document.body,{childList:true,subtree:true});
+  const t=setInterval(()=>{mv();if(done)clearInterval(t)},400);
+  setTimeout(()=>{mo.disconnect();clearInterval(t)},15000);
 })();
