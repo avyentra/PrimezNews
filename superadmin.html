@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><script>(function(l){var p=l.pathname;if(!/\.html$/.test(p))return;var c=p.replace(/index\.html$/,"").replace(/\.html$/,"");try{history.replaceState(history.state,"",c+l.search+l.hash)}catch(e){}})(location)</script><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Primez · Super Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Noto+Sans+Gurmukhi:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/super-admin.css?v=20261118a"></head>
+<body class="sa">
+<div class="sa-app">
+<aside class="sa-side" id="saSide">
+  <a class="sa-logo" href="./"><img src="assets/images/newsroom-logo.webp" width="1000" height="334" alt="Primez News"></a>
+  <span class="sa-badge">SUPER ADMIN</span>
+  <nav class="sa-nav" aria-label="Super admin">
+    <span class="cap">Earnings &amp; growth</span>
+    <a href="#overview" data-view="overview"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Overview</a>
+    <a href="#earnings" data-view="earnings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 4h12M6 9h12M6 4c7 0 7 10 0 10l9 7"/></svg>Earnings</a>
+    <a href="#ads" data-view="ads"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 15l2.5-6 2.5 6M8 13h3M15 9v6"/></svg>Ads &amp; DIPR</a>
+    <span class="cap">Control</span>
+    <a href="#team" data-view="team"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2.2.6 3.5 2.6 3.5 6"/></svg>Team &amp; roles<span class="pill" id="navNew" hidden></span></a>
+    <a href="#site" data-view="site"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>Pages &amp; settings</a>
+    <a href="#audit" data-view="audit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>Audit log</a>
+  </nav>
+  <div class="sa-me">
+    <div class="sa-me-row"><span class="sa-av" id="meIni">—</span><div style="min-width:0"><strong id="meName">Super admin</strong><small id="meMail"></small></div></div>
+    <a class="link" href="admin">Open newsroom (stories) ↗</a>
+    <button type="button" class="btn" id="signOut"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</button>
+  </div>
+</aside>
+<main class="sa-main" id="saMain">
+  <div class="head" id="mobileBar" style="display:none"></div>
+  <p class="notice" id="gate" role="status">Checking super admin access…</p>
+  <div id="view" class="stack" style="gap:22px" hidden></div>
+</main>
+</div>
+<dialog class="sa-dlg" id="dlg"><div id="dlgBody"></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px" id="dlgActs"><button type="button" class="btn" id="dlgClose">Close</button></div></dialog>
+<script src="assets/js/backend-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js"></script>
+<script src="assets/js/newsroom-api.js"></script>
+<script src="assets/js/super-admin.js?v=20261118a"></script>
+</body></html>
