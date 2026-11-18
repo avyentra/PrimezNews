@@ -147,6 +147,7 @@
     async save(story) { await requireEditor(); validateStory(story); return check(await db().from('stories').upsert(story).select().single()); },
     async remove(id) { await requireEditor(); check(await db().from('stories').delete().eq('id', id)); },
     async ads() { return check(await db().from('advertisements').select('*')); },
+    async removeAd(slot) { await requireEditor(); if (!slot) throw new Error('Choose a placement first.'); check(await db().from('advertisements').delete().eq('slot', slot)); return true; },
     async saveAd(ad) { await requireEditor(); if (ad.href && !safeUrl(ad.href)) throw new Error('Use an HTTPS destination URL.'); return check(await db().from('advertisements').upsert(ad).select().single()); },
     upload
   };

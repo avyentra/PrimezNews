@@ -23,6 +23,7 @@
     refresh: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg>'
   };
   const SLOTS = {
+    'home-hero-side': ['Home hero box', 'Home, top right beside main news', '300×250'],
     'top-leaderboard': ['Top leaderboard', 'Every page, below header', '970×90'],
     'left-skin': ['Left skin', 'Desktop, left side', '160×600'],
     'right-skin': ['Right skin', 'Desktop, right side', '160×600'],

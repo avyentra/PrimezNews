@@ -6,6 +6,7 @@
   const panel = el('adsPanel'), list = el('adsSlots'), select = el('adSlot');
   if (!panel || !list || !select || !window.PrimezAPI) return;
   const SLOTS = {
+    'home-hero-side': ['Home hero box', 'Home page, top right beside main news', '300 × 250', [40, 34]],
     'top-leaderboard': ['Top leaderboard', 'Every page, below the header', '970 × 90', [64, 8]],
     'left-skin': ['Left skin', 'Desktop, left side of page', '160 × 600', [16, 60]],
     'right-skin': ['Right skin', 'Desktop, right side of page', '160 × 600', [16, 60]],

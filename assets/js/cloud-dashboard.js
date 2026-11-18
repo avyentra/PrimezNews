@@ -3,7 +3,7 @@
  const api = window.PrimezAPI, el = id => document.getElementById(id);
  const cats = ['Agriculture','Education','Politics','Sports','Faith','Crime','Punjab','Business','Health','Jobs','NRI','Entertainment','National','World','Weather','Technology'];
  const districts = ['Amritsar','Barnala','Bathinda','Faridkot','Fatehgarh Sahib','Fazilka','Ferozepur','Gurdaspur','Hoshiarpur','Jalandhar','Kapurthala','Ludhiana','Malerkotla','Mansa','Moga','Sri Muktsar Sahib','Pathankot','Patiala','Rupnagar','SAS Nagar (Mohali)','Sangrur','SBS Nagar','Tarn Taran','Chandigarh'];
- const slots = ['left-skin','right-skin','top-leaderboard','after-headlines','news-sidebar','before-video','after-video'];
+ const slots = ['home-hero-side','left-skin','right-skin','top-leaderboard','after-headlines','news-sidebar','before-video','after-video'];
  let rows = [], ads = [], selected = null, image = 'fields', dirty = false, saving = false;
  const feedback = text => { el('storyFeedback').textContent = text; };
  const option = (label, value = label) => { const o = document.createElement('option'); o.textContent = label; o.value = value; return o; };
@@ -162,8 +162,9 @@
   } catch(error) { await refresh().catch(()=>{}); feedback('Import stopped: '+error.message+'. Earlier successful imports were retained.'); }
   finally { el('importDrafts').disabled = false; }
  };
- function adForm() { const ad = ads.find(a=>a.slot===el('adSlot').value); el('adUrl').value = ad?.href || ''; el('adEnabled').checked = ad?.enabled ?? true; el('adPreview').hidden = !ad; if(ad) el('adPreview').src=ad.image; el('adFile').value=''; el('adFeedback').textContent=''; }
+ function adForm() { const ad = ads.find(a=>a.slot===el('adSlot').value); el('adUrl').value = ad?.href || ''; el('adEnabled').checked = ad?.enabled ?? true; el('adPreview').hidden = !ad; if(ad) el('adPreview').src=ad.image; el('adFile').value=''; el('adFeedback').textContent=''; const rm = el('removeAd'); if (rm) { rm.hidden = !ad; rm.textContent = 'Remove ad'; delete rm.dataset.armed; } }
  el('adSlot').onchange = adForm; adForm();
+ if (el('removeAd')) el('removeAd').onclick = async () => { const rm = el('removeAd'); if (!rm.dataset.armed) { rm.dataset.armed = '1'; rm.textContent = 'Tap again to remove'; setTimeout(() => { if (rm.dataset.armed) { delete rm.dataset.armed; rm.textContent = 'Remove ad'; } }, 4000); return; } rm.disabled = true; try { await api.removeAd(el('adSlot').value); ads = await api.ads(); adForm(); el('adFeedback').textContent = 'Advertisement removed — saved.'; } catch (error) { el('adFeedback').textContent = error.message; } finally { rm.disabled = false; } };
  el('cloudAdForm').onsubmit = async event => {
   event.preventDefault(); el('saveAd').disabled = true;
   try { let image = ads.find(a=>a.slot===el('adSlot').value)?.image; if(el('adFile').files[0]) image = await api.upload(el('adFile').files[0], { maxSide: 2200, maxBytes: 450 * 1024, allowGif: true }); if(!image) throw new Error('Choose a creative image first.'); await api.saveAd({slot:el('adSlot').value,image,href:el('adUrl').value.trim(),enabled:el('adEnabled').checked}); ads=await api.ads(); adForm(); el('adFeedback').textContent='Advertisement saved to database.'; }
