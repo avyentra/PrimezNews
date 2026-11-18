@@ -81,3 +81,17 @@ The alias does not bypass editor membership or password checks.
 ## Super Admin (owner panel) + GIF ads
 See `backend/SUPER-ADMIN.md`. Short version: run `backend/super-admin.sql`, then its STEP 2 with the owner email,
 and `backend/ad-gif-upload.sql`. Owner then lands on `superadmin.html` after login.
+
+
+## Join the newsroom v2 (photo, mobile, Aadhaar)
+
+Run **once** in Supabase → SQL Editor (after `journalist-applications.sql`; run it in one go, press Ctrl+A first):
+
+1. Open `backend/journalist-application-v2.sql`, copy everything, paste, **Run**. The last line should show `join_v2_ok = true`.
+2. Upload the whole project to GitHub as usual.
+
+What changes:
+- Applicants now send: photo, mobile, Aadhaar number, Aadhaar front and back. The published-news photo is optional.
+- Photos and the Aadhaar number are stored privately (not readable from the website API), only reviewers can open them, and they are deleted as soon as the decision is made.
+- A declined applicant sees the editor's note and can apply again. A pending applicant can withdraw and edit.
+- Reviewers see the documents in `join-newsroom#review`; the super admin panel (Team & roles) opens the same documents.
