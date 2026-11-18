@@ -10,7 +10,7 @@
   async function run(control, action) {
     if(control.disabled) return;
     control.disabled=true; el('message').textContent='';
-    try { await action(); } catch(error) { el('message').textContent=error.message || 'Request failed. Please try again.'; }
+    try { await action(); } catch(error) { el('message').textContent=/invalid login/i.test(error.message||'')?'Wrong email or password. Please try again.':(error.message || 'Request failed. Please try again.'); }
     finally { control.disabled=false; }
   }
   /* ---------- Review desk (reviewers / newsroom editors) — dashboard look, same database calls ---------- */
@@ -23,6 +23,7 @@
     b.onclick=()=>{if(!b.dataset.armed){b.dataset.armed='1';b.textContent=armedText;setTimeout(()=>{if(b.isConnected&&b.dataset.armed){delete b.dataset.armed;b.textContent=text;}},4000);return;}delete b.dataset.armed;b.textContent=text;run(b,action);};return b;}
   const initials=t=>String(t||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
   const when=t=>{const d=new Date(t);return Number.isFinite(d.getTime())?d.toLocaleString('en-IN',{timeZone:'Asia/Kolkata',day:'numeric',month:'short',hour:'numeric',minute:'2-digit',hour12:true}):'';};
+  {const m=document.getElementById('message');let h;if(m)new MutationObserver(()=>{clearTimeout(h);if(m.textContent)h=setTimeout(()=>{m.textContent='';},7000);}).observe(m,{childList:true,characterData:true,subtree:true});}
   function toast(text){el('message').textContent=text;clearTimeout(toast.t);toast.t=setTimeout(()=>{el('message').textContent='';},3500);}
   function count(id,n){const e=el(id);if(e){e.textContent=n;e.hidden=!n;}}
   function renderReports(){
@@ -134,11 +135,25 @@
   el('account').onsubmit=e=>{e.preventDefault();run(el('signin'),async()=>{
     result(await db.auth.signInWithPassword(credentials()));el('pw').value='';await refresh();
   });};
+  const verify=el('verify');
+  const note=(html)=>{verify.hidden=!html;verify.innerHTML=html||'';};
+  el('em').addEventListener('input',()=>note(''));
   el('register').onclick=()=>run(el('register'),async()=>{
+    note('');
     if(!el('account').reportValidity())return;
-    const data=result(await db.auth.signUp({...credentials(),options:{emailRedirectTo:new URL('join-newsroom.html',location.href).href}}));el('pw').value='';
-    if(data.session){await refresh();return;}
-    el('message').textContent='Verify your email, then sign in here to submit your application.';
+    const cred=credentials();
+    const data=result(await db.auth.signUp({...cred,options:{emailRedirectTo:new URL('join-newsroom.html',location.href).href}}));
+    if(data.session){el('pw').value='';await refresh();return;}
+    /* No session yet: either email confirmation is switched on, or this email already has an account. Try signing in. */
+    const tried=await db.auth.signInWithPassword(cred);
+    if(!tried.error&&tried.data&&tried.data.session){el('pw').value='';await refresh();return;}
+    el('pw').value='';
+    const unconfirmed=!tried.error||/not confirmed/i.test(tried.error.message||'');
+    if(unconfirmed){
+      const mail=cred.email.replace(/[<>&"]/g,'');
+      note('<b>Step 1 done — verify your email.</b> We sent a link to <b>'+mail+'</b>. Open it, then come back here and press <b>Sign in</b> to continue to step 2. Check Spam if you cannot see it.');
+    } else el('message').textContent='This email already has an account. Use Sign in with your password.';
+    document.querySelector('#account [data-mode="login"]')?.click();
   });
   el('deskOut').onclick=()=>el('logout').click();
   el('deskRefresh').onclick=()=>run(el('deskRefresh'),showQueue);

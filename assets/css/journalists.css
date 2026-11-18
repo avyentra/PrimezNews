@@ -120,3 +120,10 @@
 @media(max-width:560px){#account.jn-card,.jn-wide,.jn-center{padding:24px 18px 24px;border-radius:16px}.jn-pair{grid-template-columns:1fr}.jn-go,.jn-actions .jn-btn{width:100%}.jn-center .jn-list{padding:18px}}
 .jn-center>div:not(#stProg){display:flex;flex-direction:column;gap:24px}
 .jn-center .jn-note.green{margin:0}
+
+/* Messages: a clear pill at the bottom of the screen instead of loose text */
+.join #message{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:50;max-width:min(92vw,520px);margin:0;padding:13px 20px;border-radius:14px;background:#14213b;color:#fff;border-left:5px solid #e0a82e;font:600 15px/1.4 system-ui,sans-serif;text-align:left;box-shadow:0 12px 32px rgba(20,33,59,.28)}
+.join #message:empty{display:none}
+
+.jn-verify{margin:0 0 14px;padding:12px 14px;border-radius:12px;background:#fff7e0;border:1px solid #e0a82e;color:#5a3f00;font:500 14px/1.5 system-ui,sans-serif}
+.jn-verify[hidden]{display:none}

@@ -1,34 +1,21 @@
-// Each article gets its own random receipt, so visits cannot be linked across articles.
 (function () {
   const cache = new Map();
-  function receiptFor(id) {
-    const key = 'primez.articleView.' + id;
-    try {
-      let receipt = localStorage.getItem(key);
-      if (!receipt || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(receipt)) {
-        receipt = crypto.randomUUID();
-        localStorage.setItem(key, receipt);
-      }
-      return receipt;
-    } catch { return null; }
-  }
+  // One count per page load (a refresh or a new visit counts again; mount() may run twice on one load).
   async function total(id) {
     const old = cache.get(id);
-    if (old && Date.now() - old.time < 55000) return old.request;
+    if (old) return old;
     const request = window.PrimezAPI.db().rpc('article_view_count', {
-      article_id: id, browser_receipt: receiptFor(id)
+      article_id: id, browser_receipt: crypto.randomUUID()
     }).then(({data,error}) => {
       if (error || !Number.isSafeInteger(data) || data < 0) throw Error('Count unavailable');
       return data;
     });
-    cache.set(id, {time: Date.now(), request});
+    cache.set(id, request);
     return request;
   }
-  // Launch period (till 17 Feb 2027): every story shows a starting count above 963,
-  // different for each story but the same on every visit. Real reader views are added on top.
-  const BOOST_UNTIL=Date.parse('2027-02-17T23:59:59+05:30');
+  // Every story starts from a count above 963 (different per story, same on every visit), for life.
+  // Real reads and the +5 per hour (added by the database) come on top.
   function boost(id) {
-    if (Date.now() > BOOST_UNTIL) return 0;
     let h=2166136261;
     for (const ch of String(id)) { h^=ch.charCodeAt(0); h=Math.imul(h,16777619)>>>0; }
     return 964 + (h % 2037);
@@ -73,10 +60,10 @@
 })();
 
 /* Footer: total website visitors.
-   Launch period (till 17 Feb 2027): shows 50,000 + real visitors. After that only real visitors.
-   Real visitors = one count per browser, kept in Supabase by backend/site-visitors.sql. */
+   Shows 50,000 + counted visits, for life. A visit is counted on every refresh, every new visit and every
+   re-opened browser; moving between pages inside the site is not counted again. Kept by backend/view-counters-v2.sql. */
 (function () {
-  const BASE = 50000, BASE_UNTIL = Date.parse('2027-02-17T23:59:59+05:30');
+  const BASE = 50000;
   function receipt() {
     try {
       let r = localStorage.getItem('primez.siteVisitor');
@@ -84,12 +71,20 @@
       return r;
     } catch { return null; }
   }
+  function isHit() {
+    let nav = ''; try { nav = performance.getEntriesByType('navigation')[0]?.type || ''; } catch {}
+    try {
+      const fresh = !sessionStorage.getItem('primez.session');
+      sessionStorage.setItem('primez.session', '1');
+      return fresh || nav === 'reload';
+    } catch { return nav !== 'back_forward'; }
+  }
   async function real() {
     const cfg = window.PRIMEZ_BACKEND;
     if (!cfg || !cfg.url || !cfg.publicKey) throw Error('no backend');
     const res = await fetch(cfg.url + '/rest/v1/rpc/site_visitor_count', {
       method: 'POST', headers: { apikey: cfg.publicKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ browser_receipt: receipt() })
+      body: JSON.stringify({ browser_receipt: receipt(), count_hit: isHit() })
     });
     const n = await res.json();
     if (!res.ok || !Number.isSafeInteger(n) || n < 0) throw Error('count unavailable');
@@ -98,7 +93,7 @@
   async function show() {
     const spots = document.querySelectorAll('[data-visitor-count]');
     if (!spots.length) return;
-    const base = Date.now() <= BASE_UNTIL ? BASE : 0;
+    const base = BASE;
     let n = null;
     try { n = (await real()) + base; } catch { n = base || null; }
     const lang = document.documentElement.lang || 'pa';
