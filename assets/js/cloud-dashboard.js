@@ -164,6 +164,7 @@
  };
  function adForm() { const ad = ads.find(a=>a.slot===el('adSlot').value); el('adUrl').value = ad?.href || ''; el('adEnabled').checked = ad?.enabled ?? true; el('adPreview').hidden = !ad; if(ad) el('adPreview').src=ad.image; el('adFile').value=''; el('adFeedback').textContent=''; const rm = el('removeAd'); if (rm) { rm.hidden = !ad; rm.textContent = 'Remove ad'; delete rm.dataset.armed; } }
  el('adSlot').onchange = adForm; adForm();
+ window.PrimezAdsRefresh = async () => { ads = await api.ads(); adForm(); };
  if (el('removeAd')) el('removeAd').onclick = async () => { const rm = el('removeAd'); if (!rm.dataset.armed) { rm.dataset.armed = '1'; rm.textContent = 'Tap again to remove'; setTimeout(() => { if (rm.dataset.armed) { delete rm.dataset.armed; rm.textContent = 'Remove ad'; } }, 4000); return; } rm.disabled = true; try { await api.removeAd(el('adSlot').value); ads = await api.ads(); adForm(); el('adFeedback').textContent = 'Advertisement removed — saved.'; } catch (error) { el('adFeedback').textContent = error.message; } finally { rm.disabled = false; } };
  el('cloudAdForm').onsubmit = async event => {
   event.preventDefault(); el('saveAd').disabled = true;

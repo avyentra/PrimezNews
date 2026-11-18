@@ -41,7 +41,32 @@
       const meta = node('small', '', where + ' · ' + size);
       b.append(frame, row, meta);
       b.addEventListener('click', () => { select.value = slot; select.dispatchEvent(new Event('change')); if (window.innerWidth < 1100) el('cloudAdForm').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-      list.append(b);
+      const wrap = node('div', 'ads-slot-wrap'); wrap.append(b);
+      if (ad) {
+        // Delete straight from the card: first tap asks, second tap removes. The card then shows Empty.
+        const del = node('button', 'ads-del'); del.type = 'button';
+        del.setAttribute('aria-label', 'Delete ad from ' + name);
+        del.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Delete</span>';
+        del.addEventListener('click', async () => {
+          if (!del.dataset.armed) {
+            del.dataset.armed = '1'; del.querySelector('span').textContent = 'Tap again';
+            setTimeout(() => { if (del.isConnected && del.dataset.armed) { delete del.dataset.armed; del.querySelector('span').textContent = 'Delete'; } }, 4000);
+            return;
+          }
+          del.disabled = true; del.querySelector('span').textContent = 'Deleting…';
+          try {
+            await window.PrimezAPI.removeAd(slot);
+            ads = ads.filter(a => a.slot !== slot); render();
+            if (window.PrimezAdsRefresh) await window.PrimezAdsRefresh();
+            const fb = el('adFeedback'); fb.textContent = name + ' ad deleted — saved.';
+          } catch (e) {
+            del.disabled = false; delete del.dataset.armed; del.querySelector('span').textContent = 'Delete';
+            const fb = el('adFeedback'); fb.textContent = (e && e.message) || 'Could not delete. Try again.'; fb.classList.add('err');
+          }
+        });
+        wrap.append(del);
+      }
+      list.append(wrap);
     });
     const sum = el('adsSummary'); sum.replaceChildren();
     [['live', '#2f8f5b', 'Live'], ['off', '#d9ad4e', 'Paused'], ['empty', '#b8bfcd', 'Empty']].forEach(([k, c, t]) => {
