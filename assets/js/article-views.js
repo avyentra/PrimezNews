@@ -99,7 +99,14 @@
     if (!spots.length) return;
     const base = BASE;
     let n = null;
-    try { n = (await real()) + base; } catch { n = base || null; }
+    try { n = (await real()) + base; }
+    catch (err) {
+      /* Database counter unreachable (SQL not run yet / network). Keep the number moving with the same automatic +5 per hour
+         the database adds, instead of freezing at 50,000. Real visit counting needs backend/view-counters-v2.sql in Supabase. */
+      try { console.warn('[PrimezViews] visitor counter unavailable:', err && err.message); } catch {}
+      const hours = Math.max(0, Math.floor((Date.now() - Date.parse('2026-11-18T00:00:00+05:30')) / 3600000));
+      n = base + 5 * hours;
+    }
     const lang = document.documentElement.lang || 'pa';
     spots.forEach(el => {
       if (n === null) { el.closest('[data-site-visitors]')?.setAttribute('hidden', ''); return; }
