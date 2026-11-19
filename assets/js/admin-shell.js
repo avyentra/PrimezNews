@@ -9,7 +9,8 @@
     const go = b.dataset.go;
     /* Dashboard: newsroom-home.js listens on #homeTab, shows #homePanel and re-loads the stories from the database */
     if (go === 'home') { $('homeTab')?.click(); mark('home'); closeMenu(); return; }
-  if (go === 'recent' || go === 'drafts') { $('storiesTab')?.click(); window.PrimezNewsroom?.setFilter(go === 'drafts' ? 'draft' : ''); openRecent(); mark(go === 'drafts' ? 'drafts' : 'recent'); return; }
+  if (go === 'drafts') { document.dispatchEvent(new CustomEvent('primez-show-drafts')); mark('drafts'); closeMenu(); return; }
+  if (go === 'recent') { $('storiesTab')?.click(); window.PrimezNewsroom?.setFilter(''); openRecent(); return; }
     if (go === 'new') { $('storiesTab')?.click(); $('newStory')?.click(); mark('new'); }
     else { $(go + 'Tab')?.click(); mark(go); }
     closeMenu();
@@ -182,7 +183,7 @@ document.getElementById('primaryCategory')?.addEventListener('change', e => {
   function show() {
     ['storiesPanel', 'adsPanel'].forEach(id => { if ($(id)) $(id).hidden = true; });
     document.querySelector('.workspace-top') && (document.querySelector('.workspace-top').hidden = true);
-    const hp = $('homePanel'); if (hp) hp.hidden = true; document.body.classList.remove('nh-mode');
+    ['homePanel', 'draftsPanel'].forEach(id => { if ($(id)) $(id).hidden = true; }); document.body.classList.remove('nh-mode');
     panel.hidden = false; markNav('settings');
     $('setName').value = $('userName').textContent || '';
     $('setEmail').value = $('userEmail').textContent || '';
@@ -190,7 +191,7 @@ document.getElementById('primaryCategory')?.addEventListener('change', e => {
     $('profileMsg').textContent = $('passMsg').textContent = '';
     document.body.classList.remove('ad-menu-open', 'show-recent');
   }
-  function hide() { if (panel.hidden) return; panel.hidden = true; const t = document.querySelector('.workspace-top'); if (t) t.hidden = false; const hp = $('homePanel'); if ($('storiesPanel') && $('adsPanel') && $('storiesPanel').hidden && $('adsPanel').hidden && !(hp && !hp.hidden)) $('storiesPanel').hidden = false; }
+  function hide() { if (panel.hidden) return; panel.hidden = true; const t = document.querySelector('.workspace-top'); if (t) t.hidden = false; const other = ['homePanel', 'draftsPanel'].some(id => $(id) && !$(id).hidden); if ($('storiesPanel') && $('adsPanel') && $('storiesPanel').hidden && $('adsPanel').hidden && !other) $('storiesPanel').hidden = false; }
   $('openSettings').addEventListener('click', show);
   document.querySelector('.ad-nav [data-go="settings"]')?.addEventListener('click', e => { e.stopImmediatePropagation(); show(); }, true);
   ['storiesTab', 'adsTab'].forEach(id => $(id)?.addEventListener('click', hide));

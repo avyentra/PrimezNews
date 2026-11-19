@@ -39,22 +39,65 @@
     panel.hidden = false;
     ['storiesPanel', 'adsPanel'].forEach(id => { if ($(id)) $(id).hidden = true; });
     document.body.classList.add('nh-mode'); document.body.classList.remove('show-recent');
-    const sp = $('settingsPanel'); if (sp) sp.hidden = true;
+    const sp = $('settingsPanel'); if (sp) sp.hidden = true; if (dpanel) dpanel.hidden = true;
     const wt = document.querySelector('.workspace-top'); if (wt) wt.hidden = false;
     markNav('home'); load(true);                       // every time the dashboard opens: fetch drafts/stories again
     clearInterval(timer); timer = setInterval(() => { if (!panel.hidden && !document.hidden) load(true); }, 60000);
   }
-  function hide() { panel.hidden = true; document.body.classList.remove('nh-mode'); clearInterval(timer); }
+  const dpanel = $('draftsPanel');
+  function hide() { panel.hidden = true; if (dpanel) dpanel.hidden = true; document.body.classList.remove('nh-mode'); clearInterval(timer); }
   $('homeTab')?.addEventListener('click', show);
   $('storiesTab')?.addEventListener('click', hide);
   $('adsTab')?.addEventListener('click', hide);
   /* open the dashboard first, once the newsroom has loaded its stories (= access confirmed) */
-  document.addEventListener('primez-admin-stories', () => { if (first) { first = false; setTimeout(show, 0); } else if (!panel.hidden) load(false); });
+  document.addEventListener('primez-admin-stories', () => { if (first) { first = false; setTimeout(show, 0); } else if (!panel.hidden) load(false); else if (dpanel && !dpanel.hidden) drawDraftList(); });
   /* if the newsroom finished loading before this script ran, open the dashboard now (or as soon as access is confirmed) */
   const ws = $('workspace');
   const ready = () => ws && !ws.hidden && window.PrimezNewsroom;
   if (ready()) { first = false; setTimeout(show, 0); }
   else if (ws) { const mo = new MutationObserver(() => { if (first && ready()) { first = false; mo.disconnect(); setTimeout(show, 0); } }); mo.observe(ws, { attributes: true, attributeFilter: ['hidden'] }); }
+
+  /* ---------- Draft news page: list of every draft (incl. RSS drafts) with Edit -> editor -> Publish ---------- */
+  let dq = '';
+  function drow(s) {
+    return h('div', { class: 'nh-drow' },
+      h('div', { class: 'nh-story' }, h('img', { src: api.image(s.image), alt: '', loading: 'lazy' }),
+        h('div', {}, h('strong', { class: 'nh-gb' }, s.title || s.en), h('span', {}, [s.category, s.district, s.author, 'Updated ' + ago(s.updated_at)].filter(Boolean).join(' · ')))),
+      h('div', { class: 'nh-acts' }, h('button', { type: 'button', class: 'nh-sm nh-dark', onclick: () => openStory(s.id) }, 'Edit & publish')));
+  }
+  function drawDraftList() {
+    const box = $('nhDraftList'); if (!box) return;
+    const all = (window.PrimezNewsroom ? window.PrimezNewsroom.rows() : []).filter(s => s.status === 'draft').sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
+    const q = dq.trim().toLowerCase();
+    const list = q ? all.filter(s => ((s.title || '') + ' ' + (s.en || '')).toLowerCase().includes(q)) : all;
+    box.replaceChildren(...(list.length ? list.map(drow) : [h('p', { class: 'nh-empty' }, all.length ? 'No draft matches your search.' : 'No drafts right now.')]));
+    const c = $('nhDraftCount'); if (c) c.textContent = all.length + (all.length === 1 ? ' draft' : ' drafts');
+  }
+  async function loadDrafts() {
+    let err = '';
+    try { if (window.PrimezNewsroom?.refresh) await window.PrimezNewsroom.refresh(); } catch (e) { err = 'Could not refresh: ' + (e?.message || e); }
+    drawDraftList();
+    const m = $('nhDraftMsg'); if (m) m.textContent = err;
+  }
+  function showDrafts() {
+    if (!dpanel) return;
+    panel.hidden = true; clearInterval(timer);
+    ['storiesPanel', 'adsPanel', 'settingsPanel'].forEach(id => { if ($(id)) $(id).hidden = true; });
+    document.body.classList.add('nh-mode'); document.body.classList.remove('show-recent');
+    dpanel.replaceChildren(
+      h('section', { class: 'nh-hello' }, h('div', {}, h('span', {}, 'Review, edit and publish'), h('h1', {}, 'Draft news'))),
+      h('section', { class: 'nh-card nh-flush' },
+        h('div', { class: 'nh-head' },
+          h('h2', {}, 'All drafts ', h('span', { class: 'nh-pill nh-p-grey', id: 'nhDraftCount' }, '')),
+          h('input', { class: 'nh-dsearch', type: 'search', placeholder: 'Search drafts by headline…', value: dq, oninput: e => { dq = e.target.value; drawDraftList(); } }),
+          h('button', { type: 'button', class: 'nh-sm', onclick: loadDrafts }, 'Refresh')),
+        h('p', { class: 'nh-empty', id: 'nhDraftMsg' }),
+        h('div', { id: 'nhDraftList' })));
+    dpanel.hidden = false; markNav('drafts');
+    drawDraftList(); loadDrafts();
+    timer = setInterval(() => { if (!dpanel.hidden && !document.hidden) loadDrafts(); }, 60000);
+  }
+  document.addEventListener('primez-show-drafts', showDrafts);
 
   const newStory = () => { $('topNewStory')?.click(); markNav('new'); };
   const openStory = id => { if (window.PrimezNewsroom?.open(id)) markNav(''); };
