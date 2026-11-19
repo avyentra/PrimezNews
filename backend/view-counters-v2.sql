@@ -61,5 +61,8 @@ end $$;
 revoke all on function public.article_view_count(text, uuid) from public;
 grant execute on function public.article_view_count(text, uuid) to anon, authenticated;
 commit;
+-- refresh the API so the new functions are visible right away
+notify pgrst, 'reload schema';
+
 select count(*) = 1 as counters_v2_ok from information_schema.routines
  where routine_schema = 'public' and routine_name = 'site_visitor_count';

@@ -137,6 +137,9 @@ grant execute on function public.submit_journalist_application(text, text, text,
   to authenticated;
 revoke all on function newsroom_private.image_ok(text, bytea) from public, anon, authenticated;
 
+-- refresh the API so the new functions are visible right away
+notify pgrst, 'reload schema';
+
 -- check: should return true
 select count(*) = 3 as join_v2_ok from information_schema.columns
  where table_schema = 'public' and table_name = 'journalist_applications'

@@ -101,3 +101,8 @@ Run `backend/view-counters-v2.sql` in the Supabase SQL Editor (last row must sho
 - Story views: +1 on every open/refresh of that story, plus 5 per hour automatically for life (from its publish time).
 - Footer total: 50,000 + visits. +1 on every refresh, every new visit and every re-opened browser; moving between pages of the site does not add.
 - If you ever re-run `super-admin.sql`, run `view-counters-v2.sql` again afterwards (it restores these two functions).
+
+If the site says "Could not find the function ... in the schema cache": the SQL file was not run yet. Run it in Supabase SQL Editor (it also refreshes the API cache). If it was already run, run only: `notify pgrst, 'reload schema';`
+
+## Market rates page (mandi-bhav)
+Rates come from `data/market-rates.json` (refreshed hourly by `.github/workflows/market-rates.yml`); the page re-reads it every minute and shows LIVE, "last checked" and the up/down change. MSP tables come from `data/msp.json` — edit it when a new season's MSP is announced. In GitHub: Settings → Actions → General → allow "Read and write permissions" so the hourly job can save new rates.
