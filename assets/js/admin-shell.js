@@ -7,7 +7,8 @@
   function mark(name) { nav.forEach(b => b.classList.toggle('active', b.dataset.go === name)); }
   nav.forEach(b => b.addEventListener('click', () => {
     const go = b.dataset.go;
-    if (go === 'recent') { $('storiesTab')?.click(); openRecent(); return; }
+    if (go === 'home') { document.getElementById('homeTab')?.click(); document.getElementById('homePanel')?.removeAttribute('hidden'); ['storiesPanel','adsPanel'].forEach(id=>{const el=document.getElementById(id);if(el)el.hidden=true;}); mark('home'); return; }
+  if (go === 'recent') { $('storiesTab')?.click(); openRecent(); return; }
     if (go === 'new') { $('storiesTab')?.click(); $('newStory')?.click(); mark('new'); }
     else { $(go + 'Tab')?.click(); mark(go); }
     closeMenu();
@@ -239,3 +240,5 @@ document.getElementById('primaryCategory')?.addEventListener('change', e => {
   document.getElementById('topNewStory')?.addEventListener('click', () => setTimeout(sync, 0));
   sync();
 })();
+
+document.getElementById('homeTab')?.addEventListener('click', () => { const p = document.getElementById('homePanel'); if (p) p.hidden = false; ['storiesPanel','adsPanel'].forEach(id=>{const el=document.getElementById(id);if(el)el.hidden=true;}); mark('home'); });
