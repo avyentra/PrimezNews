@@ -1,4 +1,4 @@
-"""Daily Health & Beauty blog generator (4-5 new posts per day, rotating over 10 topics).
+"""Daily Health & Beauty blog generator (4-5 new posts per day, rotating over 10 topics, each at least 1200 words).
 
 Writes new posts at the top of data/health-blog.json (same format as the hand-written posts:
 Punjabi + Hindi + English for every field). The existing builder then turns them into pages:
@@ -9,6 +9,7 @@ Punjabi + Hindi + English for every field). The existing builder then turns them
 Env (all optional except the key):
     GEMINI_API_KEY          Google AI Studio key
     HEALTH_BLOGS_PER_DAY    1-10. Default: 4 on even days, 5 on odd days of the year  ("4-5 a day")
+    HEALTH_BLOG_MIN_WORDS   minimum English words per article (default 1200)
     HEALTH_BLOG_DRAFT=true  do NOT publish: write to data/health-blog-drafts.json for manual review
                             (move an entry into data/health-blog.json to publish it)
 
@@ -110,7 +111,7 @@ def tri_ok(obj, minimum=1):
             and GURMUKHI.search(obj["pa"]) and DEVANAGARI.search(obj["hi"]) and LATIN.search(obj["en"]))
 
 
-def validate(post):
+def validate(post, min_words=1200):
     """Raises ValueError unless the Gemini JSON is a complete trilingual post."""
     if not SLUG.match(post.get("slug", "")) or len(post["slug"]) > 80:
         raise ValueError("bad slug")
@@ -121,8 +122,8 @@ def validate(post):
     if not (isinstance(pts, list) and 3 <= len(pts) <= 5 and all(tri_ok(x, 8) for x in pts)):
         raise ValueError("points must be 3-5 trilingual items")
     body = post.get("body")
-    if not (isinstance(body, list) and 5 <= len(body) <= 16):
-        raise ValueError("body must be 5-16 blocks")
+    if not (isinstance(body, list) and 8 <= len(body) <= 40):
+        raise ValueError("body must be 8-40 blocks")
     words = 0
     for b in body:
         if not isinstance(b, dict) or len(b) != 1:
@@ -138,51 +139,105 @@ def validate(post):
             words += sum(len(x["en"].split()) for x in val)
         else:
             raise ValueError(f"unknown block {kind}")
-    if words < 150:
-        raise ValueError(f"article too short ({words} English words)")
+    if words < min_words:
+        raise ValueError(f"article too short ({words} English words, minimum {min_words})")
     return words
 
 
-def build_prompt(topic, avoid_titles):
+def en_words(body):
+    n = 0
+    for blk in body:
+        (kind, val), = blk.items()
+        if kind == "h2":
+            continue
+        n += len(val.split()) if isinstance(val, str) else sum(len(x.split()) for x in val)
+    return n
+
+
+def build_prompt(topic, avoid_titles, min_words, note=""):
     avoid = "\n".join(f"- {t}" for t in avoid_titles[:40]) or "- (none yet)"
-    shape = '{"pa":"ਪੰਜਾਬੀ","hi":"हिन्दी","en":"English"}'
-    return f"""You are the health editor of PrimezNews, a Punjab (India) news site. Write ONE original, respectful, medically responsible
-blog article for general readers in Punjab. Topic area: "{topic['name']}".
+    return f"""You are the health editor of PrimezNews, a Punjab (India) news site. Write ONE original, respectful, medically responsible,
+in-depth blog article in clear English for general readers in Punjab. Topic area: "{topic['name']}".
 Topic guidance: {topic['brief']}
+{note}
+LENGTH IS CRITICAL: the article body must be AT LEAST {min_words + 150} words (aim for {min_words + 300}). Count only the paragraphs, list items and tip.
+Use 6-8 sections (h2), each with 1-2 full paragraphs of 80-140 words; add bullet or numbered lists, one section on common myths vs facts,
+one on "when to see a doctor", and a short closing paragraph. Be specific and practical, not repetitive filler.
 
 Hard rules:
 - Be accurate and conservative. Use widely accepted guidance (WHO, ICMR, Ministry of Health). NEVER invent statistics, studies, quotes, dates, brands or news events.
 - No diagnosis, no medicine names or doses, no cure or "miracle" claims, no fear-mongering. Say when to see a doctor.
 - Non-explicit, dignified, inclusive language. No shaming.
-- Pick a fresh, specific angle (a practical question readers actually have). Do NOT reuse or closely paraphrase these existing titles:
+- Pick a fresh, specific angle readers actually care about. Do NOT reuse or closely paraphrase these existing titles:
 {avoid}
-- Write natural Punjabi (Gurmukhi), natural Hindi (Devanagari) and clear English. All three must say the same thing.
 
-Return ONLY valid JSON, exactly this shape, where every TRI value is an object {shape}:
+Return ONLY valid JSON of this shape (plain strings, no markdown, no HTML):
 {{"slug":"3-7 lower-case english words joined by hyphens",
- "title":TRI (max 80 chars each),
- "excerpt":TRI (one sentence, 20-30 words),
- "points":[TRI,TRI,TRI] (3 key takeaways, each one short sentence),
- "body":[
-   {{"p":TRI}} (intro, 2-3 sentences),
-   {{"h2":TRI}}, {{"p":TRI}}, {{"ul":[TRI,TRI,TRI]}},
-   {{"h2":TRI}}, {{"p":TRI}}, {{"ol":[TRI,TRI,TRI]}},
-   {{"h2":TRI}}, {{"p":TRI}},
-   {{"tip":TRI}} (one practical, safe tip; the last block)
- ]}}
-Total length about 350-450 English words (and the same content in Punjabi and Hindi). No markdown, no HTML."""
+ "title":"max 80 characters",
+ "excerpt":"one sentence, 20-30 words",
+ "points":["key takeaway 1","key takeaway 2","key takeaway 3"],
+ "body":[{{"p":"intro paragraph"}},{{"h2":"heading"}},{{"p":"paragraph"}},{{"ul":["item","item","item"]}},{{"h2":"heading"}},{{"p":"paragraph"}},{{"ol":["step","step","step"]}}, ... ,{{"tip":"one practical safe tip (last block)"}}]}}"""
 
 
-def generate_post(topic, avoid_titles, state):
+def translate_prompt(article, lang):
+    name = {"pa": "Punjabi in Gurmukhi script (ਪੰਜਾਬੀ)", "hi": "Hindi in Devanagari script (हिन्दी)"}[lang]
+    return f"""Translate this health article into natural, fluent {name}, written for ordinary readers in Punjab.
+Translate EVERY string completely - do not summarise, shorten or skip anything; keep the same meaning and length.
+Keep the JSON structure EXACTLY the same (same keys, same number of blocks, same number of list items, same order). Do not translate JSON keys.
+Keep numbers, units and the helpline number 14416 unchanged. Return ONLY the JSON.
+
+{json.dumps(article, ensure_ascii=False)}"""
+
+
+def call_json(prompt, max_tokens, state):
     if state.get("last_call") and time.time() - state["last_call"] < 4:
         time.sleep(4)  # stay under the free-tier request rate
     try:
-        raw = rss._gemini_generate(build_prompt(topic, avoid_titles), os.environ["GEMINI_API_KEY"], max_tokens=16000, timeout=180)
+        raw = rss._gemini_generate(prompt, os.environ["GEMINI_API_KEY"], max_tokens=max_tokens, timeout=240)
     finally:
         state["last_call"] = time.time()
-    text = raw["candidates"][0]["content"]["parts"][0]["text"]
-    post = json.loads(text, strict=False)
-    words = validate(post)
+    return json.loads(raw["candidates"][0]["content"]["parts"][0]["text"], strict=False)
+
+
+def shape_of(article):
+    return [(k, len(v) if isinstance(v, list) else None) for blk in article["body"] for k, v in blk.items()], len(article["points"])
+
+
+def merge(en, pa, hi):
+    """English + Punjabi + Hindi article -> the trilingual format used by data/health-blog.json."""
+    if not (shape_of(en) == shape_of(pa) == shape_of(hi)):
+        raise ValueError("translation changed the article structure")
+    tri = lambda a, b, c: {"pa": str(b).strip(), "hi": str(c).strip(), "en": str(a).strip()}
+    body = []
+    for be, bp, bh in zip(en["body"], pa["body"], hi["body"]):
+        (kind, ve), = be.items()
+        vp, vh = bp[kind], bh[kind]
+        body.append({kind: [tri(x, y, z) for x, y, z in zip(ve, vp, vh)] if isinstance(ve, list) else tri(ve, vp, vh)})
+    return {
+        "slug": en["slug"], "title": tri(en["title"], pa["title"], hi["title"]),
+        "excerpt": tri(en["excerpt"], pa["excerpt"], hi["excerpt"]),
+        "points": [tri(x, y, z) for x, y, z in zip(en["points"], pa["points"], hi["points"])],
+        "body": body,
+    }
+
+
+def generate_post(topic, avoid_titles, state, min_words):
+    note = ""
+    for attempt in (1, 2, 3):  # an article that is too short is regenerated, never published
+        en = call_json(build_prompt(topic, avoid_titles, min_words, note), 12000, state)
+        if not isinstance(en.get("body"), list) or not isinstance(en.get("points"), list):
+            raise ValueError("English article has no body/points")
+        words = en_words(en["body"])
+        if words >= min_words:
+            break
+        log(f"[WARN] {topic['name']}: English draft has only {words} words (< {min_words}); regenerating longer")
+        note = f"IMPORTANT: your previous attempt had only {words} words. Write MUCH longer: at least {min_words + 300} words, with more sections and fuller paragraphs."
+    else:
+        raise ValueError(f"article stayed shorter than {min_words} words")
+    pa = call_json(translate_prompt({k: en[k] for k in ("title", "excerpt", "points", "body")}, "pa"), 32000, state)
+    hi = call_json(translate_prompt({k: en[k] for k in ("title", "excerpt", "points", "body")}, "hi"), 32000, state)
+    post = merge(en, pa, hi)
+    validate(post, min_words)
     return post, words
 
 
@@ -194,13 +249,17 @@ def main():
     today = datetime.now(IST).date()
     iso = today.isoformat()
     target = per_day(today)
+    try:
+        min_words = max(300, int(os.environ.get("HEALTH_BLOG_MIN_WORDS", "1200") or 1200))
+    except ValueError:
+        min_words = 1200
 
     data = load(DATA, {"tags": {}, "posts": []})
     drafts = load(DRAFTS, {"posts": []})
     everything = data["posts"] + drafts["posts"]
     done_today = sum(1 for p in everything if p.get("auto") and p.get("date") == iso)
     need = target - done_today
-    log(f"[INFO] {iso} (IST): target {target} blogs/day, already generated today: {done_today}, mode={'DRAFT (review)' if draft_mode else 'publish'}")
+    log(f"[INFO] {iso} (IST): target {target} blogs/day (min {min_words} words each), already generated today: {done_today}, mode={'DRAFT (review)' if draft_mode else 'publish'}")
     if need <= 0:
         log("[OK] Today's blogs already exist - nothing to do.")
         return 0
@@ -221,7 +280,7 @@ def main():
         post = words = None
         for attempt in (1, 2):
             try:
-                post, words = generate_post(topic, avoid, state)
+                post, words = generate_post(topic, avoid, state, min_words)
                 if norm(post["title"]["en"]) in used_titles:
                     raise ValueError("duplicate title")
                 break
@@ -239,7 +298,7 @@ def main():
         entry = {
             "slug": slug, "image": image, "date": iso,
             "author": {"pa": "PrimezNews ਸਿਹਤ ਡੈਸਕ", "hi": "PrimezNews हेल्थ डेस्क", "en": "PrimezNews Health Desk"},
-            "tag": topic["tag"], "minutes": max(3, round(words / 180)),
+            "tag": topic["tag"], "minutes": max(3, round(words / 200)),
             "title": {k: post["title"][k].strip() for k in LANGS},
             "excerpt": {k: post["excerpt"][k].strip() for k in LANGS},
             "points": [{k: x[k].strip() for k in LANGS} for x in post["points"]],
