@@ -199,13 +199,18 @@ def fetch_existing_guids(supabase_url: str, service_key: str) -> set[str]:
             "Authorization": f"Bearer {service_key}",
         },
     )
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        rows = json.loads(resp.read().decode("utf-8"))
-    return {r["external_guid"] for r in rows if r.get("external_guid")}
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            rows = json.loads(resp.read().decode("utf-8"))
+        return {r["external_guid"] for r in rows if r.get("external_guid")}
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="ignore")
+        print(f"[WARN] Could not read existing external_guid list: HTTP {exc.code}: {detail}")
+        return set()
 
 
 def insert_story(supabase_url: str, service_key: str, row: dict) -> None:
-    url = f"{supabase_url}/rest/v1/stories?on_conflict=external_guid"
+    url = f"{supabase_url}/rest/v1/stories"
     req = urllib.request.Request(
         url,
         data=json.dumps(row).encode("utf-8"),
@@ -213,12 +218,16 @@ def insert_story(supabase_url: str, service_key: str, row: dict) -> None:
             "apikey": service_key,
             "Authorization": f"Bearer {service_key}",
             "Content-Type": "application/json",
-            "Prefer": "resolution=ignore-duplicates,return=minimal",
+            "Prefer": "return=minimal",
         },
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        resp.read()
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            resp.read()
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"HTTP {exc.code} {exc.reason}: {detail}") from exc
 
 
 def main() -> int:
@@ -265,7 +274,7 @@ def main() -> int:
                     "body": f"{item['summary']}\n\nSource: {item['source_name']} ({item['link']})",
                 }
 
-            story_row = {
+            base_row = {
                 "title": rewritten["title"],
                 "en": rewritten["en"],
                 "summary": rewritten["summary"],
@@ -277,6 +286,9 @@ def main() -> int:
                 "image": item["image"],
                 "status": "published" if auto_publish else "draft",
                 "publish_at": now_iso if auto_publish else None,
+            }
+            story_row = {
+                **base_row,
                 "external_guid": item["external_guid"],
                 "source_name": item["source_name"],
                 "source_url": item["link"],
@@ -287,7 +299,12 @@ def main() -> int:
                 existing.add(item["external_guid"])
                 inserted += 1
             except Exception as exc:
-                print(f"[WARN] Failed inserting '{item['title']}': {exc}")
+                try:
+                    insert_story(supabase_url, service_key, base_row)
+                    existing.add(item["external_guid"])
+                    inserted += 1
+                except Exception as exc2:
+                    print(f"[WARN] Failed inserting '{item['title']}': {exc} | fallback: {exc2}")
 
     print(f"RSS sync finished. New stories added: {inserted} (mode={'published' if auto_publish else 'draft'})")
     return 0
