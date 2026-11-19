@@ -1,0 +1,28 @@
+name: Sync RSS news feeds
+on:
+  schedule:
+    - cron: '25 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: primeznews-rss-sync
+  cancel-in-progress: false
+jobs:
+  sync-rss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch and process RSS feeds
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          RSS_AUTO_PUBLISH: ${{ vars.RSS_AUTO_PUBLISH || 'false' }}
+        run: python3 scripts/fetch_rss_news.py
