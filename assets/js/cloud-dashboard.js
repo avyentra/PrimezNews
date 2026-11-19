@@ -83,7 +83,8 @@
   } catch (error) { feedback('Auto-save failed, your changes are kept on this device. ' + (error.message || '')); }
   finally { autoBusy = false; if (dirty && edits !== mark) schedule(); }
  }
- async function refresh() { rows = await api.stories(); renderList(); }
+ /* Always re-reads public.stories (drafts included), so freshly ingested RSS drafts show up at once. */
+ async function refresh() { rows = await api.stories(); renderList(); return rows; }
  async function save(status) {
   if (saving || !window.PrimezWorkspace.validate()) return;
   saving = true; clearTimeout(autoTimer);
@@ -166,7 +167,7 @@
  el('adSlot').onchange = adForm; adForm();
  window.PrimezAdsRefresh = async () => { ads = await api.ads(); adForm(); };
  /* My dashboard (newsroom-home.js) reads the loaded stories and opens one in the editor */
- window.PrimezNewsroom = { rows: () => rows.slice(), open: id => { const s = rows.find(r => r.id === id); if (!s || saving) return false; if (dirty && selected?.id !== id && !confirm('Discard unsaved changes?')) return false; el('storiesTab').click(); select(s); return true; } };
+ window.PrimezNewsroom = { rows: () => rows.slice(), refresh, open: id => { const s = rows.find(r => r.id === id); if (!s || saving) return false; if (dirty && selected?.id !== id && !confirm('Discard unsaved changes?')) return false; el('storiesTab').click(); select(s); return true; } };
  if (el('removeAd')) el('removeAd').onclick = async () => { const rm = el('removeAd'); if (!rm.dataset.armed) { rm.dataset.armed = '1'; rm.textContent = 'Tap again to remove'; setTimeout(() => { if (rm.dataset.armed) { delete rm.dataset.armed; rm.textContent = 'Remove ad'; } }, 4000); return; } rm.disabled = true; try { await api.removeAd(el('adSlot').value); ads = await api.ads(); adForm(); el('adFeedback').textContent = 'Advertisement removed — saved.'; } catch (error) { el('adFeedback').textContent = error.message; } finally { rm.disabled = false; } };
  el('cloudAdForm').onsubmit = async event => {
   event.preventDefault(); el('saveAd').disabled = true;
