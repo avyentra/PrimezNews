@@ -32,22 +32,24 @@
   }
   const svg = (d, size = 16) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('width', size); s.setAttribute('height', size); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '2.2'); s.setAttribute('aria-hidden', 'true'); const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', d); s.append(p); return s; };
 
-  let filter = 'all', loading = false, timer = 0, first = true;
+  let filter = 'all', loading = false, pending = false, timer = 0, first = true, lastError = '';
 
   function markNav(name) { document.querySelectorAll('.ad-nav [data-go]').forEach(b => b.classList.toggle('active', b.dataset.go === name)); }
   function show() {
     panel.hidden = false;
     ['storiesPanel', 'adsPanel'].forEach(id => { if ($(id)) $(id).hidden = true; });
     document.body.classList.add('nh-mode'); document.body.classList.remove('show-recent');
-    markNav('home'); load();
-    clearInterval(timer); timer = setInterval(() => { if (!panel.hidden && !document.hidden) load(); }, 60000);
+    const sp = $('settingsPanel'); if (sp) sp.hidden = true;
+    const wt = document.querySelector('.workspace-top'); if (wt) wt.hidden = false;
+    markNav('home'); load(true);                       // every time the dashboard opens: fetch drafts/stories again
+    clearInterval(timer); timer = setInterval(() => { if (!panel.hidden && !document.hidden) load(true); }, 60000);
   }
   function hide() { panel.hidden = true; document.body.classList.remove('nh-mode'); clearInterval(timer); }
   $('homeTab')?.addEventListener('click', show);
   $('storiesTab')?.addEventListener('click', hide);
   $('adsTab')?.addEventListener('click', hide);
   /* open the dashboard first, once the newsroom has loaded its stories (= access confirmed) */
-  document.addEventListener('primez-admin-stories', () => { if (first) { first = false; setTimeout(show, 0); } else if (!panel.hidden) load(); });
+  document.addEventListener('primez-admin-stories', () => { if (first) { first = false; setTimeout(show, 0); } else if (!panel.hidden) load(false); });
   /* if the newsroom finished loading before this script ran, open the dashboard now (or as soon as access is confirmed) */
   const ws = $('workspace');
   const ready = () => ws && !ws.hidden && window.PrimezNewsroom;
@@ -59,10 +61,16 @@
 
   async function safe(p, fallback) { try { const r = await p; if (r && r.error) return fallback; return r && 'data' in r ? (r.data ?? fallback) : (r ?? fallback); } catch { return fallback; } }
 
-  async function load() {
-    if (loading) return; loading = true;
+  /* load(true) = re-read stories from Supabase first (opening / refreshing the dashboard); load() = just repaint */
+  async function load(force) {
+    if (loading) { if (force) pending = true; return; }
+    loading = true; lastError = '';
     try {
       const db = api.db();
+      if (force) {
+        try { if (window.PrimezNewsroom?.refresh) await window.PrimezNewsroom.refresh(); }
+        catch (err) { lastError = 'Could not refresh stories: ' + (err?.message || err); }
+      }
       const [rows, reports, apps, ads] = await Promise.all([
         window.PrimezNewsroom ? Promise.resolve(window.PrimezNewsroom.rows()) : safe(api.stories(), []),
         safe(db.from('journalist_reports').select('id,headline,status,submitted_at,district,journalist_applications(name,district)').in('status', ['submitted', 'in_review']).order('submitted_at', { ascending: false }).limit(8), []),
@@ -73,7 +81,9 @@
       const reads = {};
       await Promise.all(recent.filter(live).slice(0, 8).map(async s => { const n = await safe(db.rpc('article_view_count', { article_id: s.id }), null); if (typeof n === 'number') reads[s.id] = n; }));
       render(rows, recent, reports, apps, ads, reads);
-    } finally { loading = false; }
+    } catch (err) {
+      panel.replaceChildren(h('p', { class: 'nh-empty' }, 'Dashboard could not load: ' + (err?.message || err) + ' '), h('button', { type: 'button', class: 'nh-sm', onclick: () => load(true) }, 'Try again'));
+    } finally { loading = false; if (pending) { pending = false; load(true); } }
   }
 
   function render(rows, recent, reports, apps, ads, reads) {
@@ -128,6 +138,7 @@
         h('div', { class: 'nh-quick' },
           h('button', { type: 'button', class: 'nh-sm', disabled: !drafts.length, onclick: () => drafts[0] && openStory(drafts[0].id) }, 'Continue last draft'),
           h('button', { type: 'button', class: 'nh-sm', onclick: newStory }, svg('M12 5v14M5 12h14', 14), 'Write new story'),
+          h('button', { type: 'button', class: 'nh-sm', id: 'nhRefresh', onclick: () => load(true) }, 'Refresh'),
           h('a', { class: 'nh-sm', href: './', target: '_blank', rel: 'noopener' }, 'Open website ↗'))),
       h('section', { class: 'nh-stats', 'aria-label': 'Today' },
         stat('Published today', pubToday, '#17633a', diff > 0 ? diff + ' more than yesterday' : diff < 0 ? -diff + ' fewer than yesterday' : 'Same as yesterday'),
@@ -156,7 +167,7 @@
           h('div', { class: 'nh-head' }, h('h2', {}, 'Continue a draft'), h('span', { class: 'nh-cap' }, drafts.length + (drafts.length === 1 ? ' draft' : ' drafts'))),
           drafts.length ? drafts.slice(0, 3).map(d => { const [p, label] = step(d); return h('div', { class: 'nh-draft' }, h('div', {}, h('strong', { class: 'nh-gb' }, d.title || d.en), h('div', { class: 'nh-prog' }, h('div', { class: 'nh-track' }, h('i', { style: `width:${p}%` })), h('span', {}, label))), h('button', { type: 'button', class: 'nh-sm nh-dark', onclick: () => openStory(d.id) }, 'Continue')); })
             : h('p', { class: 'nh-empty' }, 'No drafts. ', h('button', { type: 'button', class: 'nh-link', onclick: newStory }, 'Write a new story →')))),
-      h('p', { class: 'nh-foot' }, 'Updated ' + time(Date.now()) + ' · refreshes every minute')
+      h('p', { class: 'nh-foot' }, 'Updated ' + time(Date.now()) + ' · refreshes every minute · ', h('button', { type: 'button', class: 'nh-link', onclick: () => load(true) }, 'Refresh now'), lastError ? ' · ' + lastError : '')
     );
   }
 })();

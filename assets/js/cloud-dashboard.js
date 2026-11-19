@@ -4,7 +4,7 @@
  const cats = ['Agriculture','Education','Politics','Sports','Faith','Crime','Punjab','Business','Health','Jobs','NRI','Entertainment','National','World','Weather','Technology'];
  const districts = ['Amritsar','Barnala','Bathinda','Faridkot','Fatehgarh Sahib','Fazilka','Ferozepur','Gurdaspur','Hoshiarpur','Jalandhar','Kapurthala','Ludhiana','Malerkotla','Mansa','Moga','Sri Muktsar Sahib','Pathankot','Patiala','Rupnagar','SAS Nagar (Mohali)','Sangrur','SBS Nagar','Tarn Taran','Chandigarh'];
  const slots = ['home-hero-side','left-skin','right-skin','top-leaderboard','after-headlines','news-sidebar','before-video','after-video'];
- let rows = [], ads = [], selected = null, image = 'fields', dirty = false, saving = false;
+ let statusFilter = '', rows = [], ads = [], selected = null, image = 'fields', dirty = false, saving = false;
  const feedback = text => { el('storyFeedback').textContent = text; };
  const option = (label, value = label) => { const o = document.createElement('option'); o.textContent = label; o.value = value; return o; };
  const chosen = () => [...document.querySelectorAll('#categories input:checked')].map(input => input.value);
@@ -19,13 +19,14 @@
  function renderList() {
   el('storyList').replaceChildren();
   const query = el('storySearch').value.toLowerCase();
-  rows.filter(s => (s.en + ' ' + s.title).toLowerCase().includes(query)).forEach(story => {
+  rows.filter(s => (!statusFilter || s.status === statusFilter) && (s.en + ' ' + s.title).toLowerCase().includes(query)).forEach(story => {
    const b = document.createElement('button'); b.type = 'button'; b.className = 'story-row' + (selected?.id === story.id ? ' active' : '');
    const strong = document.createElement('strong'); strong.textContent = story.en;
    const small = document.createElement('small'); small.textContent = story.status + ' · ' + story.district;
    b.append(strong,small); b.onclick = () => { if (!saving && (!dirty || confirm('Discard unsaved changes?'))) select(story); }; el('storyList').append(b);
   });
-  if (!rows.length) el('storyList').textContent = 'No stories yet. Create your first story.';
+  const h2 = document.querySelector('.rail-heading h2'); if (h2) h2.textContent = statusFilter === 'draft' ? 'Draft news' : 'Recent news';
+  if (!el('storyList').children.length) el('storyList').textContent = statusFilter === 'draft' ? 'No drafts right now.' : 'No stories yet. Create your first story.';
   document.dispatchEvent(new CustomEvent('primez-admin-stories', { detail: rows.map(s => s.status) }));
  }
  function select(story) {
@@ -167,7 +168,7 @@
  el('adSlot').onchange = adForm; adForm();
  window.PrimezAdsRefresh = async () => { ads = await api.ads(); adForm(); };
  /* My dashboard (newsroom-home.js) reads the loaded stories and opens one in the editor */
- window.PrimezNewsroom = { rows: () => rows.slice(), refresh, open: id => { const s = rows.find(r => r.id === id); if (!s || saving) return false; if (dirty && selected?.id !== id && !confirm('Discard unsaved changes?')) return false; el('storiesTab').click(); select(s); return true; } };
+ window.PrimezNewsroom = { rows: () => rows.slice(), refresh, setFilter: f => { statusFilter = f || ''; renderList(); }, open: id => { const s = rows.find(r => r.id === id); if (!s || saving) return false; if (dirty && selected?.id !== id && !confirm('Discard unsaved changes?')) return false; el('storiesTab').click(); select(s); return true; } };
  if (el('removeAd')) el('removeAd').onclick = async () => { const rm = el('removeAd'); if (!rm.dataset.armed) { rm.dataset.armed = '1'; rm.textContent = 'Tap again to remove'; setTimeout(() => { if (rm.dataset.armed) { delete rm.dataset.armed; rm.textContent = 'Remove ad'; } }, 4000); return; } rm.disabled = true; try { await api.removeAd(el('adSlot').value); ads = await api.ads(); adForm(); el('adFeedback').textContent = 'Advertisement removed — saved.'; } catch (error) { el('adFeedback').textContent = error.message; } finally { rm.disabled = false; } };
  el('cloudAdForm').onsubmit = async event => {
   event.preventDefault(); el('saveAd').disabled = true;

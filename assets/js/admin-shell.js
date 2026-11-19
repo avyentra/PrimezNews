@@ -9,7 +9,7 @@
     const go = b.dataset.go;
     /* Dashboard: newsroom-home.js listens on #homeTab, shows #homePanel and re-loads the stories from the database */
     if (go === 'home') { $('homeTab')?.click(); mark('home'); closeMenu(); return; }
-  if (go === 'recent') { $('storiesTab')?.click(); openRecent(); return; }
+  if (go === 'recent' || go === 'drafts') { $('storiesTab')?.click(); window.PrimezNewsroom?.setFilter(go === 'drafts' ? 'draft' : ''); openRecent(); mark(go === 'drafts' ? 'drafts' : 'recent'); return; }
     if (go === 'new') { $('storiesTab')?.click(); $('newStory')?.click(); mark('new'); }
     else { $(go + 'Tab')?.click(); mark(go); }
     closeMenu();
@@ -39,6 +39,7 @@
   document.addEventListener('primez-admin-stories', e => {
     const st = e.detail || [], c = k => st.filter(x => x === k).length;
     const data = [['Total stories', st.length], ['Published', c('published')], ['Scheduled', c('scheduled')], ['Drafts', c('draft')]];
+    if ($('draftCount')) { $('draftCount').textContent = String(c('draft')); $('draftCount').hidden = !c('draft'); }
     if ($('recentCount')) { $('recentCount').textContent = String(st.length); $('recentCount').hidden = !st.length; }
     const box = $('adStats');
     box.replaceChildren(...data.map(([label, v], i) => {
