@@ -1,0 +1,128 @@
+{
+ "note": "Minimum Support Prices (MSP) in Rs per quintal, as approved by the Union Cabinet. Update when a new season is announced.",
+ "seasons": [
+  {
+   "id": "rabi",
+   "pa": "ਹਾੜ੍ਹੀ 2026-27 (ਕਣਕ ਆਦਿ)",
+   "hi": "रबी 2026-27 (गेहूं आदि)",
+   "en": "Rabi 2026-27 (wheat & others)",
+   "source": "https://www.tribuneindia.com/news/india/govt-raises-wheat-msp-by-6-59-to-rs-2585-per-quintal-for-2026-27",
+   "crops": [
+    [
+     "wheat",
+     "ਕਣਕ",
+     "गेहूं",
+     "Wheat",
+     2585
+    ],
+    [
+     "barley",
+     "ਜੌਂ",
+     "जौ",
+     "Barley",
+     2150
+    ],
+    [
+     "gram",
+     "ਛੋਲੇ",
+     "चना",
+     "Gram",
+     5875
+    ],
+    [
+     "masur",
+     "ਮਸਰ",
+     "मसूर",
+     "Lentil (masur)",
+     7000
+    ],
+    [
+     "mustard",
+     "ਸਰ੍ਹੋਂ",
+     "सरसों",
+     "Rapeseed & mustard",
+     6200
+    ],
+    [
+     "safflower",
+     "ਕੁਸੁੰਭ",
+     "कुसुम",
+     "Safflower",
+     6540
+    ]
+   ]
+  },
+  {
+   "id": "kharif",
+   "pa": "ਸਾਉਣੀ 2026-27 (ਝੋਨਾ ਆਦਿ)",
+   "hi": "खरीफ 2026-27 (धान आदि)",
+   "en": "Kharif 2026-27 (paddy & others)",
+   "source": "https://www.dtnext.in/news/business/govt-hikes-paddy-msp-by-rs-72-to-rs-2441qtl-sunflower-seed-sees-steepest-rise-at-rs-622",
+   "crops": [
+    [
+     "paddy",
+     "ਝੋਨਾ (ਆਮ)",
+     "धान (सामान्य)",
+     "Paddy (common)",
+     2441
+    ],
+    [
+     "paddyA",
+     "ਝੋਨਾ (ਗ੍ਰੇਡ ਏ)",
+     "धान (ग्रेड ए)",
+     "Paddy (grade A)",
+     2461
+    ],
+    [
+     "maize",
+     "ਮੱਕੀ",
+     "मक्का",
+     "Maize",
+     2410
+    ],
+    [
+     "cotton",
+     "ਕਪਾਹ (ਮੱਧਮ ਰੇਸ਼ਾ)",
+     "कपास (मध्यम रेशा)",
+     "Cotton (medium staple)",
+     8267
+    ],
+    [
+     "moong",
+     "ਮੂੰਗੀ",
+     "मूंग",
+     "Moong",
+     8780
+    ],
+    [
+     "urad",
+     "ਮਾਂਹ",
+     "उड़द",
+     "Urad",
+     8200
+    ],
+    [
+     "bajra",
+     "ਬਾਜਰਾ",
+     "बाजरा",
+     "Bajra",
+     2900
+    ],
+    [
+     "groundnut",
+     "ਮੂੰਗਫਲੀ",
+     "मूंगफली",
+     "Groundnut",
+     7517
+    ],
+    [
+     "sunflower",
+     "ਸੂਰਜਮੁਖੀ",
+     "सूरजमुखी",
+     "Sunflower seed",
+     8343
+    ]
+   ]
+  }
+ ]
+}

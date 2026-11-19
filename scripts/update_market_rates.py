@@ -62,6 +62,12 @@ def main():
                 quote = task.result()
                 if quote['date'] < rates.get(kind, {}).get('date', ''):
                     raise ValueError('Older than saved quote')
+                old = rates.get(kind, {})
+                quote['checked'] = datetime.now(ZoneInfo('Asia/Kolkata')).isoformat(timespec='minutes')
+                if old.get('price') and old['price'] != quote['price']:
+                    quote['prev'] = old['price']          # shown as the up/down change on the page
+                elif old.get('prev'):
+                    quote['prev'] = old['prev']
                 rates[kind] = quote
             except Exception as error:
                 print(kind, type(error).__name__, file=sys.stderr)
