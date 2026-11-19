@@ -199,14 +199,9 @@ def fetch_existing_guids(supabase_url: str, service_key: str) -> set[str]:
             "Authorization": f"Bearer {service_key}",
         },
     )
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            rows = json.loads(resp.read().decode("utf-8"))
-        return {r["external_guid"] for r in rows if r.get("external_guid")}
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="ignore")
-        print(f"[WARN] Could not read existing external_guid list: HTTP {exc.code}: {detail}")
-        return set()
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        rows = json.loads(resp.read().decode("utf-8"))
+    return {r["external_guid"] for r in rows if r.get("external_guid")}
 
 
 def insert_story(supabase_url: str, service_key: str, row: dict) -> None:
@@ -274,7 +269,7 @@ def main() -> int:
                     "body": f"{item['summary']}\n\nSource: {item['source_name']} ({item['link']})",
                 }
 
-            base_row = {
+            story_row = {
                 "title": rewritten["title"],
                 "en": rewritten["en"],
                 "summary": rewritten["summary"],
@@ -286,9 +281,6 @@ def main() -> int:
                 "image": item["image"],
                 "status": "published" if auto_publish else "draft",
                 "publish_at": now_iso if auto_publish else None,
-            }
-            story_row = {
-                **base_row,
                 "external_guid": item["external_guid"],
                 "source_name": item["source_name"],
                 "source_url": item["link"],
@@ -298,13 +290,9 @@ def main() -> int:
                 insert_story(supabase_url, service_key, story_row)
                 existing.add(item["external_guid"])
                 inserted += 1
+                print(f"[OK] Added ({story_row['status']}): {story_row['title'][:90]}")
             except Exception as exc:
-                try:
-                    insert_story(supabase_url, service_key, base_row)
-                    existing.add(item["external_guid"])
-                    inserted += 1
-                except Exception as exc2:
-                    print(f"[WARN] Failed inserting '{item['title']}': {exc} | fallback: {exc2}")
+                print(f"[WARN] Failed inserting '{item['title']}': {exc}")
 
     print(f"RSS sync finished. New stories added: {inserted} (mode={'published' if auto_publish else 'draft'})")
     return 0
