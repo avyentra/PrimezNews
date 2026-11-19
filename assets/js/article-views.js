@@ -82,13 +82,17 @@
   async function real() {
     const cfg = window.PRIMEZ_BACKEND;
     if (!cfg || !cfg.url || !cfg.publicKey) throw Error('no backend');
-    const res = await fetch(cfg.url + '/rest/v1/rpc/site_visitor_count', {
-      method: 'POST', headers: { apikey: cfg.publicKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ browser_receipt: receipt(), count_hit: isHit() })
-    });
-    const n = await res.json();
-    if (!res.ok || !Number.isSafeInteger(n) || n < 0) throw Error('count unavailable');
-    return n;
+    const call = async body => {
+      const res = await fetch(cfg.url + '/rest/v1/rpc/site_visitor_count', {
+        method: 'POST', headers: { apikey: cfg.publicKey, 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      });
+      const n = await res.json();
+      if (!res.ok || !Number.isSafeInteger(n) || n < 0) throw Error('count unavailable');
+      return n;
+    };
+    const r = receipt();
+    try { return await call({ browser_receipt: r, count_hit: isHit() }); }
+    catch { return call({ browser_receipt: r }); }   // older database function (view-counters-v2.sql not run yet)
   }
   async function show() {
     const spots = document.querySelectorAll('[data-visitor-count]');
