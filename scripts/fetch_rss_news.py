@@ -2,6 +2,14 @@
 Reads approved Punjab/India RSS feeds, deduplicates via external_guid, optionally rewrites
 into concise Punjabi/English summaries via Gemini API, and inserts directly into public.stories
 so existing triggers (slugs, instant-news-pages, published_stories RPC) work automatically.
+
+Insert strategy (robust against PostgREST 400s):
+  * plain POST /rest/v1/stories, NO `on_conflict` (a partial unique index on external_guid cannot be
+    used as an ON CONFLICT target, which is what used to cause HTTP 400);
+  * `Prefer: resolution=ignore-duplicates,return=minimal`;
+  * deterministic primary key `id = rss-<hash>` so duplicates are ignored even without optional columns;
+  * if the optional RSS columns are missing / not in the schema cache, retry with core columns only;
+  * after the run, rows are read back from Supabase to verify they really exist.
 """
 import hashlib
 import html
@@ -173,8 +181,12 @@ def rewrite_with_gemini(item: dict, api_key: str) -> dict:
     req = urllib.request.Request(
         endpoint, data=payload, headers={"Content-Type": "application/json"}, method="POST"
     )
-    with urllib.request.urlopen(req, timeout=35) as resp:
-        raw = json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=35) as resp:
+            raw = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="ignore")[:400]
+        raise RuntimeError(f"Gemini HTTP {exc.code} {exc.reason}: {detail}") from exc
     text = raw["candidates"][0]["content"]["parts"][0]["text"]
     parsed = json.loads(text)
     pa_title = (parsed.get("pa_title") or item["title"]).strip()[:480]
@@ -190,39 +202,109 @@ def rewrite_with_gemini(item: dict, api_key: str) -> dict:
     }
 
 
-def fetch_existing_guids(supabase_url: str, service_key: str) -> set[str]:
-    url = f"{supabase_url}/rest/v1/stories?select=external_guid&external_guid=not.is.null&limit=1000"
-    req = urllib.request.Request(
-        url,
-        headers={
-            "apikey": service_key,
-            "Authorization": f"Bearer {service_key}",
-        },
-    )
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        rows = json.loads(resp.read().decode("utf-8"))
-    return {r["external_guid"] for r in rows if r.get("external_guid")}
+def _auth_headers(service_key: str) -> dict:
+    """New-style `sb_secret_...` keys are not JWTs and must be sent in `apikey` only."""
+    headers = {"apikey": service_key}
+    if not service_key.startswith("sb_"):
+        headers["Authorization"] = f"Bearer {service_key}"
+    return headers
 
 
-def insert_story(supabase_url: str, service_key: str, row: dict) -> None:
-    url = f"{supabase_url}/rest/v1/stories"
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(row).encode("utf-8"),
-        headers={
-            "apikey": service_key,
-            "Authorization": f"Bearer {service_key}",
-            "Content-Type": "application/json",
-            "Prefer": "return=minimal",
-        },
-        method="POST",
-    )
+def rest_request(method: str, url: str, service_key: str, body=None, prefer: str | None = None):
+    """Returns (status, text). Never raises for HTTP errors, so callers can log the response body."""
+    headers = _auth_headers(service_key)
+    data = None
+    if body is not None:
+        headers["Content-Type"] = "application/json"
+        data = json.dumps(body).encode("utf-8")
+    if prefer:
+        headers["Prefer"] = prefer
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
     try:
         with urllib.request.urlopen(req, timeout=30) as resp:
-            resp.read()
+            return resp.status, resp.read().decode("utf-8", errors="ignore")
     except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="ignore")
-        raise RuntimeError(f"HTTP {exc.code} {exc.reason}: {detail}") from exc
+        return exc.code, exc.read().decode("utf-8", errors="ignore")
+
+
+def norm_title(text: str) -> str:
+    return " ".join((text or "").lower().split())[:200]
+
+
+def fetch_existing(supabase_url: str, service_key: str) -> tuple[set[str], set[str], bool]:
+    """Returns (existing guids, normalized existing titles, rss_columns_available)."""
+    base = f"{supabase_url}/rest/v1/stories"
+    status, text = rest_request(
+        "GET", f"{base}?select=id,external_guid,title,en&order=updated_at.desc&limit=1000", service_key
+    )
+    has_cols = True
+    if status == 400:
+        print(f"[WARN] Optional RSS columns not readable (HTTP 400): {text[:300]}")
+        print("[WARN] Run backend/rss-ingestion.sql in Supabase SQL Editor. Falling back to core columns.")
+        has_cols = False
+        status, text = rest_request("GET", f"{base}?select=id,title,en&order=updated_at.desc&limit=1000", service_key)
+    if status != 200:
+        raise RuntimeError(f"Cannot read public.stories (HTTP {status}): {text[:400]}")
+    rows = json.loads(text or "[]")
+    guids = {r["external_guid"] for r in rows if r.get("external_guid")}
+    guids |= {r["id"] for r in rows if str(r.get("id", "")).startswith("rss-")}
+    titles = {norm_title(r.get("title")) for r in rows} | {norm_title(r.get("en")) for r in rows}
+    titles.discard("")
+    return guids, titles, has_cols
+
+
+OPTIONAL_COLUMNS = ("external_guid", "source_name", "source_url", "is_automated")
+
+
+def insert_story(supabase_url: str, service_key: str, row: dict) -> str:
+    """POST one story. Returns 'inserted', 'inserted-core' (optional columns dropped) or 'duplicate'.
+    Raises RuntimeError (with the HTTP response body) on real failures."""
+    url = f"{supabase_url}/rest/v1/stories"
+    prefer = "resolution=ignore-duplicates,return=minimal"
+    status, text = rest_request("POST", url, service_key, row, prefer)
+    if status in (200, 201, 204):
+        return "inserted"
+    if status == 409:
+        return "duplicate"
+    # Optional columns missing / schema cache stale -> retry with core public.stories columns only.
+    lowered = text.lower()
+    if status == 400 and (
+        "pgrst204" in lowered or "schema cache" in lowered or "column" in lowered or "42703" in lowered
+    ):
+        core = {k: v for k, v in row.items() if k not in OPTIONAL_COLUMNS}
+        print(f"[WARN] HTTP 400 with optional columns ({text[:200]}); retrying with core columns only.")
+        status2, text2 = rest_request("POST", url, service_key, core, prefer)
+        if status2 in (200, 201, 204):
+            return "inserted-core"
+        if status2 == 409:
+            return "duplicate"
+        raise RuntimeError(f"HTTP {status2}: {text2[:600]}")
+    raise RuntimeError(f"HTTP {status}: {text[:600]}")
+
+
+def verify_inserted(supabase_url: str, service_key: str, ids: list[str]) -> set[str]:
+    """Read the rows back so we only report what really exists in the database."""
+    found: set[str] = set()
+    for i in range(0, len(ids), 50):
+        chunk = ids[i : i + 50]
+        in_list = ",".join(urllib.parse.quote(x, safe="") for x in chunk)
+        status, text = rest_request(
+            "GET", f"{supabase_url}/rest/v1/stories?select=id,status&id=in.({in_list})", service_key
+        )
+        if status != 200:
+            print(f"[WARN] Verification read failed (HTTP {status}): {text[:300]}")
+            continue
+        found |= {r["id"] for r in json.loads(text or "[]")}
+    return found
+
+
+def fallback_rewrite(item: dict) -> dict:
+    return {
+        "title": item["title"],
+        "en": item["en"],
+        "summary": item["summary"],
+        "body": f"{item['summary']}\n\nSource: {item['source_name']} ({item['link']})",
+    }
 
 
 def main() -> int:
@@ -231,70 +313,108 @@ def main() -> int:
     auto_publish = os.environ.get("RSS_AUTO_PUBLISH", "false").strip().lower() == "true"
 
     if not service_key:
-        print("SUPABASE_SERVICE_KEY is not set; skipping RSS sync cleanly.")
+        print("[WARN] SUPABASE_SERVICE_KEY is not set; skipping RSS sync cleanly.")
         return 0
 
     supabase_url = load_supabase_url()
-    existing = fetch_existing_guids(supabase_url, service_key)
+    print(f"[INFO] Supabase: {supabase_url} · mode={'published' if auto_publish else 'draft'} · gemini={'on' if gemini_key else 'off'}")
+    try:
+        existing, existing_titles, has_cols = fetch_existing(supabase_url, service_key)
+    except Exception as exc:
+        print(f"[WARN] {exc}")
+        return 1
     now_iso = datetime.now(timezone.utc).isoformat()
-    inserted = 0
+    attempted: list[str] = []
+    inserted = skipped = failed = feeds_ok = 0
 
     for feed_cfg in RSS_FEEDS:
         try:
             req = urllib.request.Request(
-                feed_cfg["url"], headers={
+                feed_cfg["url"],
+                headers={
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
                     "Accept": "application/rss+xml, application/xml, text/xml, */*",
                     "Accept-Language": "en-IN,en;q=0.9,pa;q=0.8",
-                }
+                },
             )
             with urllib.request.urlopen(req, timeout=25) as resp:
                 xml_data = resp.read()
             items = parse_feed(xml_data, feed_cfg)
+            feeds_ok += 1
+            print(f"[OK] Feed '{feed_cfg['name']}': {len(items)} items")
+        except urllib.error.HTTPError as exc:
+            body = exc.read().decode("utf-8", errors="ignore")[:200]
+            print(f"[WARN] Could not read feed {feed_cfg['name']}: HTTP {exc.code} {exc.reason} {body}")
+            continue
         except Exception as exc:
             print(f"[WARN] Could not read feed {feed_cfg['name']}: {exc}")
             continue
 
         for item in items:
-            if item["external_guid"] in existing:
+            row_id = item["external_guid"].replace("rss_", "rss-", 1)
+            if item["external_guid"] in existing or row_id in existing or norm_title(item["title"]) in existing_titles:
+                skipped += 1
                 continue
             try:
                 rewritten = rewrite_with_gemini(item, gemini_key)
             except Exception as exc:
-                print(f"[WARN] Gemini rewrite fallback for '{item['title']}': {exc}")
-                rewritten = {
-                    "title": item["title"],
-                    "en": item["en"],
-                    "summary": item["summary"],
-                    "body": f"{item['summary']}\n\nSource: {item['source_name']} ({item['link']})",
-                }
+                print(f"[WARN] Gemini rewrite fallback for '{item['title'][:70]}': {exc}")
+                if "HTTP 4" in str(exc):
+                    gemini_key = ""  # bad key / quota: stop calling Gemini for the rest of this run
+                rewritten = fallback_rewrite(item)
 
+            body = (rewritten["body"] or "").strip() or f"{item['title']}\n\nSource: {item['source_name']} ({item['link']})"
             story_row = {
-                "title": rewritten["title"],
-                "en": rewritten["en"],
-                "summary": rewritten["summary"],
-                "body": rewritten["body"],
+                "id": row_id,
+                "title": rewritten["title"][:500],
+                "en": rewritten["en"][:500],
+                "summary": (rewritten["summary"] or item["title"])[:3000],
+                "body": body[:100000],
                 "categories": [item["category"]],
                 "category": item["category"],
                 "district": item["district"],
-                "author": f"RSS Desk · {item['source_name']}",
+                "author": f"RSS Desk · {item['source_name']}"[:200],
                 "image": item["image"],
                 "status": "published" if auto_publish else "draft",
                 "publish_at": now_iso if auto_publish else None,
+                "updated_at": now_iso,
                 "external_guid": item["external_guid"],
                 "source_name": item["source_name"],
                 "source_url": item["link"],
                 "is_automated": True,
             }
             try:
-                insert_story(supabase_url, service_key, story_row)
-                existing.add(item["external_guid"])
-                inserted += 1
-                print(f"[OK] Added ({story_row['status']}): {story_row['title'][:90]}")
+                result = insert_story(supabase_url, service_key, story_row)
             except Exception as exc:
-                print(f"[WARN] Failed inserting '{item['title']}': {exc}")
+                failed += 1
+                print(f"[WARN] Failed inserting '{item['title'][:70]}': {exc}")
+                continue
+            existing.add(item["external_guid"])
+            existing.add(row_id)
+            existing_titles.add(norm_title(item["title"]))
+            if result == "duplicate":
+                skipped += 1
+                print(f"[WARN] Duplicate ignored: {story_row['title'][:80]}")
+                continue
+            attempted.append(row_id)
+            print(f"[OK] Sent ({story_row['status']}{', core columns' if result == 'inserted-core' else ''}): {story_row['title'][:90]}")
 
-    print(f"RSS sync finished. New stories added: {inserted} (mode={'published' if auto_publish else 'draft'})")
+    verified = verify_inserted(supabase_url, service_key, attempted) if attempted else set()
+    inserted = len(verified)
+    missing = [i for i in attempted if i not in verified]
+    if missing:
+        print(f"[WARN] {len(missing)} row(s) were accepted by the API but NOT found afterwards: {missing[:5]}")
+    print(
+        f"RSS sync finished. New stories added: {inserted} · skipped (already present): {skipped} · "
+        f"failed: {failed} (mode={'published' if auto_publish else 'draft'})"
+    )
+    if feeds_ok == 0:
+        print("[WARN] No feed could be read.")
+        return 1
+    if failed and not inserted:
+        return 1
+    if attempted and not inserted:
+        return 1
     return 0
 
 
