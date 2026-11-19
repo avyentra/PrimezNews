@@ -21,22 +21,22 @@ ROOT = Path(__file__).resolve().parents[1]
 # Approved public RSS feeds (add or customize URLs as needed)
 RSS_FEEDS = [
     {
-        "name": "The Tribune Punjab",
-        "url": "https://www.tribuneindia.com/rss/feed?catId=42",
+        "name": "Google News Punjab",
+        "url": "https://news.google.com/rss/search?q=Punjab+news+Chandigarh+Mohali&hl=en-IN&gl=IN&ceid=IN:en",
         "category": "Punjab",
         "default_district": "Chandigarh",
         "image": "city",
     },
     {
-        "name": "The Tribune Chandigarh",
-        "url": "https://www.tribuneindia.com/rss/feed?catId=41",
+        "name": "Google News Chandigarh & Tricity",
+        "url": "https://news.google.com/rss/search?q=Chandigarh+Mohali+Panchkula+news&hl=en-IN&gl=IN&ceid=IN:en",
         "category": "Punjab",
-        "default_district": "Chandigarh",
+        "default_district": "SAS Nagar (Mohali)",
         "image": "city",
     },
     {
-        "name": "The Tribune Agriculture / Nation",
-        "url": "https://www.tribuneindia.com/rss/feed?catId=50",
+        "name": "Google News Punjab Agriculture",
+        "url": "https://news.google.com/rss/search?q=Punjab+agriculture+farming+MSP+crop&hl=en-IN&gl=IN&ceid=IN:en",
         "category": "Agriculture",
         "default_district": "Ludhiana",
         "image": "fields",
@@ -238,7 +238,11 @@ def main() -> int:
     for feed_cfg in RSS_FEEDS:
         try:
             req = urllib.request.Request(
-                feed_cfg["url"], headers={"User-Agent": "PrimezNews-RSS-Sync/1.0"}
+                feed_cfg["url"], headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+                    "Accept": "application/rss+xml, application/xml, text/xml, */*",
+                    "Accept-Language": "en-IN,en;q=0.9,pa;q=0.8",
+                }
             )
             with urllib.request.urlopen(req, timeout=25) as resp:
                 xml_data = resp.read()
