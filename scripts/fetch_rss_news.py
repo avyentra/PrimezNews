@@ -3,6 +3,10 @@ Reads approved Punjab/India RSS feeds, deduplicates via external_guid, optionall
 into concise Punjabi/English summaries via Gemini API, and inserts directly into public.stories
 so existing triggers (slugs, instant-news-pages, published_stories RPC) work automatically.
 
+Article pipeline: Google News link -> real publisher URL -> readable article text (<= 4000 chars)
+-> Gemini -> publish-ready Punjabi (Gurmukhi) article + English headline. If the publisher blocks us
+or Gemini is unavailable, the RSS headline/summary is used instead (never an empty body).
+
 Insert strategy (robust against PostgREST 400s):
   * plain POST /rest/v1/stories, NO `on_conflict` (a partial unique index on external_guid cannot be
     used as an ON CONFLICT target, which is what used to cause HTTP 400);
@@ -11,20 +15,33 @@ Insert strategy (robust against PostgREST 400s):
   * if the optional RSS columns are missing / not in the schema cache, retry with core columns only;
   * after the run, rows are read back from Supabase to verify they really exist.
 """
+import base64
 import hashlib
 import html
 import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+GEMINI_API_BASE = os.environ.get("GEMINI_API_BASE", "https://generativelanguage.googleapis.com").rstrip("/")
+# Google retires models for new users from time to time (gemini-2.5-flash now returns 404), so we try a list.
+# Override with the GEMINI_MODEL env var / repository variable if you want a specific model.
+GEMINI_MODELS = [m for m in [os.environ.get("GEMINI_MODEL", "").strip(), "gemini-3.8-flash", "gemini-3-flash", "gemini-2.5-flash"] if m]
+_GEMINI = {"model": None, "thinking": True}
+BROWSER_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/126.0.0.0 Safari/537.36"
+)
+MAX_SOURCE_CHARS = 4000
 
 # Approved public RSS feeds (add or customize URLs as needed)
 RSS_FEEDS = [
@@ -131,6 +148,10 @@ def parse_feed(xml_bytes: bytes, feed_cfg: dict) -> list[dict]:
         )
         if not title or not link:
             continue
+        if desc and norm_title(desc).startswith(norm_title(title)[:40]) and len(desc) < len(title) + 120:
+            desc = ""  # Google News description is only the headline + publisher link
+        publisher = clean_html(node.findtext("source") or "") or feed_cfg["name"]
+        title = strip_publisher(title, publisher)
         guid_hash = hashlib.sha256(guid.encode("utf-8")).hexdigest()[:32]
         district = detect_district(f"{title} {desc}", feed_cfg["default_district"])
         items.append(
@@ -140,7 +161,7 @@ def parse_feed(xml_bytes: bytes, feed_cfg: dict) -> list[dict]:
                 "en": title[:480],
                 "summary": (desc or title)[:2800],
                 "link": link,
-                "source_name": feed_cfg["name"],
+                "source_name": publisher,
                 "category": feed_cfg["category"],
                 "district": district,
                 "image": feed_cfg["image"],
@@ -149,57 +170,299 @@ def parse_feed(xml_bytes: bytes, feed_cfg: dict) -> list[dict]:
     return items
 
 
-def rewrite_with_gemini(item: dict, api_key: str) -> dict:
-    if not api_key:
-        return {
-            "title": item["title"],
-            "en": item["en"],
-            "summary": item["summary"],
-            "body": f"{item['summary']}\n\nSource: {item['source_name']} ({item['link']})",
-        }
+def strip_publisher(title: str, publisher: str = "") -> str:
+    """'Headline - Times of India' -> 'Headline'."""
+    t = title.strip()
+    if publisher and t.lower().endswith(" - " + publisher.lower()):
+        return t[: -(len(publisher) + 3)].strip()
+    m = re.match(r"^(.*\S)\s+[-\u2013\u2014|]\s+([^-\u2013\u2014|]{2,45})$", t)
+    return m.group(1).strip() if m else t
 
-    prompt = (
-        "You are an editorial desk assistant for PrimezNews (Punjab regional digital news). "
-        "Rewrite the news brief below into neutral, factual, original Punjabi (Gurmukhi) and concise English. "
-        "Do not copy sentences verbatim; keep all names, numbers, and facts accurate; never invent details. "
-        'Return ONLY valid JSON with keys: "pa_title", "en_title", "pa_summary", "pa_body".\n'
-        f"Source: {item['source_name']}\n"
-        f"District: {item['district']}\n"
-        f"Headline: {item['title']}\n"
-        f"Details: {item['summary']}"
-    )
-    endpoint = (
-        "https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-2.5-flash:generateContent?key={urllib.parse.quote(api_key)}"
-    )
-    payload = json.dumps(
-        {
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"responseMimeType": "application/json"},
-        }
-    ).encode("utf-8")
+
+# ---------------------------------------------------------------- Google News -> publisher URL
+def _http_get(url: str, timeout: int = 20, max_bytes: int = 1_500_000):
     req = urllib.request.Request(
-        endpoint, data=payload, headers={"Content-Type": "application/json"}, method="POST"
+        url,
+        headers={
+            "User-Agent": BROWSER_UA,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-IN,en;q=0.9",
+        },
     )
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        raw = resp.read(max_bytes)
+        charset = resp.headers.get_content_charset() or "utf-8"
+        return resp.geturl(), raw.decode(charset, errors="replace")
+
+
+def _google_article_id(link: str) -> str | None:
+    u = urllib.parse.urlparse(link)
+    parts = [p for p in u.path.split("/") if p]
+    if u.hostname == "news.google.com" and len(parts) >= 2 and parts[-2] in ("articles", "read"):
+        return parts[-1]
+    return None
+
+
+def _decode_legacy_google_id(gid: str) -> str | None:
+    """Older Google News ids embed the publisher URL in plain base64."""
     try:
-        with urllib.request.urlopen(req, timeout=35) as resp:
-            raw = json.loads(resp.read().decode("utf-8"))
+        data = base64.urlsafe_b64decode(gid + "=" * (-len(gid) % 4))
+    except Exception:
+        return None
+    m = re.search(rb"https?://[\x21-\x7e]+", data)
+    return m.group(0).decode("ascii", errors="ignore") if m else None
+
+
+def _decode_google_id_online(gid: str) -> str | None:
+    """Newer ids are encrypted; Google's own web app resolves them through batchexecute."""
+    page = None
+    for base in (f"https://news.google.com/rss/articles/{gid}", f"https://news.google.com/articles/{gid}"):
+        try:
+            _, page = _http_get(base, timeout=20)
+        except Exception:
+            continue
+        sg = re.search(r'data-n-a-sg="([^"]+)"', page)
+        ts = re.search(r'data-n-a-ts="([^"]+)"', page)
+        if sg and ts:
+            break
+    else:
+        return None
+    sig, stamp = html.unescape(sg.group(1)), html.unescape(ts.group(1))
+    inner = (
+        '["garturlreq",[["X","X",["X","X"],null,null,1,1,"US:en",null,1,null,null,null,null,null,0,1],'
+        f'"X","X",1,[1,1,1],1,1,null,0,0,null,0],"{gid}",{stamp},"{sig}"]'
+    )
+    form = "f.req=" + urllib.parse.quote(json.dumps([[["Fbv4je", inner]]]))
+    req = urllib.request.Request(
+        "https://news.google.com/_/DotsSplashUi/data/batchexecute",
+        data=form.encode("utf-8"),
+        headers={"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8", "User-Agent": BROWSER_UA},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        text = resp.read().decode("utf-8", errors="replace")
+    for line in text.split("\n"):
+        line = line.strip()
+        if line.startswith("[["):
+            try:
+                return json.loads(json.loads(line)[0][2])[1]
+            except Exception:
+                continue
+    m = re.search(r'garturlres\\",\\"(https?:[^"\\]+)', text)
+    return m.group(1).replace("\\u003d", "=").replace("\\u0026", "&") if m else None
+
+
+def resolve_article_url(link: str) -> str:
+    """Returns the real publisher URL, or the original link when it cannot be resolved."""
+    gid = _google_article_id(link)
+    if not gid:
+        return link
+    for step in (_decode_legacy_google_id, _decode_google_id_online):
+        try:
+            url = step(gid)
+        except Exception:
+            url = None
+        if url and "news.google.com" not in (urllib.parse.urlparse(url).hostname or ""):
+            return url
+    try:  # last resort: follow plain HTTP redirects
+        final, _ = _http_get(link, timeout=15, max_bytes=2000)
+        if "news.google.com" not in (urllib.parse.urlparse(final).hostname or ""):
+            return final
+    except Exception:
+        pass
+    return link
+
+
+# ---------------------------------------------------------------- readable article text
+class _ArticleParser(HTMLParser):
+    SKIP = {"script", "style", "nav", "header", "footer", "aside", "form", "noscript", "svg", "iframe",
+            "button", "select", "template", "figcaption"}
+    JUNK = re.compile(
+        r"(cookie|subscribe|sign in|log in|advertisement|all rights reserved|follow us|newsletter|"
+        r"read more|click here|terms of use|privacy policy|whatsapp|copyright)", re.I)
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.skip = 0
+        self.article = 0
+        self.buf: list[str] | None = None
+        self.in_article: list[str] = []
+        self.anywhere: list[str] = []
+        self.meta = ""
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag in self.SKIP:
+            self.skip += 1
+        elif tag == "article":
+            self.article += 1
+        elif tag == "p" and not self.skip:
+            self.buf = []
+        elif tag == "meta" and not self.meta:
+            key = (a.get("property") or a.get("name") or "").lower()
+            if key in ("og:description", "description", "twitter:description"):
+                self.meta = clean_html(a.get("content") or "")
+
+    def handle_endtag(self, tag):
+        if tag in self.SKIP:
+            self.skip = max(0, self.skip - 1)
+        elif tag == "article":
+            self.article = max(0, self.article - 1)
+        elif tag == "p" and self.buf is not None:
+            text = " ".join("".join(self.buf).split())
+            self.buf = None
+            if len(text) >= 50 and not self.JUNK.search(text):
+                self.anywhere.append(text)
+                if self.article:
+                    self.in_article.append(text)
+
+    def handle_data(self, data):
+        if self.buf is not None and not self.skip:
+            self.buf.append(data)
+
+
+def extract_article_text(page_html: str, limit: int = MAX_SOURCE_CHARS) -> str:
+    parser = _ArticleParser()
+    try:
+        parser.feed(page_html)
+    except Exception:
+        pass
+    paras = parser.in_article if sum(map(len, parser.in_article)) >= 300 else parser.anywhere
+    seen, out, total = set(), [], 0
+    for p in paras:
+        if p in seen:
+            continue
+        seen.add(p)
+        if total + len(p) > limit and out:
+            break
+        out.append(p[:limit])
+        total += len(p)
+    text = "\n\n".join(out)
+    if len(text) < 200 and parser.meta:
+        text = (text + "\n\n" + parser.meta).strip()
+    return text[:limit]
+
+
+def fetch_source_text(link: str) -> tuple[str, str]:
+    """Returns (publisher_url, article_text). Text is '' when the publisher blocks us."""
+    url = resolve_article_url(link)
+    if "news.google.com" in (urllib.parse.urlparse(url).hostname or ""):
+        return url, ""
+    try:
+        final, page = _http_get(url, timeout=20)
+        return final, extract_article_text(page)
     except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="ignore")[:400]
-        raise RuntimeError(f"Gemini HTTP {exc.code} {exc.reason}: {detail}") from exc
-    text = raw["candidates"][0]["content"]["parts"][0]["text"]
-    parsed = json.loads(text)
-    pa_title = (parsed.get("pa_title") or item["title"]).strip()[:480]
-    en_title = (parsed.get("en_title") or item["en"]).strip()[:480]
-    pa_summary = (parsed.get("pa_summary") or item["summary"]).strip()[:2800]
-    pa_body = (parsed.get("pa_body") or pa_summary).strip()
-    attribution = f"\n\nਸਰੋਤ / Source: {item['source_name']} ({item['link']})"
+        print(f"[WARN] Publisher page blocked/unavailable (HTTP {exc.code}): {url[:100]}")
+    except Exception as exc:
+        print(f"[WARN] Could not read publisher page ({exc}): {url[:100]}")
+    return url, ""
+
+
+# ---------------------------------------------------------------- Gemini
+GURMUKHI = re.compile(r"[\u0A00-\u0A7F]")
+
+
+def _gemini_generate(prompt: str, api_key: str) -> dict:
+    """Calls generateContent, trying the model list on 404 and dropping thinkingConfig on 400."""
+    models = [_GEMINI["model"]] if _GEMINI["model"] else list(dict.fromkeys(GEMINI_MODELS))
+    last = None
+    for model in models:
+        for attempt in (1, 2, 3):
+            cfg = {"responseMimeType": "application/json", "temperature": 0.3, "maxOutputTokens": 8192}
+            if _GEMINI["thinking"]:
+                cfg["thinkingConfig"] = {"thinkingBudget": 0}
+            payload = json.dumps({"contents": [{"parts": [{"text": prompt}]}], "generationConfig": cfg}).encode("utf-8")
+            endpoint = f"{GEMINI_API_BASE}/v1beta/models/{model}:generateContent?key={urllib.parse.quote(api_key)}"
+            req = urllib.request.Request(endpoint, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+            try:
+                with urllib.request.urlopen(req, timeout=90) as resp:
+                    raw = json.loads(resp.read().decode("utf-8"))
+                if _GEMINI["model"] != model:
+                    print(f"[INFO] Using Gemini model: {model}")
+                _GEMINI["model"] = model
+                return raw
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="ignore")[:400]
+                last = RuntimeError(f"Gemini HTTP {exc.code} {exc.reason} ({model}): {detail}")
+                if exc.code == 404:
+                    break  # model not available -> next model
+                if exc.code == 400 and _GEMINI["thinking"] and "think" in detail.lower():
+                    _GEMINI["thinking"] = False  # this model does not accept thinkingBudget
+                    continue
+                if exc.code in (429, 500, 503) and attempt < 3:
+                    time.sleep(10 * attempt)
+                    continue
+                raise last from exc
+    raise last or RuntimeError("No Gemini model available")
+
+
+def rewrite_with_gemini(item: dict, source_text: str, api_key: str) -> dict:
+    """Original, neutral Gurmukhi article + English headline. Raises on any failure (caller falls back)."""
+    thin = len(source_text) < 400
+    prompt = (
+        "You are a senior editor at PrimezNews (Punjab regional digital news). Using ONLY the source material "
+        "below, write original, neutral, factual news copy. Do not copy sentences verbatim; keep every name, "
+        "number, date and place exactly as in the source; NEVER invent facts, quotes or background.\n"
+        'Return ONLY valid JSON with exactly these keys:\n'
+        '"pa_title": crisp Punjabi (Gurmukhi) headline, no publisher name or suffix;\n'
+        '"en_title": crisp English headline, no publisher name or suffix;\n'
+        '"pa_summary": 2-3 sentence Punjabi (Gurmukhi) summary;\n'
+        '"pa_body": full Punjabi (Gurmukhi) news article of 3-4 paragraphs, about 250-400 words, paragraphs '
+        'separated by a blank line (\\n\\n), written as a news report, strictly based on the source'
+        + (" (the source is short, so write only what it supports and keep the article shorter; never pad with invention)" if thin else "")
+        + f', and the last line must be exactly: ਸਰੋਤ: {item["source_name"]}\n'
+        f"Publisher: {item['source_name']}\nDistrict: {item['district']}\nHeadline: {item['title']}\n"
+        f"Source material:\n{(source_text or item['summary'] or item['title'])[:MAX_SOURCE_CHARS]}"
+    )
+    raw = _gemini_generate(prompt, api_key)
+    parsed = json.loads(raw["candidates"][0]["content"]["parts"][0]["text"], strict=False)
+    pa_title = strip_publisher((parsed.get("pa_title") or "").strip(), item["source_name"])[:480]
+    en_title = strip_publisher((parsed.get("en_title") or "").strip(), item["source_name"])[:480]
+    pa_summary = (parsed.get("pa_summary") or "").strip()[:2800]
+    pa_body = (parsed.get("pa_body") or "").strip()
+    if not (pa_title and GURMUKHI.search(pa_title) and en_title and GURMUKHI.search(pa_summary) and len(pa_body) >= 200 and GURMUKHI.search(pa_body)):
+        raise RuntimeError("Gemini returned an incomplete or non-Gurmukhi article")
+    attribution = f"ਸਰੋਤ: {item['source_name']}"
+    if not pa_body.rstrip().endswith(attribution):
+        pa_body = re.sub(r"\n*\s*ਸਰੋਤ\s*[:/].*$", "", pa_body, flags=re.S).rstrip() + "\n\n" + attribution
+    return {"title": pa_title, "en": en_title, "summary": pa_summary, "body": pa_body[:95000]}
+
+
+def fallback_rewrite(item: dict) -> dict:
+    summary = item["summary"] or item["title"]
     return {
-        "title": pa_title,
-        "en": en_title,
-        "summary": pa_summary,
-        "body": (pa_body + attribution)[:95000],
+        "title": item["title"],
+        "en": item["en"],
+        "summary": summary,
+        "body": f"{summary}\n\nSource: {item['source_name']}",
     }
+
+
+def build_article(item: dict, state: dict) -> dict:
+    """Resolve -> extract -> Gemini, with graceful fallbacks. Returns title/en/summary/body/source_url/mode."""
+    url, text = fetch_source_text(item["link"])
+    if text:
+        print(f"[INFO] Source text: {len(text)} chars from {urllib.parse.urlparse(url).hostname}")
+    else:
+        print("[WARN] Full article text unavailable; using RSS headline/summary only.")
+    out, mode = None, "rss-fallback"
+    if state.get("gemini_key"):
+        try:
+            if state.get("last_call") and time.time() - state["last_call"] < 4:
+                time.sleep(4)  # stay under the free-tier request rate
+            out = rewrite_with_gemini(item, text, state["gemini_key"])
+            mode = "gemini-full" if text else "gemini-summary"
+        except Exception as exc:
+            print(f"[WARN] Gemini rewrite fallback for '{item['title'][:70]}': {exc}")
+            if "HTTP 4" in str(exc) and "HTTP 429" not in str(exc):
+                state["gemini_key"] = ""  # bad key / blocked: stop calling Gemini this run
+        finally:
+            state["last_call"] = time.time()
+    if out is None:
+        out = fallback_rewrite(item)
+    out["source_url"] = url if url else item["link"]
+    out["mode"] = mode
+    return out
 
 
 def _auth_headers(service_key: str) -> dict:
@@ -298,26 +561,91 @@ def verify_inserted(supabase_url: str, service_key: str, ids: list[str]) -> set[
     return found
 
 
-def fallback_rewrite(item: dict) -> dict:
-    return {
-        "title": item["title"],
-        "en": item["en"],
-        "summary": item["summary"],
-        "body": f"{item['summary']}\n\nSource: {item['source_name']} ({item['link']})",
-    }
+def patch_story(supabase_url: str, service_key: str, story_id: str, fields: dict) -> None:
+    url = f"{supabase_url}/rest/v1/stories?id=eq.{urllib.parse.quote(story_id, safe='')}&status=eq.draft"
+    status, text = rest_request("PATCH", url, service_key, fields, "return=minimal")
+    if status == 400 and "source_url" in fields:  # optional column missing -> core columns only
+        core = {k: v for k, v in fields.items() if k != "source_url"}
+        status, text = rest_request("PATCH", url, service_key, core, "return=minimal")
+    if status not in (200, 204):
+        raise RuntimeError(f"HTTP {status}: {text[:400]}")
+
+
+def regenerate_drafts(supabase_url: str, service_key: str, state: dict, limit: int) -> int:
+    """RSS_REGENERATE=true: rebuild old RSS drafts whose body is still a 1-line stub.
+    Only drafts (never published stories) with a short body are touched, so human edits are safe."""
+    base = f"{supabase_url}/rest/v1/stories"
+    cols = "id,title,en,summary,body,category,district,source_url,source_name"
+    q = "&status=eq.draft&id=like.rss-*&order=updated_at.desc&limit=300"
+    status, text = rest_request("GET", f"{base}?select={cols}{q}", service_key)
+    if status == 400:
+        status, text = rest_request("GET", f"{base}?select=id,title,en,summary,body,category,district{q}", service_key)
+    if status != 200:
+        print(f"[WARN] Cannot list drafts to regenerate (HTTP {status}): {text[:300]}")
+        return 0
+    done = 0
+    for row in json.loads(text or "[]"):
+        if len(row.get("body") or "") >= 700:
+            continue
+        if done >= limit:
+            break
+        m = re.search(r"https?://[^\s)]+", row.get("body") or "")
+        link = row.get("source_url") or (m.group(0) if m else "")
+        sm = re.search(r"Source:\s*(.+?)(?:\s*\(|$)", row.get("body") or "")
+        tm = re.search(r"\s[-\u2013|]\s([^-\u2013|]{2,45})$", row.get("en") or row["title"])  # old titles end with the publisher
+        publisher = (tm.group(1).strip() if tm else "") or row.get("source_name") or (sm.group(1).strip() if sm else "Google News")
+        if not link:
+            print(f"[WARN] No source link for {row['id']}; skipped.")
+            continue
+        item = {
+            "title": strip_publisher(row.get("en") or row["title"], publisher),
+            "en": strip_publisher(row.get("en") or row["title"], publisher),
+            "summary": row.get("summary") or row["title"],
+            "link": link, "source_name": publisher, "district": row.get("district") or "Chandigarh",
+        }
+        art = build_article(item, state)
+        if art["mode"] == "rss-fallback":
+            print(f"[WARN] Not regenerated (no Gemini article): {item['title'][:70]}")
+            continue
+        try:
+            patch_story(supabase_url, service_key, row["id"], {
+                "title": art["title"][:500], "en": art["en"][:500], "summary": art["summary"][:3000],
+                "body": art["body"][:100000], "source_url": art["source_url"],
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+            })
+            done += 1
+            print(f"[OK] Regenerated ({art['mode']}): {art['title'][:80]}")
+        except Exception as exc:
+            print(f"[WARN] Regenerate failed for {row['id']}: {exc}")
+    print(f"Regenerated drafts: {done}")
+    return done
 
 
 def main() -> int:
     service_key = os.environ.get("SUPABASE_SERVICE_KEY", "").strip()
     gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
     auto_publish = os.environ.get("RSS_AUTO_PUBLISH", "false").strip().lower() == "true"
+    regenerate = os.environ.get("RSS_REGENERATE", "false").strip().lower() == "true"
+    try:
+        max_new = max(1, int(os.environ.get("RSS_MAX_NEW", "20") or 20))
+    except ValueError:
+        max_new = 20
 
     if not service_key:
         print("[WARN] SUPABASE_SERVICE_KEY is not set; skipping RSS sync cleanly.")
         return 0
 
     supabase_url = load_supabase_url()
-    print(f"[INFO] Supabase: {supabase_url} · mode={'published' if auto_publish else 'draft'} · gemini={'on' if gemini_key else 'off'}")
+    print(f"[INFO] Supabase: {supabase_url} · mode={'published' if auto_publish else 'draft'} · gemini={'on' if gemini_key else 'OFF (set GEMINI_API_KEY)'}")
+    state = {"gemini_key": gemini_key, "last_call": 0.0}
+
+    if regenerate:
+        if not gemini_key:
+            print("[WARN] RSS_REGENERATE needs GEMINI_API_KEY.")
+            return 1
+        regenerate_drafts(supabase_url, service_key, state, max_new)
+        return 0
+
     try:
         existing, existing_titles, has_cols = fetch_existing(supabase_url, service_key)
     except Exception as exc:
@@ -325,14 +653,16 @@ def main() -> int:
         return 1
     now_iso = datetime.now(timezone.utc).isoformat()
     attempted: list[str] = []
-    inserted = skipped = failed = feeds_ok = 0
+    skipped = failed = feeds_ok = processed = 0
 
     for feed_cfg in RSS_FEEDS:
+        if processed >= max_new:
+            break
         try:
             req = urllib.request.Request(
                 feed_cfg["url"],
                 headers={
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+                    "User-Agent": BROWSER_UA,
                     "Accept": "application/rss+xml, application/xml, text/xml, */*",
                     "Accept-Language": "en-IN,en;q=0.9,pa;q=0.8",
                 },
@@ -355,20 +685,17 @@ def main() -> int:
             if item["external_guid"] in existing or row_id in existing or norm_title(item["title"]) in existing_titles:
                 skipped += 1
                 continue
-            try:
-                rewritten = rewrite_with_gemini(item, gemini_key)
-            except Exception as exc:
-                print(f"[WARN] Gemini rewrite fallback for '{item['title'][:70]}': {exc}")
-                if "HTTP 4" in str(exc):
-                    gemini_key = ""  # bad key / quota: stop calling Gemini for the rest of this run
-                rewritten = fallback_rewrite(item)
-
-            body = (rewritten["body"] or "").strip() or f"{item['title']}\n\nSource: {item['source_name']} ({item['link']})"
+            if processed >= max_new:
+                print(f"[INFO] RSS_MAX_NEW={max_new} reached; remaining items are picked up in the next run.")
+                break
+            processed += 1
+            art = build_article(item, state)
+            body = (art["body"] or "").strip() or f"{item['title']}\n\nSource: {item['source_name']}"
             story_row = {
                 "id": row_id,
-                "title": rewritten["title"][:500],
-                "en": rewritten["en"][:500],
-                "summary": (rewritten["summary"] or item["title"])[:3000],
+                "title": art["title"][:500],
+                "en": art["en"][:500],
+                "summary": (art["summary"] or item["title"])[:3000],
                 "body": body[:100000],
                 "categories": [item["category"]],
                 "category": item["category"],
@@ -380,7 +707,7 @@ def main() -> int:
                 "updated_at": now_iso,
                 "external_guid": item["external_guid"],
                 "source_name": item["source_name"],
-                "source_url": item["link"],
+                "source_url": art["source_url"],
                 "is_automated": True,
             }
             try:
@@ -397,7 +724,7 @@ def main() -> int:
                 print(f"[WARN] Duplicate ignored: {story_row['title'][:80]}")
                 continue
             attempted.append(row_id)
-            print(f"[OK] Sent ({story_row['status']}{', core columns' if result == 'inserted-core' else ''}): {story_row['title'][:90]}")
+            print(f"[OK] Sent ({story_row['status']}, {art['mode']}{', core columns' if result == 'inserted-core' else ''}): {story_row['title'][:90]}")
 
     verified = verify_inserted(supabase_url, service_key, attempted) if attempted else set()
     inserted = len(verified)
