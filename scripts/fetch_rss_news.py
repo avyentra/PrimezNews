@@ -16,6 +16,7 @@ Insert strategy (robust against PostgREST 400s):
   * after the run, rows are read back from Supabase to verify they really exist.
 """
 import base64
+import email.utils
 import hashlib
 import html
 import json
@@ -27,7 +28,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -121,12 +122,51 @@ def detect_district(text: str, default_district: str) -> str:
     return default_district
 
 
+def parse_pub_date(node) -> datetime | None:
+    """Item timestamp in UTC (RSS <pubDate>, Atom <published>/<updated>, <dc:date>); None if missing/unparseable."""
+    for tag in ("pubDate", "{http://www.w3.org/2005/Atom}published", "{http://www.w3.org/2005/Atom}updated",
+                "{http://purl.org/dc/elements/1.1/}date"):
+        raw = (node.findtext(tag) or "").strip()
+        if not raw:
+            continue
+        dt = None
+        try:
+            dt = email.utils.parsedate_to_datetime(raw)
+        except Exception:
+            try:
+                dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+            except Exception:
+                dt = None
+        if dt is not None:
+            return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
+    return None
+
+
+def max_age_hours() -> float:
+    try:
+        value = float(os.environ.get("RSS_MAX_AGE_HOURS", "4") or 4)
+    except ValueError:
+        value = 4.0
+    return value if value > 0 else 4.0
+
+
+def with_recency(url: str, hours: float) -> str:
+    """Adds Google News' `when:Nh` operator to the search query (e.g. q=Punjab+news+when:4h)."""
+    parts = urllib.parse.urlsplit(url)
+    if "news.google.com" not in parts.netloc:
+        return url
+    query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
+    window = f"{int(-(-hours // 1))}h" if hours < 24 else f"{int(-(-hours // 24))}d"
+    query = [(k, re.sub(r"\s*when:\S+", "", v) + f" when:{window}") if k == "q" else (k, v) for k, v in query]
+    return urllib.parse.urlunsplit(parts._replace(query=urllib.parse.urlencode(query)))
+
+
 def parse_feed(xml_bytes: bytes, feed_cfg: dict) -> list[dict]:
     root = ET.fromstring(xml_bytes)
     items = []
     # Support RSS 2.0 (<item>) and Atom (<entry>)
     nodes = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
-    for node in nodes[:12]:
+    for node in nodes[:30]:
         title = clean_html(
             (node.findtext("title") or node.findtext("{http://www.w3.org/2005/Atom}title") or "")
         )
@@ -165,6 +205,7 @@ def parse_feed(xml_bytes: bytes, feed_cfg: dict) -> list[dict]:
                 "category": feed_cfg["category"],
                 "district": district,
                 "image": feed_cfg["image"],
+                "published": parse_pub_date(node),
             }
         )
     return items
@@ -362,20 +403,20 @@ def fetch_source_text(link: str) -> tuple[str, str]:
 GURMUKHI = re.compile(r"[\u0A00-\u0A7F]")
 
 
-def _gemini_generate(prompt: str, api_key: str) -> dict:
+def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout: int = 90) -> dict:
     """Calls generateContent, trying the model list on 404 and dropping thinkingConfig on 400."""
     models = [_GEMINI["model"]] if _GEMINI["model"] else list(dict.fromkeys(GEMINI_MODELS))
     last = None
     for model in models:
         for attempt in (1, 2, 3):
-            cfg = {"responseMimeType": "application/json", "temperature": 0.3, "maxOutputTokens": 8192}
+            cfg = {"responseMimeType": "application/json", "temperature": 0.3, "maxOutputTokens": max_tokens}
             if _GEMINI["thinking"]:
                 cfg["thinkingConfig"] = {"thinkingBudget": 0}
             payload = json.dumps({"contents": [{"parts": [{"text": prompt}]}], "generationConfig": cfg}).encode("utf-8")
             endpoint = f"{GEMINI_API_BASE}/v1beta/models/{model}:generateContent?key={urllib.parse.quote(api_key)}"
             req = urllib.request.Request(endpoint, data=payload, headers={"Content-Type": "application/json"}, method="POST")
             try:
-                with urllib.request.urlopen(req, timeout=90) as resp:
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
                     raw = json.loads(resp.read().decode("utf-8"))
                 if _GEMINI["model"] != model:
                     print(f"[INFO] Using Gemini model: {model}")
@@ -638,6 +679,8 @@ def main() -> int:
     supabase_url = load_supabase_url()
     print(f"[INFO] Supabase: {supabase_url} · mode={'published' if auto_publish else 'draft'} · gemini={'on' if gemini_key else 'OFF (set GEMINI_API_KEY)'}")
     state = {"gemini_key": gemini_key, "last_call": 0.0}
+    age_limit = max_age_hours()
+    print(f"[INFO] Freshness filter: only items published in the last {age_limit:g} hours (RSS_MAX_AGE_HOURS)")
 
     if regenerate:
         if not gemini_key:
@@ -660,7 +703,7 @@ def main() -> int:
             break
         try:
             req = urllib.request.Request(
-                feed_cfg["url"],
+                with_recency(feed_cfg["url"], age_limit),
                 headers={
                     "User-Agent": BROWSER_UA,
                     "Accept": "application/rss+xml, application/xml, text/xml, */*",
@@ -669,9 +712,20 @@ def main() -> int:
             )
             with urllib.request.urlopen(req, timeout=25) as resp:
                 xml_data = resp.read()
-            items = parse_feed(xml_data, feed_cfg)
+            all_items = parse_feed(xml_data, feed_cfg)
             feeds_ok += 1
-            print(f"[OK] Feed '{feed_cfg['name']}': {len(items)} items")
+            now_utc = datetime.now(timezone.utc)
+            items, too_old, undated = [], 0, 0
+            for it in all_items:
+                pub = it.get("published")
+                if pub is None:
+                    undated += 1  # unknown age -> never risk publishing stale news
+                elif timedelta(minutes=-15) <= now_utc - pub <= timedelta(hours=age_limit):
+                    items.append(it)
+                else:
+                    too_old += 1
+            print(f"[OK] Feed '{feed_cfg['name']}': {len(all_items)} items · {len(items)} fresh (<= {age_limit:g}h) · "
+                  f"{too_old} too old skipped · {undated} without a date skipped")
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="ignore")[:200]
             print(f"[WARN] Could not read feed {feed_cfg['name']}: HTTP {exc.code} {exc.reason} {body}")
