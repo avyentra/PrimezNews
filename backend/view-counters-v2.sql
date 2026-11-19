@@ -1,7 +1,7 @@
 -- View counters v2. Run ONCE in Supabase SQL Editor (after article-views.sql + site-visitors.sql; super-admin.sql optional). Safe to run again.
 --  * Article views: every page open / refresh of a story = +1 on THAT story only (no more "one per browser").
 --  * Every story also gets +5 views automatically every hour, for life (counted from its publish time).
---  * Footer total: +1 on every refresh, every new visit and every re-opened browser; moving from page to page inside the site does not add.
+--  * Footer total: also +5 every hour automatically. +1 on every refresh, every new visit and every re-opened browser; moving from page to page inside the site does not add.
 begin;
 create table if not exists newsroom_private.article_view_days (day date not null, story_key text not null, total bigint not null default 0, primary key (day, story_key));
 create table if not exists newsroom_private.site_view_days (day date primary key, total bigint not null default 0);
@@ -28,10 +28,11 @@ begin
   if count_hit then
     insert into newsroom_private.site_hits as h(id, total) values (true, 1)
       on conflict (id) do update set total = h.total + 1 returning total into n;
-    return n;
+  else
+    select total into n from newsroom_private.site_hits;
   end if;
-  select total into n from newsroom_private.site_hits;
-  return coalesce(n, 0);
+  -- real counted visits + 5 automatic visits every hour (from 18 Nov 2026), for life
+  return coalesce(n, 0) + 5 * greatest(0, floor(extract(epoch from (now() - timestamptz '2026-11-18 00:00+05:30')) / 3600))::bigint;
 end $$;
 revoke all on function public.site_visitor_count(uuid, boolean) from public;
 grant execute on function public.site_visitor_count(uuid, boolean) to anon, authenticated;
