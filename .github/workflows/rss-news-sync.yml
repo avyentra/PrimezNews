@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: '25 * * * *'
   workflow_dispatch:
+    inputs:
+      regenerate:
+        description: 'Rebuild existing short RSS drafts into full Punjabi articles (needs GEMINI_API_KEY)'
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -11,7 +16,7 @@ concurrency:
 jobs:
   sync-rss:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,4 +30,12 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           RSS_AUTO_PUBLISH: ${{ vars.RSS_AUTO_PUBLISH || 'false' }}
-        run: python3 scripts/fetch_rss_news.py
+          PYTHONUNBUFFERED: '1'
+          RSS_REGENERATE: ${{ inputs.regenerate && 'true' || 'false' }}
+          RSS_MAX_NEW: '20'
+        run: |
+          if [ -z "$SUPABASE_SERVICE_KEY" ]; then
+            echo "::error::Repository secret SUPABASE_SERVICE_KEY is missing (Settings -> Secrets and variables -> Actions)."
+            exit 1
+          fi
+          python3 scripts/fetch_rss_news.py
