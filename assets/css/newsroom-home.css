@@ -6,6 +6,7 @@ body.nh-mode #homePanel,body.nh-mode #draftsPanel{padding-bottom:32px}
 .nh-drow{display:flex;align-items:center;gap:14px;padding:12px 20px;border-top:1px solid var(--line)}
 .nh-drow .nh-story{flex:1;min-width:0}
 .nh-drow .nh-acts{display:flex;gap:8px;flex:none}
+.nh-del{color:#b42318!important;border-color:#f1c7c2!important;background:#fff!important}.nh-del:hover{background:#fdecea!important}.nh-del[disabled]{opacity:.6}
 .nh-dsearch{flex:1;min-width:180px;max-width:360px;border:1px solid var(--line);border-radius:12px;padding:9px 12px;font:inherit;background:#f7f8fb}
 .nh{--ink:#16192b;--mute:#5f6680;--line:#e6e8ef;--navy:#14233a;display:flex;flex-direction:column;gap:18px;color:var(--ink);font-family:"DM Sans",Manrope,"Noto Sans Gurmukhi",system-ui,sans-serif}
 .nh[hidden]{display:none!important}

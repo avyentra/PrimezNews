@@ -63,7 +63,17 @@
     return h('div', { class: 'nh-drow' },
       h('div', { class: 'nh-story' }, h('img', { src: api.image(s.image), alt: '', loading: 'lazy' }),
         h('div', {}, h('strong', { class: 'nh-gb' }, s.title || s.en), h('span', {}, [s.category, s.district, s.author, 'Updated ' + ago(s.updated_at)].filter(Boolean).join(' · ')))),
-      h('div', { class: 'nh-acts' }, h('button', { type: 'button', class: 'nh-sm nh-dark', onclick: () => openStory(s.id) }, 'Edit & publish')));
+      h('div', { class: 'nh-acts' },
+        h('button', { type: 'button', class: 'nh-sm nh-del', onclick: e => deleteDraft(s, e.currentTarget) }, 'Delete'),
+        h('button', { type: 'button', class: 'nh-sm nh-dark', onclick: () => openStory(s.id) }, 'Edit & publish')));
+  }
+  async function deleteDraft(s, btn) {
+    if (!window.PrimezNewsroom?.remove) return;
+    if (!confirm('Delete this draft permanently?\n\n' + (s.title || s.en || ''))) return;
+    btn.disabled = true; btn.textContent = 'Deleting…';
+    const m = $('nhDraftMsg');
+    try { await window.PrimezNewsroom.remove(s.id); if (m) m.textContent = ''; drawDraftList(); }
+    catch (err) { btn.disabled = false; btn.textContent = 'Delete'; if (m) m.textContent = 'Could not delete: ' + (err?.message || err); }
   }
   function drawDraftList() {
     const box = $('nhDraftList'); if (!box) return;
