@@ -430,7 +430,8 @@ _DEAD_MODELS = set()
 def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout: int = 90) -> dict:
     """Calls generateContent, trying the model list on 404 and dropping thinkingConfig on 400."""
     live = [m for m in dict.fromkeys(GEMINI_MODELS) if m not in _DEAD_MODELS]
-    models = [_GEMINI["model"]] if _GEMINI["model"] in live else live
+    pinned = _GEMINI["model"]
+    models = ([pinned] + [m for m in live if m != pinned]) if pinned in live else live  # busy/over quota: fall through to the next model
     last = None
     for model in models:
         for attempt in (1, 2, 3):
@@ -458,9 +459,11 @@ def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout:
                 if exc.code == 400 and _GEMINI["thinking"] and "think" in detail.lower():
                     _GEMINI["thinking"] = False  # this model does not accept thinkingBudget
                     continue
-                if exc.code in (429, 500, 503) and attempt < 3:
-                    time.sleep(10 * attempt)
-                    continue
+                if exc.code in (429, 500, 503):
+                    if attempt < 3:
+                        time.sleep(10 * attempt)
+                        continue
+                    break  # still busy after 3 tries -> try the next model
                 raise last from exc
     if last is not None and "HTTP 404" in str(last) and [m for m in GEMINI_MODELS if m not in _DEAD_MODELS]:
         return _gemini_generate(prompt, api_key, max_tokens, timeout)  # pinned model vanished -> try the rest
