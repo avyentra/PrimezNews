@@ -282,7 +282,7 @@ def call_json(prompt, max_tokens, state):
     rotations = 0
     for attempt in range(1, 8):
         try:
-            raw = rss._gemini_generate(prompt, os.environ["GEMINI_API_KEY"], max_tokens=max_tokens, timeout=240)
+            raw = rss._gemini_generate(prompt, os.environ["GEMINI_API_KEY"], max_tokens=max_tokens, timeout=180)
             state["last_call"] = time.time()
             return json.loads(raw["candidates"][0]["content"]["parts"][0]["text"], strict=False)
         except json.JSONDecodeError:
@@ -408,7 +408,12 @@ def main():
     used_titles = {norm(p["title"]["en"]) for p in everything}
     used_keywords = {norm(p.get("keyword", "")) for p in everything if p.get("keyword")}
     state, made, quota_out = {"last_call": 0.0}, [], False
+    started = time.time()
+    budget = float(os.environ.get("HEALTH_BLOG_BUDGET_MIN", "60")) * 60  # stop in time so written blogs are committed
     for topic in chosen:
+        if time.time() - started > budget:
+            log("[WARN] Time budget used up; keeping the blogs written so far. The next run continues.")
+            break
         avoid = [p["title"]["en"] for p in everything if p.get("tag") == topic["tag"]]
         post = words = None
         keyword = pick_keyword(topic, used_keywords, today)
