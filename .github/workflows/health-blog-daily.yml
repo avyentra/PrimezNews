@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       per_day:
-        description: 'Blogs to have for today (1-10). Empty = 4 or 5 automatically'
+        description: 'Blogs to have for today (1-10). Empty = 1 or 2 automatically'
         required: false
         default: ''
       draft:

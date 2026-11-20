@@ -8,7 +8,7 @@ Punjabi + Hindi + English for every field). The existing builder then turns them
 
 Env (all optional except the key):
     GEMINI_API_KEY          Google AI Studio key
-    HEALTH_BLOGS_PER_DAY    1-10. Default: 4 on even days, 5 on odd days of the year  ("4-5 a day")
+    HEALTH_BLOGS_PER_DAY    1-10. Default: 1 on even days, 2 on odd days of the year  ("1-2 a day", fits the free Gemini quota)
     HEALTH_BLOG_MIN_WORDS   minimum English words per article (default 1200)
     HEALTH_BLOG_SKIP_TAGS   comma list of topic tags NOT to write (default "sexual-wellness": Google AdSense is strict about
                             sexual-health content; set it to "none" to write that topic too)
@@ -159,7 +159,7 @@ def per_day(today):
     raw = os.environ.get("HEALTH_BLOGS_PER_DAY", "").strip()
     if raw.isdigit():
         return min(10, max(1, int(raw)))
-    return 4 + (today.timetuple().tm_yday % 2)
+    return 1 + (today.timetuple().tm_yday % 2)
 
 
 def tri_ok(obj, minimum=1):
