@@ -485,7 +485,7 @@ def rewrite_with_gemini(item: dict, source_text: str, api_key: str) -> dict:
         'separated by a blank line (\\n\\n), strictly based on the source'
         + (" (the source is short, so write only what it supports and keep it shorter; never pad with invention)" if thin else "")
         + (', and add one last short paragraph starting with "NRI ਲਈ ਮਤਲਬ:" that explains what this means for Punjabis abroad, using only what the source supports' if nri else "")
-        + f', and the very last line must be exactly: ਸਰੋਤ: {item["source_name"]}\n'
+        + ", with at least 2 full paragraphs (never a single paragraph), and do NOT mention the publisher or add any source line\n"
         '"priority": "high" if the news is urgent or affects many people (new rules, official announcements, '
         'safety, deadlines, major events), otherwise "low".\n'
         f"Publisher: {item['source_name']}\nDistrict: {item['district']}\nHeadline: {item['title']}\n"
@@ -499,9 +499,10 @@ def rewrite_with_gemini(item: dict, source_text: str, api_key: str) -> dict:
     pa_body = (parsed.get("pa_body") or "").strip()
     if not (pa_title and GURMUKHI.search(pa_title) and en_title and GURMUKHI.search(pa_summary) and len(pa_body) >= 200 and GURMUKHI.search(pa_body)):
         raise RuntimeError("Gemini returned an incomplete or non-Gurmukhi article")
-    attribution = f"ਸਰੋਤ: {item['source_name']}"
-    if not pa_body.rstrip().endswith(attribution):
-        pa_body = re.sub(r"\n*\s*ਸਰੋਤ\s*[:/].*$", "", pa_body, flags=re.S).rstrip() + "\n\n" + attribution
+    # No visible source line in the public text (the publisher stays stored in source_name/source_url for the admin)
+    pa_body = re.sub(r"\n*\s*ਸਰੋਤ\s*[:/].*$", "", pa_body, flags=re.S).rstrip()
+    if len([p for p in re.split(r"\n\s*\n", pa_body) if p.strip()]) < 2:
+        raise RuntimeError("Gemini returned fewer than 2 paragraphs")
     priority = "high" if str(parsed.get("priority", "")).strip().lower() == "high" else "low"
     return {"title": pa_title, "en": en_title, "summary": pa_summary, "body": pa_body[:95000], "priority": priority}
 
