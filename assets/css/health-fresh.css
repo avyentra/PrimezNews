@@ -1,10 +1,11 @@
 /* Health & Beauty page: "Fresh green" layout (hero, featured blog, helpline, news, NRI corner, guides, WhatsApp).
    Everything is scoped to main.hf, so blog list/article pages and the shared header/footer are not touched. */
 main.topic.hb.hf{--g1:#0a5c36;--g2:#1b8a4b;--g3:#82c341;--ink:#14231b;--mut:#5b6b62;--line:#e4ece6;
- width:calc(100% - 96px);max-width:1800px;margin:0 auto;padding:18px 0 48px;background:#fff;background-image:none;color:var(--ink)}
+ width:min(1550px,calc(100% - 96px));max-width:none;margin:0 auto;padding:18px 0 48px;background:transparent;background-image:none;color:var(--ink)}
 .hf h1,.hf h2,.hf h3{letter-spacing:0}
 .hf a:focus-visible,.hf button:focus-visible{outline:3px solid var(--g3);outline-offset:3px}
 
+body:has(main.hf){background:#f5f4f8}
 /* ---- hero ---- */
 .hf .hb-hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);position:relative;overflow:hidden;min-height:310px;margin:0 0 22px;border:0;border-radius:26px;box-shadow:none;
  background:linear-gradient(115deg,#eaf7e3 0%,#d4eeca 48%,#bde2b0 100%)}
