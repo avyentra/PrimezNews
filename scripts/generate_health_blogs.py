@@ -266,7 +266,7 @@ class QuotaExhausted(RuntimeError):
 
 
 def _rotate_model():
-    models = list(dict.fromkeys(rss.GEMINI_MODELS))
+    models = [m for m in dict.fromkeys(rss.GEMINI_MODELS) if m not in rss._DEAD_MODELS] or list(dict.fromkeys(rss.GEMINI_MODELS))
     cur = rss._GEMINI.get("model")
     nxt = models[(models.index(cur) + 1) % len(models)] if cur in models else models[0]
     rss._GEMINI["model"] = nxt

@@ -36,7 +36,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GEMINI_API_BASE = os.environ.get("GEMINI_API_BASE", "https://generativelanguage.googleapis.com").rstrip("/")
 # Google retires models for new users from time to time (gemini-2.5-flash now returns 404), so we try a list.
 # Override with the GEMINI_MODEL env var / repository variable if you want a specific model.
-GEMINI_MODELS = [m for m in [os.environ.get("GEMINI_MODEL", "").strip(), "gemini-3.8-flash", "gemini-3-flash", "gemini-2.5-flash"] if m]
+GEMINI_MODELS = [m for m in [os.environ.get("GEMINI_MODEL", "").strip(), "gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"] if m]
 _GEMINI = {"model": None, "thinking": True}
 BROWSER_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -403,9 +403,13 @@ def fetch_source_text(link: str) -> tuple[str, str]:
 GURMUKHI = re.compile(r"[\u0A00-\u0A7F]")
 
 
+_DEAD_MODELS = set()
+
+
 def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout: int = 90) -> dict:
     """Calls generateContent, trying the model list on 404 and dropping thinkingConfig on 400."""
-    models = [_GEMINI["model"]] if _GEMINI["model"] else list(dict.fromkeys(GEMINI_MODELS))
+    live = [m for m in dict.fromkeys(GEMINI_MODELS) if m not in _DEAD_MODELS]
+    models = [_GEMINI["model"]] if _GEMINI["model"] in live else live
     last = None
     for model in models:
         for attempt in (1, 2, 3):
@@ -426,6 +430,9 @@ def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout:
                 detail = exc.read().decode("utf-8", errors="ignore")[:400]
                 last = RuntimeError(f"Gemini HTTP {exc.code} {exc.reason} ({model}): {detail}")
                 if exc.code == 404:
+                    _DEAD_MODELS.add(model)  # model does not exist for this key: never try it again
+                    if _GEMINI["model"] == model:
+                        _GEMINI["model"] = ""
                     break  # model not available -> next model
                 if exc.code == 400 and _GEMINI["thinking"] and "think" in detail.lower():
                     _GEMINI["thinking"] = False  # this model does not accept thinkingBudget
@@ -434,6 +441,8 @@ def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout:
                     time.sleep(10 * attempt)
                     continue
                 raise last from exc
+    if last is not None and "HTTP 404" in str(last) and [m for m in GEMINI_MODELS if m not in _DEAD_MODELS]:
+        return _gemini_generate(prompt, api_key, max_tokens, timeout)  # pinned model vanished -> try the rest
     raise last or RuntimeError("No Gemini model available")
 
 
