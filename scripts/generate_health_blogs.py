@@ -10,6 +10,9 @@ Env (all optional except the key):
     GEMINI_API_KEY          Google AI Studio key
     HEALTH_BLOGS_PER_DAY    1-10. Default: 4 on even days, 5 on odd days of the year  ("4-5 a day")
     HEALTH_BLOG_MIN_WORDS   minimum English words per article (default 1200)
+    HEALTH_BLOG_SKIP_TAGS   comma list of topic tags NOT to write (default "sexual-wellness": Google AdSense is strict about
+                            sexual-health content; set it to "none" to write that topic too)
+    HEALTH_BLOG_TRENDS      "false" turns off the Google Trends (India) keyword hints
     HEALTH_BLOG_DRAFT=true  do NOT publish: write to data/health-blog-drafts.json for manual review
                             (move an entry into data/health-blog.json to publish it)
 
@@ -51,29 +54,29 @@ TAGS = {
 
 # The 10 topics, in a fixed order. `images` are existing assets/images/<name>.webp files.
 TOPICS = [
-    {"tag": "health-news", "name": "Health news", "images": ["news-health", "city"],
+    {"tag": "health-news", "keywords": ['winter health tips for adults', 'how to prevent seasonal flu naturally', 'air pollution health effects and protection', 'dengue symptoms and prevention at home', 'how to stay healthy in smog', 'vaccination schedule for adults in India', 'heat stroke prevention tips', 'when to visit a hospital emergency', 'cold and cough home care for kids', 'stubble burning smoke health risks', 'how to boost immunity naturally', 'fever in children when to worry'], "name": "Health news", "images": ["news-health", "city"],
      "brief": "Evergreen health explainers on topics that are often in the news (seasonal illnesses, vaccination awareness, "
               "air-pollution and heat/cold safety, hospital visits). Do NOT report specific recent events, outbreaks, numbers or quotes."},
-    {"tag": "beauty", "name": "Beauty", "images": ["people"],
+    {"tag": "beauty", "keywords": ['natural glowing skin tips at home', 'winter skincare routine for dry skin', 'how to get healthy skin naturally', 'homemade face pack for glowing skin', 'daily grooming tips for men', 'how to reduce dark circles naturally', 'lip care tips in winter', 'how to remove tan naturally', 'nail care tips at home', 'simple self care routine for women', 'how to get clear skin naturally', 'best habits for healthy looking skin'], "name": "Beauty", "images": ["people"],
      "brief": "Everyday grooming and natural-beauty habits for Punjab's climate; healthy routines over products. No brand names, no miracle claims."},
-    {"tag": "fitness", "name": "Yoga & fitness", "images": ["sport", "fields"],
+    {"tag": "fitness", "keywords": ['yoga for beginners at home', 'surya namaskar benefits and steps', 'how to lose belly fat naturally', '30 minute home workout without equipment', 'yoga for back pain relief', 'morning stretching routine', 'how many steps should you walk daily', 'yoga for weight loss', 'how to start exercising after 40', 'pranayama benefits for beginners', 'desk job stretches for neck and back', 'how to build stamina naturally'], "name": "Yoga & fitness", "images": ["sport", "fields"],
      "brief": "Beginner-friendly yoga, stretching, walking and home workouts; simple routines, posture, safety and gradual progress; who should check with a doctor first."},
-    {"tag": "diet", "name": "Diet & food", "images": ["wheat", "fields"],
+    {"tag": "diet", "keywords": ['healthy indian diet plan', 'high protein vegetarian foods', 'how to eat healthy on a budget', 'best foods for strong immunity in winter', 'healthy punjabi food swaps', 'how to reduce sugar intake', 'foods for good digestion', 'how much water should you drink daily', 'healthy breakfast ideas indian', 'iron rich foods for women', 'foods to control diabetes naturally', 'how to read food labels in India'], "name": "Diet & food", "images": ["wheat", "fields"],
      "brief": "Balanced Punjabi/North-Indian home food, seasonal produce, portion sense, hydration, healthy swaps, reading food labels. No crash diets, no calorie targets for individuals."},
-    {"tag": "de-addiction", "name": "Mental health & de-addiction", "images": ["people", "campus"],
+    {"tag": "de-addiction", "keywords": ['signs of drug addiction in a family member', 'how to help someone quit alcohol', 'de-addiction treatment in Punjab', 'how to quit smoking naturally', 'how to talk to a teenager about drugs', 'relapse prevention tips', 'how families can support recovery', 'tobacco quitting tips that work', 'how to stop mobile phone addiction', 'withdrawal symptoms when to see a doctor', 'Tele-MANAS helpline how it helps', 'stigma around addiction and mental health'], "name": "Mental health & de-addiction", "images": ["people", "campus"],
      "brief": "Compassionate, stigma-free guidance on substance use and recovery: warning signs, how families can support, treatment is possible, "
               "where to seek help (a doctor, a government de-addiction/OOAT centre, the Tele-MANAS helpline 14416). No instructions about drugs or doses."},
-    {"tag": "health-schemes", "name": "Health schemes", "images": ["news-health", "people"],
+    {"tag": "health-schemes", "keywords": ['Ayushman Bharat card how to check eligibility', 'Ayushman Arogya Mandir services', 'free health check up government schemes India', 'Janani Suraksha Yojana benefits explained', 'how to get free treatment in government hospital', 'Ayushman card hospital list how to find', 'national health mission services explained', 'free vaccination programme India for children', 'e-Sanjeevani free online doctor consultation', 'Punjab government health services for families', 'Pradhan Mantri Jan Arogya Yojana explained', 'how to apply for health insurance scheme in India'], "name": "Health schemes", "images": ["news-health", "people"],
      "brief": "Plain-language explainers on public health schemes and services in India/Punjab (e.g. Ayushman Bharat PM-JAY, Ayushman Arogya Mandirs, free "
               "vaccination, Janani Suraksha). Describe only what you are sure of, avoid exact amounts/dates/eligibility rules, and tell readers to confirm on the official portal or at the nearest government hospital."},
-    {"tag": "sexual-wellness", "name": "Good sex life", "images": ["people", "city"],
+    {"tag": "sexual-wellness", "keywords": ['how to talk to your partner about health', 'myths and facts about reproductive health', 'stress and sleep effects on relationships', 'contraception basics explained', 'when to see a doctor about sexual health'], "name": "Good sex life", "images": ["people", "city"],
      "brief": "Respectful, NON-EXPLICIT adult sexual-health education: communication and consent between partners, myths vs facts, stress and sleep, hygiene, "
               "safe practices and contraception basics, when to talk to a doctor. No graphic detail, no positions/acts, no products, no pills, no shaming."},
-    {"tag": "hair-care", "name": "Hair care", "images": ["people"],
+    {"tag": "hair-care", "keywords": ['how to stop hair fall naturally', 'dandruff home remedies that work', 'hair care routine for winter', 'how often should you wash your hair', 'does oiling hair really help', 'foods for healthy hair growth', 'how to treat dry scalp at home', 'hair fall after stress why it happens', 'how to make hair thicker naturally', 'grey hair causes and care', 'hair care tips for men', 'scalp care for healthy hair'], "name": "Hair care", "images": ["people"],
      "brief": "Practical hair and scalp care: washing, oiling myths, diet and stress links, seasonal care, when hair fall needs a doctor. No miracle cures, no brands."},
-    {"tag": "mind", "name": "Mental health", "images": ["people", "campus"],
+    {"tag": "mind", "keywords": ['how to reduce stress and anxiety naturally', 'how to sleep better at night', 'signs of anxiety and when to seek help', 'how to deal with overthinking', 'digital detox tips for better mental health', 'how to manage exam stress', 'how to feel less lonely', 'burnout symptoms and recovery', 'mindfulness meditation for beginners', 'how to build a healthy morning routine', 'low mood vs depression what is the difference', 'how to help a friend with anxiety'], "name": "Mental health", "images": ["people", "campus"],
      "brief": "Everyday mental well-being: stress, sleep, anxiety, low mood, screen time, talking to someone, when to see a professional; mention Tele-MANAS 14416 where relevant. No diagnosis."},
-    {"tag": "skin-care", "name": "Skin care", "images": ["people", "fields"],
+    {"tag": "skin-care", "keywords": ['how to remove pimples naturally', 'sunscreen how to choose and use in India', 'how to treat dry skin in winter', 'oily skin care routine', 'pigmentation causes and prevention', 'how to prevent acne scars', 'how to get rid of dark spots naturally', 'skin care routine for beginners', 'how to protect skin from pollution', 'eczema care tips when to see a dermatologist', 'how to treat sunburn at home', 'best way to moisturise skin'], "name": "Skin care", "images": ["people", "fields"],
      "brief": "Simple skin care: cleansing, moisturising, sun protection, seasonal dryness, acne and sun myths, when to see a dermatologist. No brands, no miracle claims."},
 ]
 
@@ -99,6 +102,47 @@ def norm(text):
     return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
 
 
+HEALTH_WORDS = ("health", "fever", "flu", "dengue", "covid", "diabetes", "cancer", "heart", "yoga", "diet", "weight", "skin", "hair", "sleep",
+                "stress", "anxiety", "vaccine", "pollution", "smog", "cold", "cough", "virus", "doctor", "hospital", "medicine", "fitness", "protein",
+                "ayushman", "immunity", "calorie", "vitamin", "bp ", "blood", "tobacco", "smoking", "alcohol", "mental")
+
+
+def trending_hints(limit=12):
+    """Health-related search topics trending in India right now (Google Trends public RSS). Used only as keyword IDEAS."""
+    if os.environ.get("HEALTH_BLOG_TRENDS", "true").strip().lower() == "false":
+        return []
+    import urllib.request
+    import xml.etree.ElementTree as ET
+    out = []
+    for url in ("https://trends.google.com/trending/rss?geo=IN", "https://trends.google.com/trends/trendingsearches/daily/rss?geo=IN"):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; PrimezNewsBot/1.0)"})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                root = ET.fromstring(r.read())
+            for item in root.iter("item"):
+                t = (item.findtext("title") or "").strip()
+                if t and any(w in t.lower() + " " for w in HEALTH_WORDS):
+                    out.append(t)
+            if out:
+                break
+        except Exception as exc:  # trends are a bonus, never a blocker
+            log(f"[WARN] Google Trends not available ({exc}); using the built-in keyword lists")
+    return list(dict.fromkeys(out))[:limit]
+
+
+def pick_keyword(topic, used_keywords, today):
+    """Next high-intent keyword of the topic that has not been written yet (rotates by day, so it never repeats)."""
+    pool = [k for k in topic["keywords"] if norm(k) not in used_keywords]
+    if not pool:
+        pool = list(topic["keywords"])
+    return pool[today.toordinal() % len(pool)]
+
+
+def similar(a, b, limit=0.6):
+    x, y = set(norm(a).split()), set(norm(b).split())
+    return bool(x and y) and len(x & y) / len(x | y) >= limit
+
+
 def per_day(today):
     raw = os.environ.get("HEALTH_BLOGS_PER_DAY", "").strip()
     if raw.isdigit():
@@ -121,6 +165,9 @@ def validate(post, min_words=1200):
     pts = post.get("points")
     if not (isinstance(pts, list) and 3 <= len(pts) <= 5 and all(tri_ok(x, 8) for x in pts)):
         raise ValueError("points must be 3-5 trilingual items")
+    faq = post.get("faq")
+    if not (isinstance(faq, list) and 3 <= len(faq) <= 6 and all(isinstance(f, dict) and tri_ok(f.get("q"), 8) and tri_ok(f.get("a"), 8) for f in faq)):
+        raise ValueError("faq must be 3-6 trilingual question/answer pairs")
     body = post.get("body")
     if not (isinstance(body, list) and 8 <= len(body) <= 40):
         raise ValueError("body must be 8-40 blocks")
@@ -154,11 +201,20 @@ def en_words(body):
     return n
 
 
-def build_prompt(topic, avoid_titles, min_words, note=""):
+def build_prompt(topic, avoid_titles, min_words, keyword, hints, note=""):
     avoid = "\n".join(f"- {t}" for t in avoid_titles[:40]) or "- (none yet)"
+    trend = ("\nTrending searches in India right now (ideas only; use one ONLY if it truly fits this topic, never copy any news): " + "; ".join(hints)) if hints else ""
     return f"""You are the health editor of PrimezNews, a Punjab (India) news site. Write ONE original, respectful, medically responsible,
 in-depth blog article in clear English for general readers in Punjab. Topic area: "{topic['name']}".
 Topic guidance: {topic['brief']}
+PRIMARY SEO KEYWORD (a phrase many people search on Google): "{keyword}"{trend}
+SEO rules: put the primary keyword in the title (near the start), in the first paragraph, in the slug, in the excerpt and in one h2; use 3-5 related
+long-tail phrases naturally (never stuff or repeat unnaturally); answer the search intent directly in the first 100 words; write for people first.
+ORIGINALITY (copyright safe): write everything fresh in your own words from general medical knowledge. Do NOT copy, translate or closely paraphrase
+any website, news article, book, government page, video or blog. No quotations, no lyrics, no brand or product names, no real people. Add original
+practical examples relevant to Punjab (seasons, food, daily routine) so the article is unique and genuinely useful.
+GOOGLE ADSENSE SAFE: helpful, trustworthy, non-sensational. No clickbait, no shocking claims, no adult or explicit content, no gambling, no weapons, no
+hate, no miracle cures, no "guaranteed" results.
 {note}
 LENGTH IS CRITICAL: the article body must be AT LEAST {min_words + 150} words (aim for {min_words + 300}). Count only the paragraphs, list items and tip.
 Use 6-8 sections (h2), each with 1-2 full paragraphs of 80-140 words; add bullet or numbered lists, one section on common myths vs facts,
@@ -171,10 +227,14 @@ Hard rules:
 - Pick a fresh, specific angle readers actually care about. Do NOT reuse or closely paraphrase these existing titles:
 {avoid}
 
+Also write 4 FAQ items (the questions real people type into Google about this keyword; answers of 35-60 words each).
 Return ONLY valid JSON of this shape (plain strings, no markdown, no HTML):
-{{"slug":"3-7 lower-case english words joined by hyphens",
- "title":"max 80 characters",
- "excerpt":"one sentence, 20-30 words",
+{{"slug":"3-7 lower-case english words joined by hyphens, containing the main keyword words",
+ "keyword":"the primary keyword you used",
+ "keywords":["3 to 5 related search phrases"],
+ "title":"max 70 characters, starts with or clearly contains the primary keyword",
+ "excerpt":"one sentence of 140-160 characters that contains the primary keyword",
+ "faq":[{{"q":"question","a":"answer"}},{{"q":"question","a":"answer"}},{{"q":"question","a":"answer"}},{{"q":"question","a":"answer"}}],
  "points":["key takeaway 1","key takeaway 2","key takeaway 3"],
  "body":[{{"p":"intro paragraph"}},{{"h2":"heading"}},{{"p":"paragraph"}},{{"ul":["item","item","item"]}},{{"h2":"heading"}},{{"p":"paragraph"}},{{"ol":["step","step","step"]}}, ... ,{{"tip":"one practical safe tip (last block)"}}]}}"""
 
@@ -200,7 +260,7 @@ def call_json(prompt, max_tokens, state):
 
 
 def shape_of(article):
-    return [(k, len(v) if isinstance(v, list) else None) for blk in article["body"] for k, v in blk.items()], len(article["points"])
+    return [(k, len(v) if isinstance(v, list) else None) for blk in article["body"] for k, v in blk.items()], len(article["points"]), len(article["faq"])
 
 
 def merge(en, pa, hi):
@@ -217,16 +277,19 @@ def merge(en, pa, hi):
         "slug": en["slug"], "title": tri(en["title"], pa["title"], hi["title"]),
         "excerpt": tri(en["excerpt"], pa["excerpt"], hi["excerpt"]),
         "points": [tri(x, y, z) for x, y, z in zip(en["points"], pa["points"], hi["points"])],
+        "faq": [{"q": tri(a["q"], b["q"], c["q"]), "a": tri(a["a"], b["a"], c["a"])} for a, b, c in zip(en["faq"], pa["faq"], hi["faq"])],
         "body": body,
+        "keyword": str(en.get("keyword", "")).strip(),
+        "keywords": [str(k).strip() for k in en.get("keywords", []) if str(k).strip()][:6],
     }
 
 
-def generate_post(topic, avoid_titles, state, min_words):
+def generate_post(topic, avoid_titles, state, min_words, keyword, hints):
     note = ""
     for attempt in (1, 2, 3):  # an article that is too short is regenerated, never published
-        en = call_json(build_prompt(topic, avoid_titles, min_words, note), 12000, state)
-        if not isinstance(en.get("body"), list) or not isinstance(en.get("points"), list):
-            raise ValueError("English article has no body/points")
+        en = call_json(build_prompt(topic, avoid_titles, min_words, keyword, hints, note), 14000, state)
+        if not isinstance(en.get("body"), list) or not isinstance(en.get("points"), list) or not isinstance(en.get("faq"), list):
+            raise ValueError("English article has no body/points/faq")
         words = en_words(en["body"])
         if words >= min_words:
             break
@@ -234,8 +297,8 @@ def generate_post(topic, avoid_titles, state, min_words):
         note = f"IMPORTANT: your previous attempt had only {words} words. Write MUCH longer: at least {min_words + 300} words, with more sections and fuller paragraphs."
     else:
         raise ValueError(f"article stayed shorter than {min_words} words")
-    pa = call_json(translate_prompt({k: en[k] for k in ("title", "excerpt", "points", "body")}, "pa"), 32000, state)
-    hi = call_json(translate_prompt({k: en[k] for k in ("title", "excerpt", "points", "body")}, "hi"), 32000, state)
+    pa = call_json(translate_prompt({k: en[k] for k in ("title", "excerpt", "points", "faq", "body")}, "pa"), 32000, state)
+    hi = call_json(translate_prompt({k: en[k] for k in ("title", "excerpt", "points", "faq", "body")}, "hi"), 32000, state)
     post = merge(en, pa, hi)
     validate(post, min_words)
     return post, words
@@ -269,20 +332,27 @@ def main():
     for p in everything:
         last[p.get("tag")] = max(last.get(p.get("tag"), ""), p.get("date", ""))
     order = sorted(range(len(TOPICS)), key=lambda i: (last.get(TOPICS[i]["tag"], ""), i))
+    skip = {t.strip() for t in os.environ.get("HEALTH_BLOG_SKIP_TAGS", "sexual-wellness").split(",") if t.strip() and t.strip().lower() != "none"}
+    order = [i for i in order if TOPICS[i]["tag"] not in skip]
     chosen = [TOPICS[i] for i in order[:need]]
+    hints = trending_hints()
+    log("[INFO] Trending health searches (India): " + (", ".join(hints) if hints else "none found - using built-in keyword lists"))
     log("[INFO] Topics this run: " + ", ".join(t["name"] for t in chosen))
 
     used_slugs = {p["slug"] for p in everything}
     used_titles = {norm(p["title"]["en"]) for p in everything}
+    used_keywords = {norm(p.get("keyword", "")) for p in everything if p.get("keyword")}
     state, made = {"last_call": 0.0}, []
     for topic in chosen:
         avoid = [p["title"]["en"] for p in everything if p.get("tag") == topic["tag"]]
         post = words = None
+        keyword = pick_keyword(topic, used_keywords, today)
+        log(f"[INFO] {topic['name']}: target keyword -> {keyword}")
         for attempt in (1, 2):
             try:
-                post, words = generate_post(topic, avoid, state, min_words)
-                if norm(post["title"]["en"]) in used_titles:
-                    raise ValueError("duplicate title")
+                post, words = generate_post(topic, avoid, state, min_words, keyword, hints)
+                if norm(post["title"]["en"]) in used_titles or any(similar(post["title"]["en"], t) for t in avoid):
+                    raise ValueError("duplicate or too-similar title")
                 break
             except Exception as exc:
                 log(f"[WARN] {topic['name']} attempt {attempt} failed: {exc}")
@@ -302,10 +372,11 @@ def main():
             "title": {k: post["title"][k].strip() for k in LANGS},
             "excerpt": {k: post["excerpt"][k].strip() for k in LANGS},
             "points": [{k: x[k].strip() for k in LANGS} for x in post["points"]],
+            "faq": post["faq"], "keyword": post.get("keyword") or keyword, "keywords": post.get("keywords", []),
             "body": post["body"],
             "auto": True,
         }
-        used_slugs.add(slug); used_titles.add(norm(entry["title"]["en"])); everything.append(entry); made.append(entry)
+        used_keywords.add(norm(entry["keyword"])); used_slugs.add(slug); used_titles.add(norm(entry["title"]["en"])); everything.append(entry); made.append(entry)
         log(f"[OK] {topic['name']}: {entry['title']['en']}  ({slug}, {words} words)")
 
     if not made:

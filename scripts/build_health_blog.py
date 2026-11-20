@@ -113,8 +113,60 @@ def block(b):
     raise ValueError(f'Unknown blog block: {list(b)}')
 
 
-AD_SIDE = '<div class="topic-ad" data-ad-slot="news-sidebar"><div><small>ਇਸ਼ਤਿਹਾਰ · Advertisement</small><b>300 × 250</b><small>DIPR Punjab</small></div></div>'
-AD_WIDE = '<div class="hb-ad-wide" data-ad-slot="after-headlines"><small>ਇਸ਼ਤਿਹਾਰ · Advertisement</small><b>728 × 90</b></div>'
+def body_html(body):
+    """Blocks -> HTML; every h2 gets an id so the table of contents can link to it."""
+    out, n = [], 0
+    for b in body:
+        if 'h2' in b:
+            n += 1
+            out.append(f'<h2 id="s{n}">{L(b["h2"])}</h2>')
+        else:
+            out.append(block(b))
+    return ''.join(out)
+
+
+def word_count(body):
+    n = 0
+    for b in body:
+        for kind, v in b.items():
+            if kind == 'h2': continue
+            n += sum(len(x['en'].split()) for x in v) if isinstance(v, list) else len(v['en'].split())
+    return n
+
+
+def toc_html(body):
+    items = [b['h2'] for b in body if 'h2' in b]
+    if len(items) < 3: return ''
+    lis = ''.join(f'<li><a href="#s{i}">{L(h)}</a></li>' for i, h in enumerate(items, 1))
+    return ('<nav class="bl-toc" aria-label="Contents"><details open><summary>' + L(T('ਇਸ ਲੇਖ ਵਿੱਚ', 'इस लेख में', 'In this article')) + f'</summary><ol>{lis}</ol></details></nav>')
+
+
+def faq_html(p):
+    faq = p.get('faq') or []
+    if not faq: return ''
+    items = ''.join(f'<details class="bl-q"><summary>{L(f["q"])}</summary><p>{L(f["a"])}</p></details>' for f in faq)
+    return '<section class="bl-faq"><h2>' + L(T('ਅਕਸਰ ਪੁੱਛੇ ਜਾਂਦੇ ਸਵਾਲ', 'अक्सर पूछे जाने वाले सवाल', 'Frequently asked questions')) + f'</h2>{items}</section>'
+
+
+def faq_ld(p):
+    faq = p.get('faq') or []
+    if not faq: return None
+    return {'@context': 'https://schema.org', '@type': 'FAQPage',
+            'mainEntity': [{'@type': 'Question', 'name': f['q']['en'], 'acceptedAnswer': {'@type': 'Answer', 'text': f['a']['en']}} for f in faq]}
+
+
+def author_box(p):
+    return ('<aside class="bl-author"><span class="bl-avatar" aria-hidden="true">PN</span><div><b>' + L(p['author']) + '</b><p>'
+            + L(T('ਆਮ ਜਨਤਕ ਸਿਹਤ ਮਾਰਗਦਰਸ਼ਨ ਦੇ ਆਧਾਰ ’ਤੇ ਤਿਆਰ ਕੀਤਾ ਗਿਆ। ਇਹ ਡਾਕਟਰ ਦੀ ਸਲਾਹ ਦੀ ਥਾਂ ਨਹੀਂ ਲੈਂਦਾ। ਸਾਡੀ ਸੰਪਾਦਕੀ ਨੀਤੀ ਪੜ੍ਹੋ।',
+                'आम जन-स्वास्थ्य मार्गदर्शन के आधार पर तैयार। यह डॉक्टर की सलाह का विकल्प नहीं है। हमारी संपादकीय नीति पढ़ें।',
+                'Prepared from widely accepted public-health guidance. It does not replace a doctor’s advice. Read our editorial policy.'))
+            + ' <a href="editorial-policy">' + L(T('ਸੰਪਾਦਕੀ ਨੀਤੀ →', 'संपादकीय नीति →', 'Editorial policy →')) + '</a></p></div></aside>')
+
+
+# Placeholder boxes ("300 x 250", "728 x 90") are NOT shown on blog pages: Google AdSense reviewers dislike empty placeholder ads.
+# Real ad units can be pasted here after AdSense approves the site.
+AD_SIDE = ''
+AD_WIDE = ''
 DISCLAIMER = T('ਇਹ ਲੇਖ ਆਮ ਜਾਣਕਾਰੀ ਲਈ ਹੈ, ਡਾਕਟਰੀ ਸਲਾਹ ਨਹੀਂ। ਕੋਈ ਵੀ ਦਵਾਈ ਜਾਂ ਇਲਾਜ ਡਾਕਟਰ ਦੀ ਸਲਾਹ ਨਾਲ ਹੀ ਲਓ।',
                'यह लेख सामान्य जानकारी के लिए है, डॉक्टरी सलाह नहीं। कोई भी दवा या इलाज डॉक्टर की सलाह से ही लें।',
                'This article is general information, not medical advice. Take any medicine or treatment only on a doctor’s advice.')
@@ -154,9 +206,12 @@ def build():
         '<section class="bl-hero"><span class="hb-kicker">PrimezNews · ' + L(T('ਸਿਹਤ ਬਲੌਗ', 'हेल्थ ब्लॉग', 'Health blog')) + '</span>'
         '<h1>' + L(T('ਸਿਹਤ ਤੇ ਸੁੰਦਰਤਾ ਬਲੌਗ', 'स्वास्थ्य व सौंदर्य ब्लॉग', 'Health & Beauty Blog')) + '</h1>'
         '<p>' + L(T('ਤੰਦਰੁਸਤੀ, ਖੁਰਾਕ, ਮਨ ਦੀ ਸਿਹਤ ਅਤੇ ਸੁੰਦਰਤਾ ਬਾਰੇ ਆਸਾਨ ਭਾਸ਼ਾ ਵਿੱਚ ਲੇਖ — ਪੰਜਾਬੀ, ਹਿੰਦੀ ਤੇ ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ।', 'सेहत, आहार, मानसिक स्वास्थ्य और सौंदर्य पर आसान भाषा में लेख — पंजाबी, हिंदी व अंग्रेज़ी में।', 'Easy reads on fitness, food, mental health and beauty — in Punjabi, Hindi and English.')) + '</p>'
+        f'<ul class="bl-stats"><li><b>{len(posts)}</b><span>' + L(T('ਲੇਖ', 'लेख', 'Articles')) + f'</span></li><li><b>{len({p["tag"] for p in posts})}</b><span>' + L(T('ਵਿਸ਼ੇ', 'विषय', 'Topics')) + '</span></li><li><b>3</b><span>' + L(T('ਭਾਸ਼ਾਵਾਂ', 'भाषाएँ', 'Languages')) + '</span></li><li><b>' + L(T('ਰੋਜ਼', 'रोज़', 'Daily')) + '</b><span>' + L(T('ਨਵੇਂ ਲੇਖ', 'नए लेख', 'New posts')) + '</span></li></ul>'
         f'<div class="hb-chips bl-chips" role="group" aria-label="Topics">{chips}</div></section>'
         '<div class="hb-grid"><div class="hb-main">'
+        '<h2 class="bl-sec">' + L(T('ਤਾਜ਼ਾ ਲੇਖ', 'ताज़ा लेख', 'Latest article')) + '</h2>'
         + card(lead, tags, 'bl-card bl-featured') +
+        '<h2 class="bl-sec">' + L(T('ਹੋਰ ਲੇਖ', 'और लेख', 'More articles')) + '</h2>'
         '<div class="bl-grid" id="blogGrid">' + ''.join(card(p, tags) for p in rest) + '</div>'
         '<p class="bl-empty" id="blogEmpty" hidden>' + L(T('ਇਸ ਵਿਸ਼ੇ ’ਤੇ ਲੇਖ ਜਲਦੀ ਆਉਣਗੇ।', 'इस विषय पर लेख जल्द आएँगे।', 'Articles on this topic are coming soon.')) + '</p>'
         + AD_WIDE + '</div>' + side(tags) + '</div></main>')
@@ -192,17 +247,23 @@ def build():
             '<div class="bl-byline"><span class="bl-avatar" aria-hidden="true">PN</span><span><b>' + L(p['author']) + '</b><small>' + L(nice_date(p['date'])) + f' · {p["minutes"]} ' + L(T('ਮਿੰਟ ਪੜ੍ਹੋ', 'मिनट पढ़ें', 'min read')) + '</small></span></div>'
             f'<figure class="bl-figure"><img src="{image_path(p["image"])}" alt="" width="1200" height="675" fetchpriority="high" decoding="async"></figure>'
             '<section class="bl-points"><h2>' + L(T('ਮੁੱਖ ਗੱਲਾਂ', 'मुख्य बातें', 'Key points')) + f'</h2><ul>{points}</ul></section>'
-            '<div class="bl-body">' + ''.join(block(b) for b in p['body']) + '</div>'
-            f'<p class="topic-note">{L(DISCLAIMER)}</p>' + share + AD_WIDE +
+            + toc_html(p['body']) +
+            '<div class="bl-body">' + body_html(p['body']) + '</div>'
+            + faq_html(p) +
+            f'<p class="topic-note">{L(DISCLAIMER)}</p>' + author_box(p) + share + AD_WIDE +
             '<section class="bl-related"><h2 class="topic-section-title">' + L(T('ਹੋਰ ਪੜ੍ਹੋ', 'और पढ़ें', 'Read more')) + '</h2><div class="bl-grid">' + ''.join(card(q, tags) for q in related) + '</div></section>'
             '</article>' + side(tags) + '</div></main>')
         ld = {'@context': 'https://schema.org', '@type': 'BlogPosting', 'headline': p['title']['en'], 'description': p['excerpt']['en'],
               'image': share_url, 'datePublished': p['date'], 'dateModified': p['date'], 'inLanguage': ['pa', 'hi', 'en'],
               'author': {'@type': 'Organization', 'name': 'PrimezNews'}, 'publisher': {'@type': 'Organization', 'name': 'PrimezNews', 'logo': {'@type': 'ImageObject', 'url': f'{SITE}/assets/images/primznews-logo-new.webp'}},
-              'mainEntityOfPage': url}
+              'mainEntityOfPage': url, 'articleSection': tag['en'], 'wordCount': word_count(p['body'])}
+        if p.get('keywords') or p.get('keyword'):
+            ld['keywords'] = ', '.join(([p['keyword']] if p.get('keyword') else []) + [k for k in p.get('keywords', []) if k != p.get('keyword')])
+        extra_ld = ''.join('<script type="application/ld+json">' + json.dumps(x, ensure_ascii=False).replace('</', '<\\/') + '</script>' for x in (faq_ld(p),) if x)
         title = f'{p["title"]["pa"]} | {p["title"]["en"]} — PrimezNews'
         h = set_meta(head, '../../', title, p['excerpt']['en'], url, share_url, 'article',
-                     '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace('</', '<\\/') + '</script>')
+                     '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace('</', '<\\/') + '</script>' + extra_ld
+                     + (f'<meta name="keywords" content="{e(", ".join(([p["keyword"]] if p.get("keyword") else []) + p.get("keywords", [])), quote=True)}">' if p.get('keyword') else ''))
         (folder / 'index.html').write_text(h + '</head>\n' + pre + article + '\n' + post_html)
     # latest 3 posts on the Health & Beauty page (between markers)
     page = SHELL.read_text()
