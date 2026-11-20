@@ -84,6 +84,7 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
     opener.click();input.value=term;input.dispatchEvent(new Event('input',{bubbles:true}));
   }
   q('.search').onclick=()=>showSearch();
+  {const fs=document.getElementById('searchOpen');if(fs && !document.querySelector('#searchInput,#readerSearchInput'))fs.addEventListener('click',()=>{location.href=search('');});}
   window.addEventListener('load',()=>{const term=new URLSearchParams(location.search).get('headerSearch');if(term!==null && document.querySelector('#searchInput'))showSearch(term);});
   function render(){
     const lang=locale();

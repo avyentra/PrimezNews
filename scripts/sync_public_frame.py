@@ -4,7 +4,10 @@ import re
 from html import escape
 
 ROOT = Path(__file__).resolve().parents[1]
-PRIVATE = {"admin.html", "login.html", "reset-password.html", "join-newsroom.html", "journalist.html"}
+PRIVATE = {"admin.html", "superadmin.html", "login.html", "reset-password.html", "journalist.html"}
+FOOTER_ONLY = {"join-newsroom.html"}  # has its own page layout; only the common footer is baked in
+COUNTER_SCRIPTS = ('<script defer src="assets/js/backend-config.js"></script>'
+                   '<script defer src="assets/js/article-views.js?v=20261119b"></script>')
 
 def label(en, hi, pa):
     return ''.join(f'<span data-frame-lang="{lang}">{escape(value)}</span>'
@@ -63,15 +66,22 @@ def footer(has_tools):
 <div class="pn-legal"><div><small>© 2026 PrimezNews · {label("A digital news portal operated by SHARVIX Studio.","SHARVIX Studio द्वारा संचालित डिजिटल समाचार पोर्टल।","SHARVIX Studio ਵੱਲੋਂ ਚਲਾਇਆ ਜਾਂਦਾ ਡਿਜੀਟਲ ਖ਼ਬਰ ਪੋਰਟਲ।")}</small><div>{''.join(link(*row) for row in policies)}{tools}</div></div></div></footer>'''
 
 def sync():
+    """Every public page gets the SAME header and the SAME footer (search, visitor counter, links)."""
     for path in list(ROOT.glob('*.html')) + list((ROOT/'news').glob('*/index.html')):
         if path.name in PRIVATE: continue
         html = path.read_text()
-        start = next(marker for marker in ('<header class="pn-header">','<div class="utility">','<header>') if marker in html)
-        i, j = html.index(start), html.index('<primez-site-nav>')
-        html = html[:i] + HEADER + '\n' + html[j:]
-        html = re.sub(r'<footer\b[^>]*>.*?</footer>', lambda _: footer('id="readerSearch"' in html or 'id="searchDialog"' in html), html, count=1, flags=re.S)
+        if path.name not in FOOTER_ONLY:
+            start = next(marker for marker in ('<header class="pn-header">','<div class="utility">','<header>') if marker in html)
+            i, j = html.index(start), html.index('<primez-site-nav>')
+            html = html[:i] + HEADER + '\n' + html[j:]
+        html = re.sub(r'<footer\b[^>]*>.*?</footer>', lambda _: footer(True), html, count=1, flags=re.S)
         if 'assets/css/public-frame.css' not in html:
             html = html.replace('</head>','<link rel="stylesheet" href="assets/css/public-frame.css"></head>',1)
+        # the footer visitor counter needs these two scripts on every page
+        add = ''
+        if 'backend-config.js' not in html: add += '<script defer src="assets/js/backend-config.js"></script>'
+        if 'article-views.js' not in html: add += '<script defer src="assets/js/article-views.js?v=20261119b"></script>'
+        if add: html = html.replace('</head>', add + '</head>', 1)
         path.write_text(html)
 
 if __name__ == '__main__':
