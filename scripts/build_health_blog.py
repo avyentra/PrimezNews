@@ -260,11 +260,20 @@ def build():
         if p.get('keywords') or p.get('keyword'):
             ld['keywords'] = ', '.join(([p['keyword']] if p.get('keyword') else []) + [k for k in p.get('keywords', []) if k != p.get('keyword')])
         extra_ld = ''.join('<script type="application/ld+json">' + json.dumps(x, ensure_ascii=False).replace('</', '<\\/') + '</script>' for x in (faq_ld(p),) if x)
-        title = f'{p["title"]["pa"]} | {p["title"]["en"]} — PrimezNews'
+        en_t = p['title']['en'].strip()
+        title = en_t if len(en_t) + 13 > 70 and len(en_t) > 57 else f'{en_t} | PrimezNews'
         h = set_meta(head, '../../', title, p['excerpt']['en'], url, share_url, 'article',
                      '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace('</', '<\\/') + '</script>' + extra_ld
                      + (f'<meta name="keywords" content="{e(", ".join(([p["keyword"]] if p.get("keyword") else []) + p.get("keywords", [])), quote=True)}">' if p.get('keyword') else ''))
         (folder / 'index.html').write_text(h + '</head>\n' + pre + article + '\n' + post_html)
+    # keep sitemap.xml in step: every blog page must be listed (the daily workflow does not run the news-pages builder)
+    sm = ROOT / 'sitemap.xml'
+    if sm.exists():
+        xml = sm.read_text()
+        want = [f'{SITE}/health-blog/'] + [f'{SITE}/health-blog/{p["slug"]}/' for p in posts]
+        add = ''.join(f'<url><loc>{u}</loc></url>' for u in want if f'<loc>{u}</loc>' not in xml)
+        if add and '</urlset>' in xml:
+            sm.write_text(xml.replace('</urlset>', add + '</urlset>'))
     # latest 3 posts on the Health & Beauty page (between markers)
     page = SHELL.read_text()
     block_html = ('<!--blog-latest--><section class="bl-latest" aria-labelledby="blLatestTitle"><div class="bl-latest-head">'

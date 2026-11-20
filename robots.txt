@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
-Disallow: /studio.html
+Disallow: /superadmin.html
+Disallow: /login.html
+Disallow: /reset-password.html
+Disallow: /journalist.html
 
 Sitemap: https://primeznews.com/sitemap.xml
