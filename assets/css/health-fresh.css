@@ -171,3 +171,12 @@ body:has(main.hf){background:#f5f4f8}
 main.hf[data-topic="nri"] .hb-hero-img{background-image:url("../images/amritsar.webp")}
 .hf .hf-n-sm{font-size:19px;white-space:nowrap}
 .hf[data-topic="nri"] .hb-help-row{max-width:900px}
+/* helpline labels: keep on one line, no awkward wrapping */
+.hf .hb-help{min-width:0;white-space:nowrap}
+.hf .hb-help-t{white-space:nowrap;min-width:0}
+.hf .hb-help-t b,.hf .hb-help-t small{white-space:nowrap;display:block}
+.hf .hb-help-row{flex:1 1 760px;max-width:none}
+.hf[data-topic="nri"] .hb-help-row{max-width:none}
+@media(max-width:1200px){.hf .hb-help-row{flex-wrap:wrap}.hf .hb-help{flex:1 1 220px}}
+@media(max-width:560px){.hf .hb-help{white-space:normal}.hf .hb-help-t,.hf .hb-help-t b,.hf .hb-help-t small{white-space:normal}}
+@media(max-width:560px){.hf .hb-help{flex:0 0 auto}.hf .hb-help-row{flex:1 1 100%}}
