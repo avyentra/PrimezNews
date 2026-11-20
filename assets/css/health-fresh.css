@@ -1,7 +1,7 @@
 /* Health & Beauty page: "Fresh green" layout (hero, featured blog, helpline, news, NRI corner, guides, WhatsApp).
    Everything is scoped to main.hf, so blog list/article pages and the shared header/footer are not touched. */
 main.topic.hb.hf{--g1:#0a5c36;--g2:#1b8a4b;--g3:#82c341;--ink:#14231b;--mut:#5b6b62;--line:#e4ece6;
- width:min(1240px,calc(100% - 48px));max-width:none;margin:0 auto;padding:18px 0 48px;background:#fff;background-image:none;color:var(--ink)}
+ width:calc(100% - 96px);max-width:1800px;margin:0 auto;padding:18px 0 48px;background:#fff;background-image:none;color:var(--ink)}
 .hf h1,.hf h2,.hf h3{letter-spacing:0}
 .hf a:focus-visible,.hf button:focus-visible{outline:3px solid var(--g3);outline-offset:3px}
 
@@ -144,13 +144,14 @@ main.topic.hb.hf{--g1:#0a5c36;--g2:#1b8a4b;--g3:#82c341;--ink:#14231b;--mut:#5b6
 .hf .topic-note{background:#fff8e7;border:1px solid #f1dfb3;border-radius:14px;box-shadow:none;color:#5b5b6b}
 
 /* ---- responsive ---- */
+@media(max-width:1200px){main.topic.hb.hf{width:calc(100% - 56px)}}
 @media(max-width:1180px){.hf .hb-guides{grid-template-columns:repeat(3,minmax(0,1fr))}.hf-feat-body{max-width:80%}}
 @media(max-width:1000px){
  .hf-top{grid-template-columns:1fr}.hf #topicNews{grid-template-columns:repeat(2,minmax(0,1fr))}.hf #topicNews .topic-card:nth-child(n+3){display:none}
  .hf-nri-grid,.hf .hb-schemes{grid-template-columns:1fr}.hf .hb-help-row{margin-left:0;max-width:none;flex-basis:100%}
 }
 @media(max-width:760px){
- main.topic.hb.hf{width:calc(100% - 28px);padding-top:12px}
+ main.topic.hb.hf{width:calc(100% - 28px);max-width:none;padding-top:12px}
  .hf .hb-hero{grid-template-columns:1fr;min-height:0;border-radius:22px}
  .hf .hb-hero-img{order:-1;min-height:150px;-webkit-mask-image:linear-gradient(0deg,transparent 0,#000 55%);mask-image:linear-gradient(0deg,transparent 0,#000 55%)}
  .hf .hb-hero-text{padding:18px 18px 24px;margin-top:-30px}
