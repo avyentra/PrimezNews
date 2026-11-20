@@ -734,7 +734,7 @@ def main() -> int:
         return 1
     now_iso = datetime.now(timezone.utc).isoformat()
     attempted: list[str] = []
-    skipped = failed = feeds_ok = processed = 0
+    skipped = failed = feeds_ok = processed = thin_skipped = 0
 
     for feed_cfg in RSS_FEEDS:
         if processed >= max_new:
@@ -782,6 +782,13 @@ def main() -> int:
                 break
             processed += 1
             art = build_article(item, state)
+            if art["mode"] == "rss-fallback" and os.environ.get("RSS_ALLOW_THIN", "").lower() not in ("1", "true", "yes"):
+                # Gemini did not produce a full article (quota/outage): do not post a headline-only draft.
+                # The item is not marked as seen, so the next hourly run tries it again while it is still fresh.
+                processed -= 1
+                thin_skipped += 1
+                print(f"[WARN] Skipped (no full article written): {item['title'][:80]}")
+                continue
             body = (art["body"] or "").strip() or f"{item['title']}\n\nSource: {item['source_name']}"
             story_row = {
                 "id": row_id,
@@ -826,7 +833,7 @@ def main() -> int:
         print(f"[WARN] {len(missing)} row(s) were accepted by the API but NOT found afterwards: {missing[:5]}")
     print(
         f"RSS sync finished. New stories added: {inserted} · skipped (already present): {skipped} · "
-        f"failed: {failed} (mode={'published' if auto_publish else 'draft'})"
+        f"failed: {failed} · held back (no full article): {thin_skipped} (mode={'published' if auto_publish else 'draft'})"
     )
     if feeds_ok == 0:
         print("[WARN] No feed could be read.")
