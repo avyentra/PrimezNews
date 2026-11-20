@@ -277,12 +277,25 @@ def build():
     # latest 3 posts on the Health & Beauty page (between markers)
     page = SHELL.read_text()
     lead_p, others = posts[0], posts[1:4]
-    block_html = ('<!--blog-latest--><section class="bl-latest" aria-labelledby="blLatestTitle"><div class="bl-latest-head">'
-                  '<div><span class="bl-new">' + L(T('ਨਵਾਂ', 'नया', 'New')) + '</span><h2 class="topic-section-title" id="blLatestTitle">' + L(T('ਤਾਜ਼ਾ ਸਿਹਤ ਬਲੌਗ', 'ताज़ा हेल्थ ब्लॉग', 'Latest health blogs')) + '</h2>'
-                  '<p class="bl-latest-sub">' + L(T('ਹਰ ਰੋਜ਼ ਨਵੇਂ ਲੇਖ — ਸਿਹਤ, ਖੁਰਾਕ, ਫਿਟਨੈੱਸ ਤੇ ਸੁੰਦਰਤਾ', 'हर रोज़ नए लेख — सेहत, आहार, फिटनेस और सौंदर्य', 'New articles every day on health, food, fitness and beauty')) + '</p></div>'
-                  '<a class="bl-all" href="health-blog/">' + L(T('ਸਾਰੇ ਲੇਖ →', 'सभी लेख →', 'All articles →')) + '</a></div>'
-                  '<div class="bl-latest-grid">' + card(lead_p, tags, 'bl-card bl-lead') +
-                  '<div class="bl-latest-list">' + ''.join(card(p, tags, 'bl-card bl-row') for p in others) + '</div></div></section><!--/blog-latest-->')
+    def feat(p):
+        tag = tags.get(p['tag'], T(p['tag'], p['tag'], p['tag']))
+        return (f'<a class="hf-feat" href="health-blog/{p["slug"]}/" data-tag="{e(p["tag"])}">'
+                f'<span class="hf-feat-img"><img src="{image_path(p["image"])}" alt="" width="1200" height="675" decoding="async"></span>'
+                f'<span class="hf-feat-body"><span class="hf-pills"><b>{L(T("ਖ਼ਾਸ ਲੇਖ", "खास लेख", "Featured"))}</b><b>{L(tag)}</b></span>'
+                f'<h3>{L(p["title"])}</h3><p>{L(p["excerpt"])}</p>'
+                f'<span class="hf-read">{L(T("ਪੂਰੀ ਕਹਾਣੀ ਪੜ੍ਹੋ →", "पूरी कहानी पढ़ें →", "Read Full Story →"))}</span>'
+                f'<span class="hf-fmeta">{L(nice_date(p["date"]))} · {p["minutes"]} {L(T("ਮਿੰਟ ਪੜ੍ਹੋ", "मिनट पढ़ें", "min read"))}</span></span></a>')
+
+    def row(p):
+        return (f'<a class="hf-row" href="health-blog/{p["slug"]}/" data-tag="{e(p["tag"])}">'
+                f'<span class="hf-thumb"><img src="{image_path(p["image"])}" alt="" width="200" height="140" loading="lazy" decoding="async"></span>'
+                f'<span class="hf-rbody"><span class="hf-rtitle">{L(p["title"])}</span>'
+                f'<small>{L(nice_date(p["date"]))} · {p["minutes"]} {L(T("ਮਿੰਟ ਪੜ੍ਹੋ", "मिनट पढ़ें", "min read"))}</small></span></a>')
+
+    block_html = ('<!--blog-latest--><section class="hf-top" aria-labelledby="blLatestTitle">' + feat(lead_p) +
+                  '<aside class="hf-side"><div class="hf-side-head"><h2 id="blLatestTitle">' + L(T('ਤਾਜ਼ਾ ਸਿਹਤ ਬਲੌਗ', 'ताज़ा हेल्थ ब्लॉग', 'Latest Health Blogs')) + '</h2>'
+                  '<a href="health-blog/">' + L(T('ਸਾਰੇ ਲੇਖ →', 'सभी लेख →', 'View All →')) + '</a></div>' +
+                  ''.join(row(p) for p in others) + '</aside></section><!--/blog-latest-->')
     new = re.sub(r'<!--blog-latest-->.*?<!--/blog-latest-->', lambda m: block_html, page, count=1, flags=re.S)
     if new != page: SHELL.write_text(new)
     # remove pages of posts that were taken out of the data file (only folders this script made)
