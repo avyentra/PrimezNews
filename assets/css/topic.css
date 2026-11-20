@@ -124,3 +124,39 @@ main.topic{max-width:1280px;width:calc(100% - 80px);margin:0 auto;padding:30px 0
 .bl-row .bl-tag{font-size:11.5px;padding:2px 9px}
 @media(max-width:900px){.bl-latest-grid{grid-template-columns:1fr}.bl-latest-list{grid-template-rows:none}.bl-row .bl-card-img{min-height:96px}}
 @media(max-width:560px){.bl-latest{padding:16px 14px;border-radius:18px}.bl-latest-head{flex-direction:column;align-items:flex-start}.bl-row .bl-card-img{flex-basis:34%}}
+
+/* ===== Health & Beauty page polish ===== */
+main.topic.hb[data-topic="health-beauty"]{padding-top:18px;background:radial-gradient(900px 380px at 100% 0,rgba(29,158,117,.10),transparent 60%),radial-gradient(700px 300px at 0 40%,rgba(217,173,78,.10),transparent 60%)}
+main.topic.hb[data-topic="health-beauty"] .hb-hero{border:0;border-radius:26px;overflow:hidden;background:linear-gradient(120deg,#0a4a3b 0%,#0f6e56 55%,#1d9e75 100%);box-shadow:0 18px 44px rgba(15,110,86,.22);margin-bottom:22px}
+main.topic.hb[data-topic="health-beauty"] .hb-hero-text{padding:38px 36px 34px}
+main.topic.hb[data-topic="health-beauty"] .hb-hero h1{color:#fff;font-size:clamp(34px,4.4vw,54px);letter-spacing:-.01em}
+main.topic.hb[data-topic="health-beauty"] .hb-hero p{color:#d6efe5}
+main.topic.hb[data-topic="health-beauty"] .hb-kicker{background:rgba(255,255,255,.16);color:#fff}
+main.topic.hb[data-topic="health-beauty"] .hb-hero .hb-chip{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.34);color:#fff}
+main.topic.hb[data-topic="health-beauty"] .hb-hero .hb-chip:hover{background:rgba(255,255,255,.22)}
+main.topic.hb[data-topic="health-beauty"] .hb-hero .hb-chip.active{background:#fff;color:#0f6e56;border-color:#fff}
+main.topic.hb[data-topic="health-beauty"] .hb-hero-img{background-image:url("../images/people.webp");background-position:center 30%}
+main.topic.hb[data-topic="health-beauty"] .hb-hero-img::after{background:linear-gradient(90deg,#0f6e56 0,rgba(15,110,86,.55) 22%,rgba(15,110,86,0) 60%)}
+.hb-helpline{border-radius:20px;background:linear-gradient(120deg,#14233a,#1c3357);box-shadow:0 12px 30px rgba(20,35,58,.18)}
+.hb-help{border-radius:16px;transition:transform .15s,background .15s}.hb-help:hover{transform:translateY(-2px)}
+.hb-tip{border-radius:20px;border:1px solid #cfe7dc;background:linear-gradient(135deg,#e6f5ef,#fff);box-shadow:0 8px 24px rgba(15,110,86,.08)}
+.hb-tip-list p{font-size:19px}
+.hb .topic-section-title{font-size:clamp(21px,2.3vw,27px);margin:26px 0 14px}
+.hb .topic-section-title::before{width:6px;height:24px;border-radius:3px;background:linear-gradient(#1d9e75,#d9ad4e)}
+.hb-guides{gap:18px}
+.hb-guide{position:relative;border-radius:20px;padding:22px 20px 20px;border:1px solid #dcebe4;box-shadow:0 6px 18px rgba(20,35,58,.05);transition:transform .18s,box-shadow .18s;overflow:hidden}
+.hb-guide::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:var(--gc,#1d9e75)}
+.hb-guide:hover{transform:translateY(-4px);box-shadow:0 18px 34px rgba(15,110,86,.14)}
+.hb-guide .hb-ic{width:50px;height:50px;border-radius:14px;background:color-mix(in srgb,var(--gc,#1d9e75) 14%,#fff);color:var(--gc,#0f6e56)}
+.hb-guide h3{font-size:18.5px}
+.hb-guide li{line-height:1.7}
+.hb-guides .hb-guide:nth-child(1){--gc:#e0526a}.hb-guides .hb-guide:nth-child(2){--gc:#1d9e75}.hb-guides .hb-guide:nth-child(3){--gc:#e2a21f}
+.hb-guides .hb-guide:nth-child(4){--gc:#6a5acd}.hb-guides .hb-guide:nth-child(5){--gc:#d9779b}.hb-guides .hb-guide:nth-child(6){--gc:#3f9d4a}
+.hb .topic-box{border-radius:20px;border-color:#dcebe4;box-shadow:0 6px 18px rgba(20,35,58,.05)}
+.hb .topic-box h2{display:flex;align-items:center;gap:8px}
+.hb-scheme{border-radius:14px;transition:transform .15s,border-color .15s}.hb-scheme:hover{transform:translateX(3px)}
+.hb .topic-card{border-radius:18px;border-color:#dcebe4;box-shadow:0 6px 18px rgba(20,35,58,.05)}
+.hb .topic-card:hover{box-shadow:0 16px 32px rgba(15,110,86,.14)}
+.hb .topic-note{border-radius:16px}
+@media(max-width:760px){main.topic.hb[data-topic="health-beauty"]{padding-top:12px}main.topic.hb[data-topic="health-beauty"] .hb-hero{border-radius:20px}main.topic.hb[data-topic="health-beauty"] .hb-hero-text{padding:22px 18px 24px}main.topic.hb[data-topic="health-beauty"] .hb-hero-img{min-height:150px}main.topic.hb[data-topic="health-beauty"] .hb-hero-img::after{background:linear-gradient(0deg,#0f6e56 0,rgba(15,110,86,0) 70%)}}
+.hb .bl-latest-head .topic-section-title{margin:8px 0 4px}.bl-latest-head{align-items:flex-end}
