@@ -126,7 +126,19 @@ def trending_hints(limit=12):
             if out:
                 break
         except Exception as exc:  # trends are a bonus, never a blocker
-            log(f"[WARN] Google Trends not available ({exc}); using the built-in keyword lists")
+            log(f"[WARN] Google Trends not available ({exc})")
+    if not out:  # fallback: what Indian readers are reading about health today (Google News headlines, used ONLY as topic ideas)
+        try:
+            req = urllib.request.Request("https://news.google.com/rss/search?q=health+India+when:2d&hl=en-IN&gl=IN&ceid=IN:en",
+                                         headers={"User-Agent": "Mozilla/5.0 (compatible; PrimezNewsBot/1.0)"})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                root = ET.fromstring(r.read())
+            for item in root.iter("item"):
+                t = re.sub(r"\s+-\s+[^-]+$", "", (item.findtext("title") or "").strip())
+                if t:
+                    out.append(t)
+        except Exception as exc:
+            log(f"[WARN] Google News hints not available ({exc}); using the built-in keyword lists")
     return list(dict.fromkeys(out))[:limit]
 
 
@@ -249,14 +261,65 @@ Keep numbers, units and the helpline number 14416 unchanged. Return ONLY the JSO
 {json.dumps(article, ensure_ascii=False)}"""
 
 
+class QuotaExhausted(RuntimeError):
+    """Gemini free-tier quota for today is used up on every model - stop politely and keep what was written."""
+
+
+def _rotate_model():
+    models = list(dict.fromkeys(rss.GEMINI_MODELS))
+    cur = rss._GEMINI.get("model")
+    nxt = models[(models.index(cur) + 1) % len(models)] if cur in models else models[0]
+    rss._GEMINI["model"] = nxt
+    log(f"[INFO] Switching Gemini model -> {nxt} (quota is per model)")
+
+
 def call_json(prompt, max_tokens, state):
-    if state.get("last_call") and time.time() - state["last_call"] < 4:
-        time.sleep(4)  # stay under the free-tier request rate
-    try:
-        raw = rss._gemini_generate(prompt, os.environ["GEMINI_API_KEY"], max_tokens=max_tokens, timeout=240)
-    finally:
-        state["last_call"] = time.time()
-    return json.loads(raw["candidates"][0]["content"]["parts"][0]["text"], strict=False)
+    """Gemini call with spacing, waits on 429/503 (per-minute limits) and model rotation (daily limits)."""
+    gap = 12  # seconds between calls: keeps tokens-per-minute under the free-tier limit
+    wait_left = gap - (time.time() - state["last_call"]) if state.get("last_call") else 0
+    if wait_left > 0:
+        time.sleep(wait_left)
+    rotations = 0
+    for attempt in range(1, 8):
+        try:
+            raw = rss._gemini_generate(prompt, os.environ["GEMINI_API_KEY"], max_tokens=max_tokens, timeout=240)
+            state["last_call"] = time.time()
+            return json.loads(raw["candidates"][0]["content"]["parts"][0]["text"], strict=False)
+        except json.JSONDecodeError:
+            state["last_call"] = time.time()
+            raise
+        except Exception as exc:
+            state["last_call"] = time.time()
+            msg = str(exc)
+            if "HTTP 429" in msg:
+                daily = "PerDay" in msg or "per day" in msg.lower()
+                if daily or attempt in (2, 4):
+                    rotations += 1
+                    if rotations > len(set(rss.GEMINI_MODELS)):
+                        raise QuotaExhausted(msg[:200]) from exc
+                    _rotate_model()
+                    continue
+                log(f"[INFO] Gemini rate limit; waiting 65 s (attempt {attempt})")
+                time.sleep(65)
+                continue
+            if "HTTP 503" in msg or "HTTP 500" in msg:
+                log(f"[INFO] Gemini busy; waiting 30 s (attempt {attempt})")
+                time.sleep(30)
+                continue
+            raise
+    raise QuotaExhausted("Gemini kept failing after several waits")
+
+
+def clean_body(body):
+    """Gemini sometimes puts two keys in one block ({"h2":..,"p":..}); split them into one-key blocks."""
+    out = []
+    for blk in body if isinstance(body, list) else []:
+        if not isinstance(blk, dict):
+            continue
+        for k, v in blk.items():
+            if k in ("h2", "p", "tip", "ul", "ol") and v:
+                out.append({k: v})
+    return out
 
 
 def shape_of(article):
@@ -288,7 +351,8 @@ def generate_post(topic, avoid_titles, state, min_words, keyword, hints):
     note = ""
     for attempt in (1, 2, 3):  # an article that is too short is regenerated, never published
         en = call_json(build_prompt(topic, avoid_titles, min_words, keyword, hints, note), 14000, state)
-        if not isinstance(en.get("body"), list) or not isinstance(en.get("points"), list) or not isinstance(en.get("faq"), list):
+        en["body"] = clean_body(en.get("body"))
+        if not en["body"] or not isinstance(en.get("points"), list) or not isinstance(en.get("faq"), list):
             raise ValueError("English article has no body/points/faq")
         words = en_words(en["body"])
         if words >= min_words:
@@ -299,6 +363,7 @@ def generate_post(topic, avoid_titles, state, min_words, keyword, hints):
         raise ValueError(f"article stayed shorter than {min_words} words")
     pa = call_json(translate_prompt({k: en[k] for k in ("title", "excerpt", "points", "faq", "body")}, "pa"), 32000, state)
     hi = call_json(translate_prompt({k: en[k] for k in ("title", "excerpt", "points", "faq", "body")}, "hi"), 32000, state)
+    pa["body"], hi["body"] = clean_body(pa.get("body")), clean_body(hi.get("body"))
     post = merge(en, pa, hi)
     validate(post, min_words)
     return post, words
@@ -342,7 +407,7 @@ def main():
     used_slugs = {p["slug"] for p in everything}
     used_titles = {norm(p["title"]["en"]) for p in everything}
     used_keywords = {norm(p.get("keyword", "")) for p in everything if p.get("keyword")}
-    state, made = {"last_call": 0.0}, []
+    state, made, quota_out = {"last_call": 0.0}, [], False
     for topic in chosen:
         avoid = [p["title"]["en"] for p in everything if p.get("tag") == topic["tag"]]
         post = words = None
@@ -354,10 +419,17 @@ def main():
                 if norm(post["title"]["en"]) in used_titles or any(similar(post["title"]["en"], t) for t in avoid):
                     raise ValueError("duplicate or too-similar title")
                 break
+            except QuotaExhausted as exc:
+                log(f"[WARN] Gemini quota used up for today ({exc}). Keeping the blogs written so far; the next run continues.")
+                quota_out = True
+                post = None
+                break
             except Exception as exc:
                 log(f"[WARN] {topic['name']} attempt {attempt} failed: {exc}")
                 post = None
         if not post:
+            if quota_out:
+                break
             continue
         slug, n = post["slug"], 2
         while slug in used_slugs:

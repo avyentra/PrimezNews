@@ -276,10 +276,13 @@ def build():
             sm.write_text(xml.replace('</urlset>', add + '</urlset>'))
     # latest 3 posts on the Health & Beauty page (between markers)
     page = SHELL.read_text()
+    lead_p, others = posts[0], posts[1:4]
     block_html = ('<!--blog-latest--><section class="bl-latest" aria-labelledby="blLatestTitle"><div class="bl-latest-head">'
-                  '<h2 class="topic-section-title" id="blLatestTitle">' + L(T('ਸਿਹਤ ਬਲੌਗ', 'हेल्थ ब्लॉग', 'Health blog')) + '</h2>'
-                  '<a class="topic-more" href="health-blog/">' + L(T('ਸਾਰੇ ਲੇਖ →', 'सभी लेख →', 'All articles →')) + '</a></div>'
-                  '<div class="bl-grid bl-grid-3">' + ''.join(card(p, tags) for p in posts[:3]) + '</div></section><!--/blog-latest-->')
+                  '<div><span class="bl-new">' + L(T('ਨਵਾਂ', 'नया', 'New')) + '</span><h2 class="topic-section-title" id="blLatestTitle">' + L(T('ਤਾਜ਼ਾ ਸਿਹਤ ਬਲੌਗ', 'ताज़ा हेल्थ ब्लॉग', 'Latest health blogs')) + '</h2>'
+                  '<p class="bl-latest-sub">' + L(T('ਹਰ ਰੋਜ਼ ਨਵੇਂ ਲੇਖ — ਸਿਹਤ, ਖੁਰਾਕ, ਫਿਟਨੈੱਸ ਤੇ ਸੁੰਦਰਤਾ', 'हर रोज़ नए लेख — सेहत, आहार, फिटनेस और सौंदर्य', 'New articles every day on health, food, fitness and beauty')) + '</p></div>'
+                  '<a class="bl-all" href="health-blog/">' + L(T('ਸਾਰੇ ਲੇਖ →', 'सभी लेख →', 'All articles →')) + '</a></div>'
+                  '<div class="bl-latest-grid">' + card(lead_p, tags, 'bl-card bl-lead') +
+                  '<div class="bl-latest-list">' + ''.join(card(p, tags, 'bl-card bl-row') for p in others) + '</div></div></section><!--/blog-latest-->')
     new = re.sub(r'<!--blog-latest-->.*?<!--/blog-latest-->', lambda m: block_html, page, count=1, flags=re.S)
     if new != page: SHELL.write_text(new)
     # remove pages of posts that were taken out of the data file (only folders this script made)
