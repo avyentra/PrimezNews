@@ -20,143 +20,217 @@ main.topic{max-width:1280px;width:calc(100% - 80px);margin:0 auto;padding:30px 0
 @media(max-width:900px){.mb-grid,.mb-msp-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.mb-dot,.mb-flash{animation:none}}
 
-/* ===== Health blog redesign (list + article) ===== */
-.bl{--bl-g:#0f6e56;--bl-g2:#1d9e75;--bl-ink:#14233a;--bl-mute:#516070;--bl-line:#e3ece8;--bl-gold:#d9ad4e}
-.bl-hero{position:relative;overflow:hidden;border:0;border-radius:24px;padding:38px 38px 30px;color:#fff;background:linear-gradient(135deg,#0b4f3f 0%,#0f6e56 55%,#1d9e75 100%)}
-.bl-hero::before{content:"";position:absolute;right:-80px;top:-80px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(217,173,78,.35),transparent 65%)}
-.bl-hero::after{content:"";position:absolute;left:-60px;bottom:-110px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.12),transparent 65%)}
-.bl-hero>*{position:relative;z-index:1}
-.bl-hero h1{color:#fff;font-size:clamp(30px,3.8vw,46px)}
-.bl-hero p{color:#d8efe6;max-width:680px}
-.bl-hero .hb-kicker{background:rgba(255,255,255,.16);color:#fff}
-.bl-stats{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:6px 0 4px;padding:0}
-.bl-stats li{display:flex;flex-direction:column;min-width:92px;padding:10px 16px;border-radius:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(2px)}
-.bl-stats b{font-size:22px;line-height:1.1}.bl-stats span{font-size:12.5px;color:#cfe9df}
-.bl-hero .hb-chip{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.35);color:#fff}
-.bl-hero .hb-chip:hover{background:rgba(255,255,255,.22)}
-.bl-hero .hb-chip.active{background:#fff;color:var(--bl-g);border-color:#fff}
-.bl-sec{display:flex;align-items:center;gap:10px;margin:6px 0 14px;font-size:21px;color:var(--bl-ink)}
-.bl-sec::before{content:"";width:5px;height:22px;border-radius:3px;background:linear-gradient(var(--bl-g2),var(--bl-gold))}
-.bl-card{border-radius:18px;border-color:var(--bl-line);box-shadow:0 1px 2px rgba(20,35,58,.04)}
-.bl-card:hover{box-shadow:0 18px 36px rgba(15,110,86,.16)}
-.bl-card-img{position:relative}
-.bl-card-img::after{content:"";position:absolute;inset:auto 0 0;height:40%;background:linear-gradient(transparent,rgba(11,35,30,.28))}
-.bl-card-body .bl-tag{background:#e6f5ef}
-.bl-card h3{font-size:18.5px}
-.bl-meta{display:flex;align-items:center;gap:6px;margin-top:auto;padding-top:6px;border-top:1px dashed var(--bl-line)}
-.bl-featured{box-shadow:0 14px 34px rgba(15,110,86,.12);border-radius:22px}
-.bl-featured .bl-card-body{background:linear-gradient(180deg,#fff,#f6fbf8)}
-.bl-featured h3{line-height:1.35}
-.bl-featured::before{content:"★";position:absolute;margin:14px;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--bl-gold);color:#14233a;font-weight:800;z-index:2}
-.bl-featured{position:relative}
+/* ===== Health Journal theme: Health & Beauty page, blog list and blog articles =====
+   Warm paper, thick ink outlines, colour "stickers". Header/footer are NOT touched (shared on every page). */
+.hb,.bl{--paper:#fbf6ee;--ink:#1b1a17;--co:#e4572e;--te:#0e7c7b;--mu:#f4b942;--pk:#f8c9c4;--mint:#c9f0d5;--sky:#bfe3ff;--lav:#d6c6fb;--peach:#ffd9b8;--sh:5px 5px 0 var(--ink);--bd:2.5px solid var(--ink)}
+main.topic.hb{background-color:var(--paper);background-image:radial-gradient(rgba(27,26,23,.10) 1px,transparent 1.2px);background-size:22px 22px;max-width:none;width:100%;padding:28px max(18px,calc((100% - 1240px)/2)) 56px;color:var(--ink)}
+.hb h1,.hb h2,.hb h3,.bl h1,.bl h2,.bl h3{color:var(--ink);letter-spacing:-.01em}
+.hb-kicker,.bl .hb-kicker{background:var(--ink);color:#fff;border-radius:999px;padding:7px 14px;font-weight:800}
+.hb-kicker .hb-ic{color:var(--mu)}
 
-/* article page */
-.bl-article{border:0;border-radius:24px;padding:0 0 30px;overflow:hidden;box-shadow:0 10px 40px rgba(20,35,58,.07)}
-.bl-article>*{margin-left:clamp(18px,4.5vw,52px);margin-right:clamp(18px,4.5vw,52px)}
-.bl-article>.bl-crumbs{margin-top:22px}
-.bl-article>.bl-figure{margin:0 0 26px;border-radius:0}
-.bl-article .bl-tag{margin-top:2px}
-.bl-article h1{font-size:clamp(28px,3.4vw,42px);line-height:1.25;letter-spacing:-.01em}
-.bl-lede{font-size:19px;color:var(--bl-mute);border-left:4px solid var(--bl-g2);padding-left:14px}
-.bl-byline{border:0;padding:6px 0 16px;margin-bottom:6px}
-.bl-avatar{background:linear-gradient(135deg,var(--bl-g),var(--bl-g2))}
-.bl-points{background:linear-gradient(135deg,#e6f5ef,#f4fbf8);border:1px solid #cfe7dc;border-radius:18px}
-.bl-points ul{list-style:none;padding:0;gap:10px}
-.bl-points li{position:relative;padding-left:30px}
-.bl-points li::before{content:"✓";position:absolute;left:0;top:2px;width:21px;height:21px;border-radius:50%;display:grid;place-items:center;background:var(--bl-g);color:#fff;font-size:12px;font-weight:800}
-.bl-toc{margin-bottom:26px;border:1px solid var(--bl-line);border-radius:16px;background:#fbfdfc}
-.bl-toc summary{cursor:pointer;font-weight:800;color:var(--bl-ink);padding:14px 18px;list-style:none;display:flex;justify-content:space-between;align-items:center}
-.bl-toc summary::-webkit-details-marker{display:none}
-.bl-toc summary::after{content:"▾";color:var(--bl-g);transition:transform .2s}
-.bl-toc details:not([open]) summary::after{transform:rotate(-90deg)}
-.bl-toc ol{margin:0;padding:0 18px 16px 40px;display:grid;gap:7px;font-size:15.5px}
-.bl-toc a{color:var(--bl-g);text-decoration:none;font-weight:600}.bl-toc a:hover{text-decoration:underline}
-.bl-body{max-width:720px;font-size:18.5px;line-height:1.9;color:#1b2733;margin-left:auto;margin-right:auto}
-.bl-article>.bl-body{margin-left:auto;margin-right:auto}
-.bl-body h2{position:relative;font-size:clamp(22px,2.4vw,27px);line-height:1.35;margin:38px 0 12px;padding-top:6px;scroll-margin-top:80px;color:var(--bl-ink)}
-.bl-body h2::before{content:"";display:block;width:46px;height:4px;border-radius:3px;margin-bottom:10px;background:linear-gradient(90deg,var(--bl-g2),var(--bl-gold))}
-.bl-body ul,.bl-body ol{background:#fafdfb;border:1px solid var(--bl-line);border-radius:14px;padding:16px 18px 16px 38px}
-.bl-tip{border-left:5px solid var(--bl-gold);border-radius:14px;background:#fff9e8}
-.bl-faq{max-width:720px;margin:34px auto 0}
-.bl-faq h2{font-size:clamp(22px,2.4vw,27px);color:var(--bl-ink);margin:0 0 14px}
-.bl-q{border:1px solid var(--bl-line);border-radius:14px;margin:0 0 10px;background:#fff;overflow:hidden}
-.bl-q summary{cursor:pointer;padding:15px 18px;font-weight:700;color:var(--bl-ink);list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center;line-height:1.5}
-.bl-q summary::-webkit-details-marker{display:none}
-.bl-q summary::after{content:"+";flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#e6f5ef;color:var(--bl-g);font-weight:800}
-.bl-q[open] summary::after{content:"–"}
-.bl-q[open]{border-color:#bfe0d2;background:#fbfdfc}
-.bl-q p{margin:0;padding:0 18px 16px;color:var(--bl-mute);line-height:1.8;font-size:16.5px}
-.bl-article>.topic-note{max-width:720px;margin-top:26px;margin-left:auto;margin-right:auto}
-.bl-author{max-width:720px;margin:18px auto 0;display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border:1px solid var(--bl-line);border-radius:16px;background:#f7fbf9}
-.bl-author p{margin:4px 0 0;font-size:14.5px;line-height:1.65;color:var(--bl-mute)}.bl-author a{color:var(--bl-g);font-weight:700;text-decoration:none}
-.bl-article>.bl-share{max-width:720px;margin-left:auto;margin-right:auto}
-.bl-related .topic-section-title{margin-top:8px}
-.bl-article>.bl-related{margin-top:30px}
-@media(max-width:640px){.bl-hero{padding:24px 18px 20px}.bl-stats li{min-width:calc(50% - 6px)}.bl-body{font-size:17.5px}.bl-article>.bl-figure{margin-bottom:18px}.bl-lede{font-size:17px}}
-@supports (animation-timeline:scroll()){.bl-post .bl-article::before{content:"";position:fixed;left:0;top:0;height:4px;width:100%;transform-origin:0 50%;background:linear-gradient(90deg,var(--bl-g2),var(--bl-gold));z-index:60;animation:blprog linear both;animation-timeline:scroll(root)}@keyframes blprog{from{transform:scaleX(0)}to{transform:scaleX(1)}}}
-.bl-article>h1,.bl-article>.bl-lede,.bl-article>.bl-byline,.bl-article>.bl-tag,.bl-article>.bl-points,.bl-article>.bl-toc{margin-left:clamp(18px,4.5vw,52px);margin-right:clamp(18px,4.5vw,52px)}
-.bl-article>h1{margin-top:12px;margin-bottom:12px}.bl-article>.bl-lede{margin-bottom:18px}.bl-article>.bl-tag{margin-top:2px;margin-bottom:0}.bl-article>.bl-points{margin-bottom:24px}.bl-article>.bl-toc{margin-bottom:26px}
-.bl-article>.bl-body,.bl-article>.bl-faq,.bl-article>.bl-author,.bl-article>.bl-share,.bl-article>.topic-note{max-width:720px;width:calc(100% - 2*clamp(18px,4.5vw,52px));margin-left:auto;margin-right:auto}
+/* section titles: marker highlight */
+.hb .topic-section-title,.bl .topic-section-title,.bl-sec{position:relative;display:inline-block;font-size:clamp(24px,2.8vw,34px);font-weight:900;margin:30px 0 16px;padding:0 6px;background:linear-gradient(transparent 58%,var(--mu) 58% 92%,transparent 92%);line-height:1.25}
+.hb .topic-section-title::before,.bl .topic-section-title::before,.bl-sec::before{display:none}
 
-/* ===== Health & Beauty page: latest blogs at the top ===== */
-.bl-latest{margin:0 0 26px;padding:22px;border-radius:24px;background:linear-gradient(135deg,#f1faf6 0%,#fff 60%);border:1px solid #d6ebe2;box-shadow:0 10px 30px rgba(15,110,86,.07)}
-.bl-latest-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px}
-.bl-latest-head .topic-section-title{margin:2px 0 4px;font-size:clamp(22px,2.6vw,30px)}
-.bl-latest-sub{margin:0;color:#516070;font-size:15px}
-.bl-new{display:inline-block;background:#d9ad4e;color:#14233a;font-weight:800;font-size:12px;letter-spacing:.04em;padding:3px 10px;border-radius:999px;text-transform:uppercase}
-.bl-all{flex:none;display:inline-flex;align-items:center;min-height:42px;padding:0 18px;border-radius:999px;background:#0f6e56;color:#fff;font-weight:700;text-decoration:none;white-space:nowrap}
-.bl-all:hover{background:#0b5a46}
-.bl-latest-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;align-items:stretch}
-.bl-lead{position:relative;min-height:100%;border-radius:20px;display:flex;flex-direction:column}
+/* ---------- Health & Beauty page ---------- */
+.hb-hero{position:relative;display:block;background:var(--mu);border:var(--bd);border-radius:28px;box-shadow:8px 8px 0 var(--ink);overflow:hidden;margin:0 0 34px}
+.hb-hero::before{content:"";position:absolute;right:-70px;top:-70px;width:300px;height:300px;border-radius:50%;background:var(--co);border:var(--bd)}
+.hb-hero::after{content:"";position:absolute;right:150px;bottom:-60px;width:170px;height:170px;border-radius:50%;background:var(--te);border:var(--bd)}
+.hb-hero-img{display:none}
+.hb-hero-text{position:relative;z-index:2;padding:46px 44px 40px;max-width:820px;gap:16px}
+.hb-hero h1{font-size:clamp(40px,6.4vw,84px);line-height:1.05;font-weight:900;margin:0}
+.hb-hero p{color:var(--ink);font-size:clamp(16px,1.6vw,19px);max-width:640px;font-weight:500}
+.hb-chips{gap:10px;margin-top:8px}
+.hb-chip{background:#fff;border:var(--bd);color:var(--ink);border-radius:999px;font-weight:800;padding:8px 15px;box-shadow:3px 3px 0 var(--ink);transition:transform .12s,box-shadow .12s}
+.hb-chip:hover{background:#fff;transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.hb-chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hb-chip.active .hb-ic{color:var(--mu)}
+
+.bl-latest{background:none;border:0;box-shadow:none;padding:0;margin:0 0 36px}
+.bl-latest-head{align-items:flex-end;margin-bottom:6px}
+.bl-new{background:var(--co);color:#fff;border:var(--bd);border-radius:8px;padding:3px 12px;font-weight:900;transform:rotate(-4deg);box-shadow:3px 3px 0 var(--ink)}
+.bl-latest-sub{font-weight:600;color:#4a463e}
+.bl-all{background:var(--ink);border:var(--bd);border-radius:999px;color:#fff;box-shadow:4px 4px 0 var(--te);font-weight:800}
+.bl-all:hover{background:var(--ink);transform:translate(-1px,-1px)}
+.bl-latest-grid{gap:22px}
+
+/* cards (blog list, latest, related) */
+.bl-card{background:#fff;border:var(--bd);border-radius:22px;box-shadow:var(--sh);overflow:hidden;transition:transform .14s,box-shadow .14s}
+.bl-card:hover{transform:translate(-3px,-3px);box-shadow:8px 8px 0 var(--ink)}
+.bl-card-img{border-bottom:var(--bd)}
+.bl-card-img::after{display:none}
+.bl-card h3{font-weight:900;color:var(--ink)}
+.bl-card:hover h3{color:var(--co)}
+.bl-card p{color:#4a463e}
+.bl-meta{border-top:2px dashed #d9d2c3;color:#6b655a;font-weight:600}
+.bl-tag,.bl-card .bl-tag{background:var(--mint);color:var(--ink);border:2px solid var(--ink);border-radius:8px;font-weight:800;padding:2px 10px}
+.bl-card[data-tag="health-news"] .bl-tag,a.bl-tag[href$="#health-news"]{background:var(--sky)}
+.bl-card[data-tag="beauty"] .bl-tag,a.bl-tag[href$="#beauty"]{background:var(--pk)}
+.bl-card[data-tag="fitness"] .bl-tag,a.bl-tag[href$="#fitness"]{background:var(--mint)}
+.bl-card[data-tag="diet"] .bl-tag,a.bl-tag[href$="#diet"]{background:#ffe08a}
+.bl-card[data-tag="de-addiction"] .bl-tag,a.bl-tag[href$="#de-addiction"],.bl-card[data-tag="mind"] .bl-tag,a.bl-tag[href$="#mind"]{background:var(--lav)}
+.bl-card[data-tag="health-schemes"] .bl-tag,a.bl-tag[href$="#health-schemes"]{background:#b8e8e0}
+.bl-card[data-tag="hair-care"] .bl-tag,a.bl-tag[href$="#hair-care"]{background:var(--peach)}
+.bl-card[data-tag="skin-care"] .bl-tag,a.bl-tag[href$="#skin-care"],.bl-card[data-tag="sexual-wellness"] .bl-tag{background:#ffcfe0}
+.bl-lead .bl-card-body{padding:20px 22px 22px}
+.bl-lead h3{font-size:clamp(22px,2.3vw,30px);line-height:1.3}
+.bl-row{border-radius:18px;box-shadow:4px 4px 0 var(--ink)}
+.bl-row .bl-card-img{border-bottom:0;border-right:var(--bd)}
+.bl-row h3{font-size:16.5px}
+
+.hb-helpline{background:var(--co);color:var(--ink);border:var(--bd);border-radius:24px;box-shadow:var(--sh);margin:0 0 34px}
+.hb-helpline h2{color:#fff;font-size:20px;font-weight:900}
+.hb-help{background:#fff;border:var(--bd);color:var(--ink);border-radius:16px;box-shadow:3px 3px 0 var(--ink)}
+.hb-help:hover{background:#fff;transform:translate(-1px,-1px)}
+.hb-help .hb-ic{color:var(--co)}.hb-help-t small{color:#5a554b}.hb-help-n{font-weight:900}
+
+.hb-tip{background:var(--lav);border:var(--bd);border-radius:24px;box-shadow:var(--sh);margin-bottom:6px}
+.hb-tip-label{background:var(--ink);color:#fff;border-radius:8px;padding:4px 12px}
+.hb-tip-label .hb-ic{color:var(--mu)}
+.hb-tip-list .hb-ic{background:#fff;border:var(--bd);color:var(--te)}
+.hb-tip-list p{font-weight:700;color:var(--ink)}
+
+.hb .topic-card{background:#fff;border:var(--bd);border-radius:20px;box-shadow:4px 4px 0 var(--ink)}
+.hb .topic-card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
+.hb .topic-tag{background:var(--te);border-radius:6px}
+.hb .topic-card h3{font-weight:800}
+
+.hb-guides{gap:22px}
+.hb-guide{border:var(--bd);border-radius:22px;box-shadow:var(--sh);padding:22px 20px;background:var(--pk);transition:transform .14s,box-shadow .14s;overflow:visible}
+.hb-guide::before{display:none}
+.hb-guide:hover{transform:translate(-3px,-3px) rotate(-.4deg);box-shadow:8px 8px 0 var(--ink)}
+.hb-guide .hb-ic{width:52px;height:52px;border-radius:50%;background:#fff;border:var(--bd);color:var(--ink);padding:11px}
+.hb-guide h3{font-size:20px;font-weight:900}
+.hb-guide ul{color:var(--ink);font-weight:500}.hb-guide li::marker{color:var(--ink)}
+.hb-guides .hb-guide:nth-child(1){background:var(--pk)}.hb-guides .hb-guide:nth-child(2){background:var(--mint)}.hb-guides .hb-guide:nth-child(3){background:#ffe08a}
+.hb-guides .hb-guide:nth-child(4){background:var(--lav)}.hb-guides .hb-guide:nth-child(5){background:#ffcfe0}.hb-guides .hb-guide:nth-child(6){background:var(--sky)}
+
+.hb .topic-box,.bl .topic-box{background:#fff;border:var(--bd);border-radius:22px;box-shadow:var(--sh)}
+.hb .topic-box h2,.bl .topic-box h2{font-weight:900}
+.hb-scheme{background:#fff;border:2px solid var(--ink);border-radius:14px;box-shadow:3px 3px 0 var(--ink)}
+.hb-scheme:hover{background:var(--mint);transform:translate(-1px,-1px)}
+.hb-scheme .hb-ic{color:var(--te)}
+.hb-btn{background:var(--ink);border:var(--bd);box-shadow:3px 3px 0 var(--co);font-weight:800}
+.hb-btn:hover{background:var(--ink);transform:translate(-1px,-1px)}
+.hb .topic-note,.bl .topic-note{background:#fff3c4;border:2px solid var(--ink);border-radius:16px;color:var(--ink)}
+.bl-side-tag{border:2px solid var(--ink);background:#fff;color:var(--ink);font-weight:800;box-shadow:2px 2px 0 var(--ink)}
+.bl-side-tag:hover{background:var(--mu)}
+
+/* ---------- Blog list page ---------- */
+.bl-crumbs a{color:var(--te);font-weight:700}
+.bl-hero{background:var(--te);color:#fff;border:var(--bd);border-radius:28px;box-shadow:8px 8px 0 var(--ink);padding:38px 36px 30px;position:relative;overflow:hidden}
+.bl-hero::before{content:"";position:absolute;right:-60px;top:-60px;width:250px;height:250px;border-radius:50%;background:var(--mu);border:var(--bd);background-image:none}
+.bl-hero::after{display:none}
+.bl-hero>*{position:relative;z-index:2}
+.bl-hero h1{color:#fff;font-size:clamp(36px,5.4vw,68px);line-height:1.08;font-weight:900}
+.bl-hero p{color:#e5fbf8;font-weight:500}
+.bl-hero .hb-kicker{background:var(--ink);color:#fff}
+.bl-stats li{background:#fff;color:var(--ink);border:var(--bd);border-radius:14px;box-shadow:3px 3px 0 var(--ink);backdrop-filter:none}
+.bl-stats span{color:#5a554b}.bl-stats b{font-weight:900}
+.bl-hero .hb-chip{background:#fff;color:var(--ink);border:var(--bd)}
+.bl-hero .hb-chip:hover{background:#fff}.bl-hero .hb-chip.active{background:var(--ink);color:#fff}
+.bl-featured{border-radius:26px;box-shadow:8px 8px 0 var(--ink);margin-bottom:26px}
+.bl-featured::before{content:"★";display:grid;position:absolute;margin:14px;width:38px;height:38px;place-items:center;border-radius:50%;background:var(--mu);border:var(--bd);font-weight:900;z-index:2}
+.bl-featured .bl-card-body{background:#fff}
+.bl-grid{gap:24px}
+
+/* ---------- Article page ---------- */
+.bl-article{background:#fff;border:var(--bd);border-radius:28px;box-shadow:8px 8px 0 var(--ink);padding:clamp(20px,4vw,46px);overflow:visible}
+.bl-article>*,.bl-article>.bl-figure{margin-left:0;margin-right:0;max-width:none;width:auto}
+.bl-article h1{font-size:clamp(32px,4.6vw,58px);line-height:1.12;font-weight:900;margin:14px 0 14px;letter-spacing:-.015em}
+.bl-lede{font-size:clamp(17px,1.6vw,20px);border:0;padding:0 0 0 0;color:#3d3a33;font-weight:500;background:linear-gradient(transparent 70%,rgba(244,185,66,.35) 70%);display:inline;line-height:1.9}
+.bl-byline{border:0;padding:18px 0 6px;margin-top:6px}
+.bl-avatar{background:var(--co);border:var(--bd);color:#fff}
+.bl-byline small{font-weight:600}
+.bl-article>.bl-figure{border:var(--bd);border-radius:22px;box-shadow:5px 5px 0 var(--ink);margin:16px 0 28px}
+.bl-points{background:var(--mint);border:var(--bd);border-radius:22px;box-shadow:5px 5px 0 var(--ink)}
+.bl-points h2{color:var(--ink);font-weight:900;font-size:19px}
+.bl-points li::before{background:var(--ink);color:var(--mu);border:0}
+.bl-toc{border:var(--bd);border-radius:20px;background:#fff7dc;box-shadow:4px 4px 0 var(--ink);margin:0 0 30px}
+.bl-toc summary{font-weight:900;color:var(--ink)}.bl-toc summary::after{color:var(--ink)}
+.bl-toc a{color:var(--ink);font-weight:700}.bl-toc a:hover{color:var(--co)}
+.bl-body{max-width:760px;margin:0 auto;font-size:clamp(17.5px,1.5vw,19.5px);line-height:1.95;color:#25231f;counter-reset:sec}
+.bl-article>.bl-body{margin-left:auto;margin-right:auto;max-width:760px;width:100%}
+.bl-body h2{counter-increment:sec;font-size:clamp(25px,2.8vw,34px);font-weight:900;margin:48px 0 14px;padding-top:0;line-height:1.25}
+.bl-body h2::before{content:counter(sec,decimal-leading-zero);display:inline-grid;place-items:center;min-width:46px;height:46px;padding:0 8px;margin:0 12px 8px 0;border:var(--bd);border-radius:12px;background:var(--mu);color:var(--ink);font-size:20px;font-weight:900;box-shadow:3px 3px 0 var(--ink);vertical-align:middle;width:auto}
+.bl-body ul,.bl-body ol{background:#fff;border:var(--bd);border-radius:18px;box-shadow:4px 4px 0 var(--ink);padding:18px 20px 18px 40px}
+.bl-body li::marker{color:var(--co);font-weight:900}
+.bl-tip{background:var(--lav);border:var(--bd);border-left:var(--bd);border-radius:20px;box-shadow:4px 4px 0 var(--ink)}
+.bl-tip b{color:var(--ink);font-weight:900}
+.bl-faq{max-width:760px;margin:44px auto 0}
+.bl-faq h2{font-size:clamp(25px,2.8vw,34px);font-weight:900;display:inline-block;background:linear-gradient(transparent 58%,var(--mu) 58% 92%,transparent 92%);margin:0 0 18px}
+.bl-q{border:var(--bd);border-radius:18px;box-shadow:4px 4px 0 var(--ink);margin-bottom:14px;background:#fff}
+.bl-q summary{font-weight:800;color:var(--ink)}
+.bl-q summary::after{background:var(--mu);border:2px solid var(--ink);color:var(--ink)}
+.bl-q[open]{background:#fff7dc;border-color:var(--ink)}.bl-q p{color:#3d3a33}
+.bl-article>.topic-note{max-width:760px;margin:30px auto 0}
+.bl-author{max-width:760px;margin:20px auto 0;background:var(--pk);border:var(--bd);border-radius:20px;box-shadow:4px 4px 0 var(--ink)}
+.bl-author p{color:#3d3a33}.bl-author a{color:var(--ink);text-decoration:underline}
+.bl-article>.bl-share{max-width:760px;margin:26px auto 0;border-top:2.5px solid var(--ink)}
+.bl-share a,.bl-share button{border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-weight:800}
+.bl-share button{background:#fff}
+.bl-article>.bl-related{margin-top:42px}
+.bl-related .topic-section-title{margin-top:0}
+.bl a:focus-visible,.bl button:focus-visible,.hb a:focus-visible,.hb button:focus-visible{outline:3px solid var(--co);outline-offset:3px}
+
+@media(max-width:900px){.bl-latest-grid{grid-template-columns:1fr}.bl-latest-list{grid-template-rows:none}}
+@media(max-width:760px){
+ main.topic.hb{padding:16px 14px 44px}
+ .hb-hero,.bl-hero{border-radius:22px;box-shadow:5px 5px 0 var(--ink)}
+ .hb-hero-text{padding:28px 20px 26px}.bl-hero{padding:26px 18px 22px}
+ .hb-hero::before{width:170px;height:170px;right:-50px;top:-50px}.hb-hero::after{display:none}
+ .bl-card,.hb-guide,.bl-article,.hb-helpline,.hb-tip,.hb .topic-box{box-shadow:4px 4px 0 var(--ink)}
+ .bl-article{border-radius:22px;padding:18px 16px 24px}
+ .bl-body h2::before{min-width:38px;height:38px;font-size:17px}
+ .bl-stats li{min-width:calc(50% - 6px)}
+}
+@media(prefers-reduced-motion:reduce){.bl-card,.hb-chip,.hb-guide,.hb-help,.hb-scheme{transition:none}}
+
+/* ----- structure for the Health Journal components (layout only; colours are above) ----- */
+.bl-latest-head{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.bl-latest-head .topic-section-title{margin:8px 0 4px}
+.bl-latest-sub{margin:2px 0 0;font-size:15px}
+.bl-new{display:inline-block;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
+.bl-all{flex:none;display:inline-flex;align-items:center;min-height:44px;padding:0 20px;text-decoration:none;white-space:nowrap}
+.bl-latest-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:stretch}
+.bl-lead{display:flex;flex-direction:column}
 .bl-lead .bl-card-img{aspect-ratio:16/10;flex:none}
-.bl-lead .bl-card-body{flex:1;padding:18px 20px 20px}
-.bl-lead h3{font-size:clamp(20px,2vw,25px);line-height:1.35}
-.bl-lead p{-webkit-line-clamp:3}
-.bl-lead::before{content:"★ " attr(data-star);position:absolute;top:12px;left:12px;z-index:2;display:none}
-.bl-latest-list{display:grid;gap:12px;align-content:stretch;grid-template-rows:repeat(3,1fr)}
-.bl-row{flex-direction:row;border-radius:16px;align-items:stretch}
-.bl-row .bl-card-img{flex:0 0 38%;aspect-ratio:auto;min-height:104px}
-.bl-row .bl-card-img::after{display:none}
+.bl-lead .bl-card-body{flex:1}
+.bl-latest-list{display:grid;gap:16px;grid-template-rows:repeat(3,1fr)}
+.bl-row{flex-direction:row;align-items:stretch}
+.bl-row .bl-card-img{flex:0 0 38%;aspect-ratio:auto;min-height:110px}
 .bl-row .bl-card-body{padding:12px 14px;gap:5px;justify-content:center;min-width:0}
-.bl-row h3{font-size:16px;line-height:1.4;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.bl-row h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.4}
 .bl-row p{display:none}
 .bl-row .bl-meta{border:0;padding:0;margin:0;font-size:12.5px}
-.bl-row .bl-tag{font-size:11.5px;padding:2px 9px}
-@media(max-width:900px){.bl-latest-grid{grid-template-columns:1fr}.bl-latest-list{grid-template-rows:none}.bl-row .bl-card-img{min-height:96px}}
-@media(max-width:560px){.bl-latest{padding:16px 14px;border-radius:18px}.bl-latest-head{flex-direction:column;align-items:flex-start}.bl-row .bl-card-img{flex-basis:34%}}
-
-/* ===== Health & Beauty page polish ===== */
-main.topic.hb[data-topic="health-beauty"]{padding-top:18px;background:radial-gradient(900px 380px at 100% 0,rgba(29,158,117,.10),transparent 60%),radial-gradient(700px 300px at 0 40%,rgba(217,173,78,.10),transparent 60%)}
-main.topic.hb[data-topic="health-beauty"] .hb-hero{border:0;border-radius:26px;overflow:hidden;background:linear-gradient(120deg,#0a4a3b 0%,#0f6e56 55%,#1d9e75 100%);box-shadow:0 18px 44px rgba(15,110,86,.22);margin-bottom:22px}
-main.topic.hb[data-topic="health-beauty"] .hb-hero-text{padding:38px 36px 34px}
-main.topic.hb[data-topic="health-beauty"] .hb-hero h1{color:#fff;font-size:clamp(34px,4.4vw,54px);letter-spacing:-.01em}
-main.topic.hb[data-topic="health-beauty"] .hb-hero p{color:#d6efe5}
-main.topic.hb[data-topic="health-beauty"] .hb-kicker{background:rgba(255,255,255,.16);color:#fff}
-main.topic.hb[data-topic="health-beauty"] .hb-hero .hb-chip{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.34);color:#fff}
-main.topic.hb[data-topic="health-beauty"] .hb-hero .hb-chip:hover{background:rgba(255,255,255,.22)}
-main.topic.hb[data-topic="health-beauty"] .hb-hero .hb-chip.active{background:#fff;color:#0f6e56;border-color:#fff}
-main.topic.hb[data-topic="health-beauty"] .hb-hero-img{background-image:url("../images/people.webp");background-position:center 30%}
-main.topic.hb[data-topic="health-beauty"] .hb-hero-img::after{background:linear-gradient(90deg,#0f6e56 0,rgba(15,110,86,.55) 22%,rgba(15,110,86,0) 60%)}
-.hb-helpline{border-radius:20px;background:linear-gradient(120deg,#14233a,#1c3357);box-shadow:0 12px 30px rgba(20,35,58,.18)}
-.hb-help{border-radius:16px;transition:transform .15s,background .15s}.hb-help:hover{transform:translateY(-2px)}
-.hb-tip{border-radius:20px;border:1px solid #cfe7dc;background:linear-gradient(135deg,#e6f5ef,#fff);box-shadow:0 8px 24px rgba(15,110,86,.08)}
-.hb-tip-list p{font-size:19px}
-.hb .topic-section-title{font-size:clamp(21px,2.3vw,27px);margin:26px 0 14px}
-.hb .topic-section-title::before{width:6px;height:24px;border-radius:3px;background:linear-gradient(#1d9e75,#d9ad4e)}
-.hb-guides{gap:18px}
-.hb-guide{position:relative;border-radius:20px;padding:22px 20px 20px;border:1px solid #dcebe4;box-shadow:0 6px 18px rgba(20,35,58,.05);transition:transform .18s,box-shadow .18s;overflow:hidden}
-.hb-guide::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:var(--gc,#1d9e75)}
-.hb-guide:hover{transform:translateY(-4px);box-shadow:0 18px 34px rgba(15,110,86,.14)}
-.hb-guide .hb-ic{width:50px;height:50px;border-radius:14px;background:color-mix(in srgb,var(--gc,#1d9e75) 14%,#fff);color:var(--gc,#0f6e56)}
-.hb-guide h3{font-size:18.5px}
-.hb-guide li{line-height:1.7}
-.hb-guides .hb-guide:nth-child(1){--gc:#e0526a}.hb-guides .hb-guide:nth-child(2){--gc:#1d9e75}.hb-guides .hb-guide:nth-child(3){--gc:#e2a21f}
-.hb-guides .hb-guide:nth-child(4){--gc:#6a5acd}.hb-guides .hb-guide:nth-child(5){--gc:#d9779b}.hb-guides .hb-guide:nth-child(6){--gc:#3f9d4a}
-.hb .topic-box{border-radius:20px;border-color:#dcebe4;box-shadow:0 6px 18px rgba(20,35,58,.05)}
-.hb .topic-box h2{display:flex;align-items:center;gap:8px}
-.hb-scheme{border-radius:14px;transition:transform .15s,border-color .15s}.hb-scheme:hover{transform:translateX(3px)}
-.hb .topic-card{border-radius:18px;border-color:#dcebe4;box-shadow:0 6px 18px rgba(20,35,58,.05)}
-.hb .topic-card:hover{box-shadow:0 16px 32px rgba(15,110,86,.14)}
-.hb .topic-note{border-radius:16px}
-@media(max-width:760px){main.topic.hb[data-topic="health-beauty"]{padding-top:12px}main.topic.hb[data-topic="health-beauty"] .hb-hero{border-radius:20px}main.topic.hb[data-topic="health-beauty"] .hb-hero-text{padding:22px 18px 24px}main.topic.hb[data-topic="health-beauty"] .hb-hero-img{min-height:150px}main.topic.hb[data-topic="health-beauty"] .hb-hero-img::after{background:linear-gradient(0deg,#0f6e56 0,rgba(15,110,86,0) 70%)}}
-.hb .bl-latest-head .topic-section-title{margin:8px 0 4px}.bl-latest-head{align-items:flex-end}
+.bl-row .bl-tag{font-size:11.5px}
+.bl-sec{display:inline-block}
+.bl-stats{display:flex;flex-wrap:wrap;gap:12px;list-style:none;margin:8px 0 6px;padding:0}
+.bl-stats li{display:flex;flex-direction:column;min-width:96px;padding:10px 16px}
+.bl-stats b{font-size:22px;line-height:1.1}.bl-stats span{font-size:12.5px}
+.bl-toc summary{cursor:pointer;padding:14px 18px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.bl-toc summary::-webkit-details-marker{display:none}
+.bl-toc summary::after{content:"▾";transition:transform .2s}
+.bl-toc details:not([open]) summary::after{transform:rotate(-90deg)}
+.bl-toc ol{margin:0;padding:0 18px 16px 42px;display:grid;gap:7px;font-size:16px}
+.bl-toc a{text-decoration:none}
+.bl-q summary{cursor:pointer;padding:15px 18px;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center;line-height:1.5}
+.bl-q summary::-webkit-details-marker{display:none}
+.bl-q summary::after{content:"+";flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:900}
+.bl-q[open] summary::after{content:"–"}
+.bl-q p{margin:0;padding:0 18px 16px;line-height:1.8;font-size:16.5px}
+.bl-author{display:flex;gap:14px;align-items:flex-start;padding:16px 18px}
+.bl-author p{margin:4px 0 0;font-size:14.5px;line-height:1.65}.bl-author a{font-weight:800}
+.bl-points ul{list-style:none;padding:0;gap:10px}
+.bl-points li{position:relative;padding-left:32px}
+.bl-points li::before{content:"✓";position:absolute;left:0;top:2px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:900}
+.bl-featured{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);position:relative}
+.bl-featured .bl-card-img{aspect-ratio:auto;min-height:300px;border-bottom:0;border-right:var(--bd)}
+.bl-featured .bl-card-body{padding:28px;justify-content:center}
+.bl-featured h3{font-size:clamp(23px,2.4vw,31px);line-height:1.3}
+.bl-featured p{-webkit-line-clamp:4;font-size:15.5px}
+@media(max-width:1000px){.bl-featured{grid-template-columns:1fr}.bl-featured .bl-card-img{aspect-ratio:16/9;min-height:0;border-right:0;border-bottom:var(--bd)}}
+@media(max-width:900px){.bl-latest-grid{grid-template-columns:1fr}.bl-latest-list{grid-template-rows:none}}
+main.topic.hb[data-topic="health-beauty"]{padding-top:28px}
+main.topic.hb[data-topic="health-beauty"] .hb-hero{border-top:var(--bd);border-radius:28px}
+@media(max-width:760px){main.topic.hb[data-topic="health-beauty"]{padding-top:16px}}
