@@ -28,7 +28,7 @@
   const title=node('h1',headline(story));title.id='pageHeading';const toprow=node('div',null,'reader-toprow');toprow.append(crumb,tags);header.append(toprow,title);
   // A summary identical to the headline adds no information; show it only once.
   if(story.summary&&story.summary.replace(/[\s*]+/g,'').toLowerCase()!==headline(story).replace(/[\s*]+/g,'').toLowerCase())header.append(node('p',story.summary,'reader-deck'));
-  const meta=node('div',null,'reader-meta'),author=node('div',null,'reader-author'),byline=node('div');byline.append(node('strong',story.author||'Primez Newsroom'),node('span',story.district));author.append(node('span','PN','reader-avatar'),byline);
+  const meta=node('div',null,'reader-meta'),author=node('div',null,'reader-author'),byline=node('div');byline.append(node('strong',/^rss desk/i.test(story.author||'')?'PrimezNews Desk':(story.author||'Primez Newsroom')),node('span',story.district));author.append(node('span','PN','reader-avatar'),byline);
   const words=String(story.body||'').trim().split(/\s+/).filter(Boolean).length;const duration=Math.max(1,Math.ceil(words/180));
   const when=node('time',date(story),'reader-date');when.dateTime=story.publish_at;const read=node('span',duration+' '+copy('ਮਿੰਟ ਪੜ੍ਹੋ','मिनट पढ़ें','min read'),'reader-duration');
   const tools=node('div',null,'reader-tools');const save=button(copy('ਖ਼ਬਰ ਸੰਭਾਲੋ','खबर सेव करें','Save story'),'bookmark',()=>toggleSave(story));save.dataset.readerSave=story.id;

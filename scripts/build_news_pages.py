@@ -58,7 +58,7 @@ def page(template,s,share_image=None):
     if summary.strip('* ')!=title.strip('* '):body+='<p class="reader-deck">'+escape(s.get('summary',''))+'</p>'
     body+='</header>'
     body+='<figure class="reader-figure"><img class="reader-hero-image" fetchpriority="high" decoding="async" src="'+escape(photo)+'" alt="'+escape(title)+'"></figure>'
-    body+='<p class="reader-meta">'+escape(s.get('author') or s.get('source') or 'PrimezNews')+' · '+escape(s.get('district'))+' · '+escape(nice_date(s.get('publish_at') or s.get('published')))+'</p><div class="reader-body">'
+    body+='<p class="reader-meta">'+escape(re.sub(r'^RSS Desk.*$','PrimezNews Desk',s.get('author') or s.get('source') or 'PrimezNews',flags=re.I))+' · '+escape(s.get('district'))+' · '+escape(nice_date(s.get('publish_at') or s.get('published')))+'</p><div class="reader-body">'
     body+=''.join('<p>'+escape(p)+'</p>' for p in s.get('body','').split('\n\n') if p.strip())+'</div>'
     if s.get('sourceUrl'):body+='<p>Source: <a rel="noopener noreferrer" href="'+escape(s['sourceUrl'])+'">'+escape(s['source'])+'</a> · Curated news brief. Photograph is illustrative.</p>'
     out=out.replace('<section id="newsContent" aria-label="ਖ਼ਬਰਾਂ"></section>','<section id="newsContent" class="reader-article" aria-label="ਖ਼ਬਰਾਂ">'+body+'</section>').replace('ਖ਼ਬਰਾਂ ਲੋਡ ਹੋ ਰਹੀਆਂ ਹਨ…','')

@@ -792,7 +792,7 @@ def main() -> int:
                 "categories": [item["category"]],
                 "category": item["category"],
                 "district": item["district"],
-                "author": f"RSS Desk · {item['source_name']}"[:200],
+                "author": "PrimezNews Desk",
                 "image": item["image"],
                 "status": "published" if auto_publish else "draft",
                 "publish_at": now_iso if auto_publish else None,
