@@ -766,6 +766,9 @@ def main() -> int:
                     items.append(it)
                 else:
                     too_old += 1
+            only = os.environ.get("RSS_ONLY_TITLE", "").strip().lower()
+            if only:  # one-off manual run: pick up just the story the editor asked for
+                items = [it for it in items if only in it["title"].lower()]
             print(f"[OK] Feed '{feed_cfg['name']}': {len(all_items)} items · {len(items)} fresh (<= {age_limit:g}h) · "
                   f"{too_old} too old skipped · {undated} without a date skipped")
         except urllib.error.HTTPError as exc:
