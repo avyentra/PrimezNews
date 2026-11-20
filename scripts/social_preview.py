@@ -1,10 +1,13 @@
 """Generate same-origin social thumbnails; the article keeps its original hero."""
 import hashlib
 import io
+import ipaddress
 import logging
 import re
+import socket
 from urllib.error import URLError
-from urllib.request import urlopen
+from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
@@ -20,6 +23,21 @@ def share_folder(root):
     return folder
 
 
+def public_https(url):
+    """True only for https URLs whose host resolves to public addresses (no SSRF into private networks)."""
+    parts = urlparse(url)
+    if parts.scheme != 'https' or not parts.hostname:
+        return False
+    try:
+        for info in socket.getaddrinfo(parts.hostname, parts.port or 443, proto=socket.IPPROTO_TCP):
+            ip = ipaddress.ip_address(info[4][0])
+            if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
+                return False
+    except (OSError, ValueError):
+        return False
+    return True
+
+
 def preview(root, article_dir, source, base, storage_origin):
     fallback = base + 'assets/images/og-image.jpg'
     try:
@@ -27,6 +45,10 @@ def preview(root, article_dir, source, base, storage_origin):
             raw = (root / 'assets' / 'images' / source.split('/')[-1]).read_bytes()
         elif source.startswith(storage_origin + '/storage/v1/object/public/newsroom-media/') or source.startswith(storage_origin + '/storage/v1/object/public/journalist-media/'):
             with urlopen(source, timeout=15) as response:
+                raw = response.read(LIMIT + 1)
+        elif public_https(source):
+            # photo hosted elsewhere (reporter pasted a link): fetch it once and rebuild it as our own share card
+            with urlopen(Request(source, headers={'User-Agent': 'PrimezNewsBot/1.0'}), timeout=15) as response:
                 raw = response.read(LIMIT + 1)
         else:
             return fallback
