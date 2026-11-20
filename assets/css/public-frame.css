@@ -6,6 +6,7 @@
    set enabled:!0 for the slots you use. Slots that match the DIPR Punjab Advertisement Policy for Websites 2022 (Gazette 7 Oct 2022):
    300x250 + 728x90 standard banners, and the 300x250 "Fixed Property" on the first scroll of the Home Page (class .hero-side-ad,
    data-ad-slot="home-hero-side"). Government ads must be served through the DIPR-approved third-party ad server (3-PAS). */
-.reader-ad-placement,.topic-ad,.hb-ad-wide,.custom-ad-stack,.placement-note,.pilgrimage-ad,.community-main{display:none!important}
-.community-edition{grid-template-columns:1fr!important}
+.reader-ad-placement,.topic-ad,.hb-ad-wide,.custom-ad-stack,.placement-note,.pilgrimage-ad{display:none!important}
+/* homepage "community edition" block = sample festival ads, sample classifieds, sample book article: hidden until real content exists */
+.community-edition{display:none!important}
 .hero-side-ad,.ad-slot{display:none!important}
