@@ -60,11 +60,11 @@
   /* ---------- Draft news page: list of every draft (incl. RSS drafts) with Edit -> editor -> Publish ---------- */
   let dq = '', dkind = 'all';
   /* News = ordinary / RSS stories. Blog = health-blog style posts (id "blog-…", author "…Health Desk", category Health/Beauty). */
-  const kindOf = s => (/^blog-/i.test(s.id || '') || /health desk/i.test(s.author || '') || /^(health|beauty|blog)/i.test(s.category || '')) ? 'blog' : 'news';
+  const kindOf = s => (/^blog-/i.test(s.id || '') || /health desk/i.test(s.author || '') || /^(health|beauty|blog)/i.test(s.category || '')) ? 'blog' : (/nri|pravasi|ਪਰਵਾਸੀ|प्रवासी/i.test([s.category].concat(s.categories || []).join(' ')) ? 'nri' : 'news');
   function drow(s) {
     return h('div', { class: 'nh-drow' },
       h('div', { class: 'nh-story' }, h('img', { src: api.image(s.image), alt: '', loading: 'lazy' }),
-        h('div', {}, h('strong', { class: 'nh-gb' }, h('span', { class: 'nh-kind nh-kind-' + kindOf(s) }, kindOf(s) === 'blog' ? 'Blog' : 'News'), s.title || s.en), h('span', {}, [s.category, s.district, s.author, 'Updated ' + ago(s.updated_at)].filter(Boolean).join(' · ')))),
+        h('div', {}, h('strong', { class: 'nh-gb' }, h('span', { class: 'nh-kind nh-kind-' + kindOf(s) }, ({ blog: 'Blog', nri: 'NRI', news: 'News' })[kindOf(s)]), s.title || s.en), h('span', {}, [s.category, s.district, s.author, 'Updated ' + ago(s.updated_at)].filter(Boolean).join(' · ')))),
       h('div', { class: 'nh-acts' },
         h('button', { type: 'button', class: 'nh-sm nh-del', onclick: e => deleteDraft(s, e.currentTarget) }, 'Delete'),
         h('button', { type: 'button', class: 'nh-sm nh-dark', onclick: () => openStory(s.id) }, 'Edit & publish')));
@@ -81,14 +81,14 @@
     const box = $('nhDraftList'); if (!box) return;
     const all = (window.PrimezNewsroom ? window.PrimezNewsroom.rows() : []).filter(s => s.status === 'draft').sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
     const q = dq.trim().toLowerCase();
-    const count = { all: all.length, news: all.filter(s => kindOf(s) === 'news').length, blog: all.filter(s => kindOf(s) === 'blog').length };
+    const count = { all: all.length, news: all.filter(s => kindOf(s) === 'news').length, blog: all.filter(s => kindOf(s) === 'blog').length, nri: all.filter(s => kindOf(s) === 'nri').length };
     const byKind = dkind === 'all' ? all : all.filter(s => kindOf(s) === dkind);
     const list = q ? byKind.filter(s => ((s.title || '') + ' ' + (s.en || '')).toLowerCase().includes(q)) : byKind;
     const none = dkind === 'blog' && !count.blog ? 'No blog drafts. Daily blogs go straight to the website (or to data/health-blog-drafts.json when HEALTH_BLOG_DRAFT is on).'
       : byKind.length ? 'No draft matches your search.' : 'No drafts right now.';
     box.replaceChildren(...(list.length ? list.map(drow) : [h('p', { class: 'nh-empty' }, none)]));
     const c = $('nhDraftCount'); if (c) c.textContent = all.length + (all.length === 1 ? ' draft' : ' drafts');
-    document.querySelectorAll('[data-dkind]').forEach(b => { const k = b.dataset.dkind; b.textContent = ({ all: 'All', news: 'News', blog: 'Blog' })[k] + ' ' + count[k]; b.classList.toggle('active', k === dkind); b.setAttribute('aria-pressed', String(k === dkind)); });
+    document.querySelectorAll('[data-dkind]').forEach(b => { const k = b.dataset.dkind; b.textContent = ({ all: 'All', news: 'News', nri: 'NRI News', blog: 'Blog' })[k] + ' ' + count[k]; b.classList.toggle('active', k === dkind); b.setAttribute('aria-pressed', String(k === dkind)); });
   }
   async function loadDrafts() {
     let err = '';
@@ -106,7 +106,7 @@
       h('section', { class: 'nh-card nh-flush' },
         h('div', { class: 'nh-head' },
           h('h2', {}, 'All drafts ', h('span', { class: 'nh-pill nh-p-grey', id: 'nhDraftCount' }, '')),
-          h('div', { class: 'nh-kinds', role: 'group', 'aria-label': 'Draft type' }, ['all', 'news', 'blog'].map(k => h('button', { type: 'button', class: 'nh-chip', 'data-dkind': k, onclick: () => { dkind = k; drawDraftList(); } }, k))),
+          h('div', { class: 'nh-kinds', role: 'group', 'aria-label': 'Draft type' }, ['all', 'news', 'nri', 'blog'].map(k => h('button', { type: 'button', class: 'nh-chip', 'data-dkind': k, onclick: () => { dkind = k; drawDraftList(); } }, k))),
           h('input', { class: 'nh-dsearch', type: 'search', placeholder: 'Search drafts by headline…', value: dq, oninput: e => { dq = e.target.value; drawDraftList(); } }),
           h('button', { type: 'button', class: 'nh-sm', onclick: loadDrafts }, 'Refresh')),
         h('p', { class: 'nh-empty', id: 'nhDraftMsg' }),
