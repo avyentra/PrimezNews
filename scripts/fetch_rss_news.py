@@ -427,7 +427,7 @@ GURMUKHI = re.compile(r"[\u0A00-\u0A7F]")
 _DEAD_MODELS = set()
 
 
-def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout: int = 90) -> dict:
+def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout: int = 120) -> dict:
     """Calls generateContent, trying the model list on 404 and dropping thinkingConfig on 400."""
     live = [m for m in dict.fromkeys(GEMINI_MODELS) if m not in _DEAD_MODELS]
     pinned = _GEMINI["model"]
@@ -465,6 +465,12 @@ def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout:
                         continue
                     break  # still busy after 3 tries -> try the next model
                 raise last from exc
+            except (TimeoutError, OSError) as exc:  # read timeout / dropped connection: retry, then try the next model
+                last = RuntimeError(f"Gemini request failed ({model}): {type(exc).__name__}: {exc}")
+                if attempt < 3:
+                    time.sleep(5 * attempt)
+                    continue
+                break
     if last is not None and "HTTP 404" in str(last) and [m for m in GEMINI_MODELS if m not in _DEAD_MODELS]:
         return _gemini_generate(prompt, api_key, max_tokens, timeout)  # pinned model vanished -> try the rest
     raise last or RuntimeError("No Gemini model available")
