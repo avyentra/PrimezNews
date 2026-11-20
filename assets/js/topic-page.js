@@ -52,7 +52,9 @@
       pic.append(img);
       const body = node('span', 'topic-body');
       if (s.district) body.append(node('span', 'topic-tag', dist(s.district)));
-      body.append(node('h3', '', title(s)), node('time', '', ago(s.publish_at || s.published)));
+      body.append(node('h3', '', title(s)));
+      const sum = String(s.summary || '').replace(/\s+/g, ' ').trim(); if (sum && sum !== title(s)) body.append(node('p', 'topic-sum', sum));
+      body.append(node('time', '', ago(s.publish_at || s.published)));
       a.append(pic, body); box.append(a);
     });
   }

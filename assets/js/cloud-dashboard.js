@@ -19,10 +19,16 @@
  function renderList() {
   el('storyList').replaceChildren();
   const query = el('storySearch').value.toLowerCase();
-  rows.filter(s => (!statusFilter || s.status === statusFilter) && (s.en + ' ' + s.title).toLowerCase().includes(query)).forEach(story => {
+  rows.filter(s => (!statusFilter || s.status === statusFilter) && (s.en + ' ' + s.title).toLowerCase().includes(query)).sort((a, b) => (b.priority === 'high') - (a.priority === 'high')).forEach(story => {
    const b = document.createElement('button'); b.type = 'button'; b.className = 'story-row' + (selected?.id === story.id ? ' active' : '');
    const strong = document.createElement('strong'); strong.textContent = story.en;
-   const small = document.createElement('small'); small.textContent = story.status + ' · ' + story.district;
+   const small = document.createElement('small'); small.textContent = story.status + ' · ' + story.district + (story.is_automated ? ' · Auto' : '');
+   if (story.priority === 'high' || story.priority === 'low') {
+    const tag = document.createElement('span'); tag.textContent = story.priority === 'high' ? 'HIGH priority' : 'LOW priority';
+    tag.style.cssText = 'display:inline-block;margin:0 0 4px;padding:1px 8px;border-radius:999px;font:700 11px/1.6 system-ui,sans-serif;' + (story.priority === 'high' ? 'background:#fde8ea;color:#b4232c' : 'background:#e8f0ff;color:#2a56a8');
+    tag.title = 'Priority set by the news desk (High = urgent or affects many people)';
+    b.append(tag);
+   }
    b.append(strong,small); b.onclick = () => { if (!saving && (!dirty || confirm('Discard unsaved changes?'))) select(story); }; el('storyList').append(b);
   });
   const h2 = document.querySelector('.rail-heading h2'); if (h2) h2.textContent = statusFilter === 'draft' ? 'Draft news' : 'Recent news';

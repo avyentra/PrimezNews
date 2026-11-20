@@ -67,6 +67,27 @@ RSS_FEEDS = [
         "default_district": "Ludhiana",
         "image": "fields",
     },
+    {
+        "name": "Google News NRI Punjabi",
+        "url": "https://news.google.com/rss/search?q=Punjabi+NRI+Canada+UK+Australia+USA&hl=en-IN&gl=IN&ceid=IN:en",
+        "category": "NRI",
+        "default_district": "Chandigarh",
+        "image": "people",
+    },
+    {
+        "name": "Google News Visa & Immigration",
+        "url": "https://news.google.com/rss/search?q=visa+immigration+Indians+Canada+UK+Australia+USA&hl=en-IN&gl=IN&ceid=IN:en",
+        "category": "NRI",
+        "default_district": "Chandigarh",
+        "image": "people",
+    },
+    {
+        "name": "Google News Passport & OCI",
+        "url": "https://news.google.com/rss/search?q=Indian+passport+OCI+MEA+consular+NRI&hl=en-IN&gl=IN&ceid=IN:en",
+        "category": "NRI",
+        "default_district": "Chandigarh",
+        "image": "people",
+    },
 ]
 
 DISTRICT_KEYWORDS = {
@@ -144,10 +165,10 @@ def parse_pub_date(node) -> datetime | None:
 
 def max_age_hours() -> float:
     try:
-        value = float(os.environ.get("RSS_MAX_AGE_HOURS", "4") or 4)
+        value = float(os.environ.get("RSS_MAX_AGE_HOURS", "2") or 2)
     except ValueError:
-        value = 4.0
-    return value if value > 0 else 4.0
+        value = 2.0
+    return value if value > 0 else 2.0
 
 
 def with_recency(url: str, hours: float) -> str:
@@ -449,18 +470,24 @@ def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout:
 def rewrite_with_gemini(item: dict, source_text: str, api_key: str) -> dict:
     """Original, neutral Gurmukhi article + English headline. Raises on any failure (caller falls back)."""
     thin = len(source_text) < 400
+    nri = item.get("category") == "NRI"
     prompt = (
         "You are a senior editor at PrimezNews (Punjab regional digital news). Using ONLY the source material "
-        "below, write original, neutral, factual news copy. Do not copy sentences verbatim; keep every name, "
-        "number, date and place exactly as in the source; NEVER invent facts, quotes or background.\n"
+        "below, write ORIGINAL, neutral, factual news copy in your own words. Re-order the information so the most "
+        "important point comes first, use your own sentence structure and vocabulary, and never reuse phrases from "
+        "the source. Keep every name, number, date and place exactly as in the source; NEVER invent facts, quotes or "
+        "background.\n"
         'Return ONLY valid JSON with exactly these keys:\n'
-        '"pa_title": crisp Punjabi (Gurmukhi) headline, no publisher name or suffix;\n'
-        '"en_title": crisp English headline, no publisher name or suffix;\n'
-        '"pa_summary": 2-3 sentence Punjabi (Gurmukhi) summary;\n'
-        '"pa_body": full Punjabi (Gurmukhi) news article of 3-4 paragraphs, about 250-400 words, paragraphs '
-        'separated by a blank line (\\n\\n), written as a news report, strictly based on the source'
-        + (" (the source is short, so write only what it supports and keep the article shorter; never pad with invention)" if thin else "")
-        + f', and the last line must be exactly: ਸਰੋਤ: {item["source_name"]}\n'
+        '"pa_title": crisp Punjabi (Gurmukhi) headline in your own words, no publisher name or suffix;\n'
+        '"en_title": crisp English headline in your own words, no publisher name or suffix;\n'
+        '"pa_summary": 2 short Punjabi (Gurmukhi) sentences giving the key detail (shown under the headline in lists);\n'
+        '"pa_body": Punjabi (Gurmukhi) news report of 2-3 short paragraphs, about 120-220 words, paragraphs '
+        'separated by a blank line (\\n\\n), strictly based on the source'
+        + (" (the source is short, so write only what it supports and keep it shorter; never pad with invention)" if thin else "")
+        + (', and add one last short paragraph starting with "NRI ਲਈ ਮਤਲਬ:" that explains what this means for Punjabis abroad, using only what the source supports' if nri else "")
+        + f', and the very last line must be exactly: ਸਰੋਤ: {item["source_name"]}\n'
+        '"priority": "high" if the news is urgent or affects many people (new rules, official announcements, '
+        'safety, deadlines, major events), otherwise "low".\n'
         f"Publisher: {item['source_name']}\nDistrict: {item['district']}\nHeadline: {item['title']}\n"
         f"Source material:\n{(source_text or item['summary'] or item['title'])[:MAX_SOURCE_CHARS]}"
     )
@@ -475,7 +502,8 @@ def rewrite_with_gemini(item: dict, source_text: str, api_key: str) -> dict:
     attribution = f"ਸਰੋਤ: {item['source_name']}"
     if not pa_body.rstrip().endswith(attribution):
         pa_body = re.sub(r"\n*\s*ਸਰੋਤ\s*[:/].*$", "", pa_body, flags=re.S).rstrip() + "\n\n" + attribution
-    return {"title": pa_title, "en": en_title, "summary": pa_summary, "body": pa_body[:95000]}
+    priority = "high" if str(parsed.get("priority", "")).strip().lower() == "high" else "low"
+    return {"title": pa_title, "en": en_title, "summary": pa_summary, "body": pa_body[:95000], "priority": priority}
 
 
 def fallback_rewrite(item: dict) -> dict:
@@ -485,6 +513,7 @@ def fallback_rewrite(item: dict) -> dict:
         "en": item["en"],
         "summary": summary,
         "body": f"{summary}\n\nSource: {item['source_name']}",
+        "priority": "low",
     }
 
 
@@ -566,7 +595,7 @@ def fetch_existing(supabase_url: str, service_key: str) -> tuple[set[str], set[s
     return guids, titles, has_cols
 
 
-OPTIONAL_COLUMNS = ("external_guid", "source_name", "source_url", "is_automated")
+OPTIONAL_COLUMNS = ("external_guid", "source_name", "source_url", "is_automated", "priority")
 
 
 def insert_story(supabase_url: str, service_key: str, row: dict) -> str:
@@ -772,6 +801,7 @@ def main() -> int:
                 "source_name": item["source_name"],
                 "source_url": art["source_url"],
                 "is_automated": True,
+                "priority": art.get("priority", "low"),
             }
             try:
                 result = insert_story(supabase_url, service_key, story_row)

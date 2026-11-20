@@ -284,3 +284,6 @@ main.topic.hb[data-topic="health-beauty"] .hb-hero{border-top:var(--bd);border-r
 .bl-latest-head .topic-section-title{margin:6px 0 4px}
 @media(max-width:900px){.bl-latest-grid{grid-template-rows:none}.bl-latest .bl-row{height:96px}}
 @media(max-width:520px){.bl-latest .bl-row{height:90px}}
+
+/* two-line detail under the headline in topic cards (the full text opens with the story) */
+.topic-sum{margin:0;font-size:14px;line-height:1.55;color:#5b6b62;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}

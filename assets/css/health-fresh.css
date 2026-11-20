@@ -166,3 +166,8 @@ body:has(main.hf){background:#f5f4f8}
 }
 @media(max-width:360px){.hf .hb-guides{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.hf *{transition:none!important}}
+
+/* NRI page extras */
+main.hf[data-topic="nri"] .hb-hero-img{background-image:url("../images/amritsar.webp")}
+.hf .hf-n-sm{font-size:19px;white-space:nowrap}
+.hf[data-topic="nri"] .hb-help-row{max-width:900px}

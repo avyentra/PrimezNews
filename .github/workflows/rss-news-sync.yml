@@ -33,7 +33,7 @@ jobs:
           PYTHONUNBUFFERED: '1'
           RSS_REGENERATE: ${{ inputs.regenerate && 'true' || 'false' }}
           RSS_MAX_NEW: '20'
-          RSS_MAX_AGE_HOURS: ${{ vars.RSS_MAX_AGE_HOURS || '4' }}
+          RSS_MAX_AGE_HOURS: ${{ vars.RSS_MAX_AGE_HOURS || '2' }}
         run: |
           if [ -z "$SUPABASE_SERVICE_KEY" ]; then
             echo "::error::Repository secret SUPABASE_SERVICE_KEY is missing (Settings -> Secrets and variables -> Actions)."
