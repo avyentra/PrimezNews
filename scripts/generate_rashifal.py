@@ -93,7 +93,13 @@ def atomic_write(path, content):
 def generate(day, key, output, ask=ask_model, provider="anthropic"):
     # Build and validate every sign before touching either published file.
     signs = {sign: validate_sign(ask(sign, day, key)) for sign in SIGNS}
-    result = {"date": day.isoformat(), "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(), "generated_by": "स्वचालित सामान्य मार्गदर्शन · AI या ग्रह-गणना आधारित नहीं" if provider == "curated" else "AI द्वारा तैयार (Claude)", "content_type": "entertainment", "provider": provider, "model": MODEL if provider == "anthropic" else None, "signs": signs}
+    labels = {"curated": "स्वचालित सामान्य मार्गदर्शन · AI या ग्रह-गणना आधारित नहीं",
+              "gochar": "ग्रह-गोचर (वैदिक पद्धति, लाहिड़ी अयनांश) की गणना पर आधारित सामान्य मार्गदर्शन · ज्योतिषीय मान्यता, केवल मनोरंजन के लिए",
+              "anthropic": "AI द्वारा तैयार (Claude)"}
+    result = {"date": day.isoformat(), "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(), "generated_by": labels[provider], "content_type": "entertainment", "provider": provider, "model": MODEL if provider == "anthropic" else None, "signs": signs}
+    if provider == "gochar":
+        from graha_gochar import positions_summary
+        result["positions"] = positions_summary(day)
     content = json.dumps(result, ensure_ascii=False, indent=2) + '\n'
     output.mkdir(parents=True, exist_ok=True)
     atomic_write(output / (day.isoformat() + '.json'), content)
@@ -106,9 +112,14 @@ def guidance_wrapper(sign, day, key):
     return guidance(sign, day)
 
 
+def gochar_wrapper(sign, day, key):
+    from graha_gochar import guidance
+    return guidance(sign, day)
+
+
 def main():
-    provider = os.environ.get('RASHIFAL_PROVIDER', 'curated')
-    if provider not in ('curated', 'anthropic'):
+    provider = os.environ.get('RASHIFAL_PROVIDER', 'gochar')
+    if provider not in ('curated', 'gochar', 'anthropic'):
         sys.exit('Unsupported Rashifal provider')
     key = os.environ.get('ANTHROPIC_API_KEY', '')
     if provider == 'anthropic' and not key:
@@ -127,6 +138,8 @@ def main():
     try:
         if provider == "curated":
             generate(day, "", output, guidance_wrapper, provider="curated")
+        elif provider == "gochar":
+            generate(day, "", output, gochar_wrapper, provider="gochar")
         else:
             generate(day, key, output)
     except Exception:

@@ -545,6 +545,9 @@ def build_article(item: dict, state: dict) -> dict:
             print(f"[WARN] Gemini rewrite fallback for '{item['title'][:70]}': {exc}")
             if "HTTP 4" in str(exc) and "HTTP 429" not in str(exc):
                 state["gemini_key"] = ""  # bad key / blocked: stop calling Gemini this run
+            elif "HTTP 429" in str(exc) and ("free_tier" in str(exc) or "PerDay" in str(exc) or "per day" in str(exc).lower()):
+                state["gemini_key"] = ""  # daily quota is used up: every further call would fail and only waste time/requests
+                print("[WARN] Gemini daily quota used up - no more Gemini calls in this run; held-back items are retried in a later run.")
         finally:
             state["last_call"] = time.time()
     if out is None:
@@ -750,8 +753,16 @@ def main() -> int:
         if processed >= max_new:
             break
         try:
+            # NRI news is sparse: give those feeds a longer freshness window (RSS_NRI_MAX_AGE_HOURS, default 24h).
+            if feed_cfg.get("category") == "NRI":
+                try:
+                    feed_age = max(age_limit, float(os.environ.get("RSS_NRI_MAX_AGE_HOURS", "24") or 24))
+                except ValueError:
+                    feed_age = max(age_limit, 24.0)
+            else:
+                feed_age = age_limit
             req = urllib.request.Request(
-                with_recency(feed_cfg["url"], age_limit),
+                with_recency(feed_cfg["url"], feed_age),
                 headers={
                     "User-Agent": BROWSER_UA,
                     "Accept": "application/rss+xml, application/xml, text/xml, */*",
@@ -768,14 +779,14 @@ def main() -> int:
                 pub = it.get("published")
                 if pub is None:
                     undated += 1  # unknown age -> never risk publishing stale news
-                elif timedelta(minutes=-15) <= now_utc - pub <= timedelta(hours=age_limit):
+                elif timedelta(minutes=-15) <= now_utc - pub <= timedelta(hours=feed_age):
                     items.append(it)
                 else:
                     too_old += 1
             only = os.environ.get("RSS_ONLY_TITLE", "").strip().lower()
             if only:  # one-off manual run: pick up just the story the editor asked for
                 items = [it for it in items if only in it["title"].lower()]
-            print(f"[OK] Feed '{feed_cfg['name']}': {len(all_items)} items · {len(items)} fresh (<= {age_limit:g}h) · "
+            print(f"[OK] Feed '{feed_cfg['name']}': {len(all_items)} items · {len(items)} fresh (<= {feed_age:g}h) · "
                   f"{too_old} too old skipped · {undated} without a date skipped")
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="ignore")[:200]

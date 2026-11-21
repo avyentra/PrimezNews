@@ -22,7 +22,7 @@ create table if not exists public.stories (
  en text not null check (length(en) between 1 and 500),
  summary text not null check (length(summary) between 1 and 3000),
  body text not null default '' check (length(body) <= 100000),
- categories text[] not null check (cardinality(categories) between 1 and 7 and categories <@ array['Agriculture','Education','Politics','Sports','Faith','Crime','Punjab']::text[]),
+ categories text[] not null check (cardinality(categories) between 1 and 16 and categories <@ array['Agriculture','Education','Politics','Sports','Faith','Crime','Punjab','Business','Health','Jobs','NRI','Entertainment','National','World','Weather','Technology']::text[]),
  category text not null,
  district text not null default 'Chandigarh', author text not null default 'News desk',
  image text not null default 'fields' check (image ~ '^(https://|[a-zA-Z0-9-]+$)'),

@@ -458,6 +458,9 @@ def main():
 
     if not made:
         log("[WARN] No blog could be generated.")
+        if quota_out:
+            print("::warning::Gemini quota used up - no health blog written today. It will retry on the next run (use a separate GEMINI_API_KEY_BLOGS key or enable billing to avoid this).")
+            return 0
         return 1
     if draft_mode:
         drafts["posts"] = made + drafts["posts"]
