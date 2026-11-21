@@ -7,6 +7,7 @@ import unittest
 import sys
 sys.path.insert(0,str(pathlib.Path(__file__).parents[1] / "scripts"))
 from rashifal_free import guidance
+import graha_gochar
 
 spec = importlib.util.spec_from_file_location('generator', pathlib.Path(__file__).parents[1] / 'scripts/generate_rashifal.py')
 g = importlib.util.module_from_spec(spec)
@@ -74,6 +75,45 @@ class GeneratorTests(unittest.TestCase):
         data['weekly'] = 'क' * 2001
         with self.assertRaises(ValueError):
             g.validate_sign(data)
+
+
+class GocharTests(unittest.TestCase):
+    def test_known_sky_positions(self):
+        ist = graha_gochar.IST
+        p = graha_gochar.sidereal_positions(datetime.datetime(2026, 11, 21, 6, tzinfo=ist))
+        names = {k: graha_gochar.SIGNS[graha_gochar.sign_index(v)] for k, v in p.items()}
+        self.assertEqual(names['सूर्य'], 'वृश्चिक')
+        self.assertEqual(names['गुरु'], 'सिंह')
+        self.assertEqual(names['शनि'], 'मीन')
+        self.assertEqual(names['राहु'], 'कुंभ')
+        self.assertEqual(names['केतु'], 'सिंह')
+        mesha = graha_gochar.sidereal_positions(datetime.datetime(2026, 4, 14, 12, tzinfo=ist))['सूर्य']
+        self.assertLess(min(mesha, 360 - mesha), 1.5)
+
+    def test_full_moon_has_opposite_sun_and_moon(self):
+        p = graha_gochar.sidereal_positions(datetime.datetime(2026, 11, 24, 14, 53, tzinfo=datetime.timezone.utc))
+        self.assertAlmostEqual((p['चंद्रमा'] - p['सूर्य']) % 360, 180, delta=1.5)
+
+    def test_gochar_output_is_valid_for_all_signs_and_varies_daily(self):
+        for sign in g.SIGNS:
+            g.validate_sign(graha_gochar.guidance(sign, datetime.date(2026, 11, 21)))
+        a = graha_gochar.guidance('सिंह', datetime.date(2026, 11, 21))['daily']
+        b = graha_gochar.guidance('सिंह', datetime.date(2026, 11, 23))['daily']
+        self.assertNotEqual(a, b)
+
+    def test_gochar_weekly_stable_within_week(self):
+        a = graha_gochar.guidance('कर्क', datetime.date(2026, 11, 16))
+        b = graha_gochar.guidance('कर्क', datetime.date(2026, 11, 22))
+        self.assertEqual(a['weekly'], b['weekly'])
+        self.assertEqual(a['monthly'], b['monthly'])
+
+    def test_gochar_provider_writes_positions_and_label(self):
+        with tempfile.TemporaryDirectory() as folder:
+            result = g.generate(datetime.date(2026, 11, 21), '', pathlib.Path(folder), g.gochar_wrapper, provider='gochar')
+            self.assertEqual(result['provider'], 'gochar')
+            self.assertIn('ग्रह-गोचर', result['generated_by'])
+            self.assertEqual(len(result['positions']), 9)
+            self.assertEqual(len(result['signs']), 12)
 
 
 if __name__ == '__main__':
