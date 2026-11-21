@@ -1,25 +1,4 @@
-"""Daily Health & Beauty blog generator (4-5 new posts per day, rotating over 10 topics, each at least 1200 words).
-
-Writes new posts at the top of data/health-blog.json (same format as the hand-written posts:
-Punjabi + Hindi + English for every field). The existing builder then turns them into pages:
-
-    python scripts/generate_health_blogs.py      # needs GEMINI_API_KEY
-    python scripts/build_health_blog.py          # health-blog/<slug>/index.html, share cards, health-beauty.html
-
-Env (all optional except the key):
-    GEMINI_API_KEY          Google AI Studio key
-    HEALTH_BLOGS_PER_DAY    1-10. Default: 1 on even days, 2 on odd days of the year  ("1-2 a day", fits the free Gemini quota)
-    HEALTH_BLOG_MIN_WORDS   minimum English words per article (default 1200)
-    HEALTH_BLOG_SKIP_TAGS   comma list of topic tags NOT to write (default "sexual-wellness": Google AdSense is strict about
-                            sexual-health content; set it to "none" to write that topic too)
-    HEALTH_BLOG_TRENDS      "false" turns off the Google Trends (India) keyword hints
-    HEALTH_BLOG_DRAFT=true  do NOT publish: write to data/health-blog-drafts.json for manual review
-                            (move an entry into data/health-blog.json to publish it)
-
-Rotation: every run takes the topics that were written LEAST recently, so the 10 topics take turns and
-nothing repeats. Titles/slugs already present are never reused. Re-running on the same day only tops up
-to the daily number, it never creates extra posts.
-"""
+"""Generate private Health & Beauty drafts and export editor-approved posts."""
 import json
 import os
 import re
@@ -217,14 +196,16 @@ def build_prompt(topic, avoid_titles, min_words, keyword, hints, note=""):
     avoid = "\n".join(f"- {t}" for t in avoid_titles[:40]) or "- (none yet)"
     trend = ("\nTrending searches in India right now (ideas only; use one ONLY if it truly fits this topic, never copy any news): " + "; ".join(hints)) if hints else ""
     return f"""You are the health editor of PrimezNews, a Punjab (India) news site. Write ONE original, respectful, medically responsible,
-in-depth blog article in clear English for general readers in Punjab. Topic area: "{topic['name']}".
+in-depth blog article in clear English for Punjabi diaspora readers in the target country. Topic area: "{topic['name']}".
 Topic guidance: {topic['brief']}
-PRIMARY SEO KEYWORD (a phrase many people search on Google): "{keyword}"{trend}
-SEO rules: put the primary keyword in the title (near the start), in the first paragraph, in the slug, in the excerpt and in one h2; use 3-5 related
-long-tail phrases naturally (never stuff or repeat unnaturally); answer the search intent directly in the first 100 words; write for people first.
+PRIMARY KEYWORD (selected for commercial search intent): "{keyword}"{trend}
+Answer the buying decision behind this phrase. Use it naturally in the English title and opening, then use relevant
+comparison, cost, features and suitability phrases where they help the reader. Cover at least one meaningful trade-off
+and when a cheaper option is adequate. Use local spelling and terminology for the target market. Never invent prices,
+search volume, advertiser bids or medical outcomes. Do not request ad clicks or repeat keywords to reach a density target.
 ORIGINALITY (copyright safe): write everything fresh in your own words from general medical knowledge. Do NOT copy, translate or closely paraphrase
 any website, news article, book, government page, video or blog. No quotations, no lyrics, no brand or product names, no real people. Add original
-practical examples relevant to Punjab (seasons, food, daily routine) so the article is unique and genuinely useful.
+practical examples relevant to the target country (season, climate, work routine) so the article is unique and genuinely useful.
 GOOGLE ADSENSE SAFE: helpful, trustworthy, non-sensational. No clickbait, no shocking claims, no adult or explicit content, no gambling, no weapons, no
 hate, no miracle cures, no "guaranteed" results.
 {note}
@@ -233,7 +214,7 @@ Use 6-8 sections (h2), each with 1-2 full paragraphs of 80-140 words; add bullet
 one on "when to see a doctor", and a short closing paragraph. Be specific and practical, not repetitive filler.
 
 Hard rules:
-- Be accurate and conservative. Use widely accepted guidance (WHO, ICMR, Ministry of Health). NEVER invent statistics, studies, quotes, dates, brands or news events.
+- Be accurate and conservative. Use widely accepted guidance (WHO and the target country’s public health authorities). NEVER invent statistics, studies, quotes, dates, brands or news events.
 - No diagnosis, no medicine names or doses, no cure or "miracle" claims, no fear-mongering. Say when to see a doctor.
 - Non-explicit, dignified, inclusive language. No shaming.
 - Pick a fresh, specific angle readers actually care about. Do NOT reuse or closely paraphrase these existing titles:
@@ -369,110 +350,87 @@ def generate_post(topic, avoid_titles, state, min_words, keyword, hints):
     return post, words
 
 
-def main():
-    if not os.environ.get("GEMINI_API_KEY", "").strip():
-        log("[WARN] GEMINI_API_KEY is not set - cannot write blogs.")
-        return 1
-    draft_mode = os.environ.get("HEALTH_BLOG_DRAFT", "false").strip().lower() == "true"
-    today = datetime.now(IST).date()
-    iso = today.isoformat()
-    target = per_day(today)
-    try:
-        min_words = max(300, int(os.environ.get("HEALTH_BLOG_MIN_WORDS", "1200") or 1200))
-    except ValueError:
-        min_words = 1200
+def reviews(method, query="", post=None):
+    base = os.environ["SUPABASE_URL"].rstrip("/") + "/rest/v1/health_blog_reviews"
+    status, raw = rss.rest_request(method, base + query, os.environ["SUPABASE_SERVICE_KEY"],
+                                   post, "resolution=ignore-duplicates,return=minimal" if post else None)
+    if status not in (200, 201, 204):
+        raise RuntimeError(f"Health blog review queue returned HTTP {status}: {raw[:200]}")
+    return json.loads(raw) if raw else []
 
-    data = load(DATA, {"tags": {}, "posts": []})
-    drafts = load(DRAFTS, {"posts": []})
-    everything = data["posts"] + drafts["posts"]
-    done_today = sum(1 for p in everything if p.get("auto") and p.get("date") == iso)
-    need = target - done_today
-    log(f"[INFO] {iso} (IST): target {target} blogs/day (min {min_words} words each), already generated today: {done_today}, mode={'DRAFT (review)' if draft_mode else 'publish'}")
-    if need <= 0:
-        log("[OK] Today's blogs already exist - nothing to do.")
-        return 0
 
-    # least-recently-written topics first (ties keep the fixed topic order) -> clean rotation, no repeats
-    last = {}
-    for p in everything:
-        last[p.get("tag")] = max(last.get(p.get("tag"), ""), p.get("date", ""))
-    order = sorted(range(len(TOPICS)), key=lambda i: (last.get(TOPICS[i]["tag"], ""), i))
-    skip = {t.strip() for t in os.environ.get("HEALTH_BLOG_SKIP_TAGS", "sexual-wellness").split(",") if t.strip() and t.strip().lower() != "none"}
-    order = [i for i in order if TOPICS[i]["tag"] not in skip]
-    chosen = [TOPICS[i] for i in order[:need]]
-    hints = trending_hints()
-    log("[INFO] Trending health searches (India): " + (", ".join(hints) if hints else "none found - using built-in keyword lists"))
-    log("[INFO] Topics this run: " + ", ".join(t["name"] for t in chosen))
+# Editorial shortlist by purchase intent. These are not measured bids or CPC forecasts.
+COMMERCIAL_KEYWORDS = {
+    "fitness": ("adjustable dumbbells for small spaces", "walking pad vs treadmill", "how to choose a home exercise bike"),
+    "diet": ("meal kit vs grocery delivery", "how to compare meal prep subscriptions", "insulated lunch bags for work"),
+    "mind": ("meditation app subscription comparison", "sleep headphones buying guide", "white noise machine vs fan"),
+    "skin-care": ("mineral vs chemical sunscreen", "fragrance free moisturiser buying guide", "refillable skincare packaging costs"),
+    "beauty": ("LED makeup mirror buying guide", "makeup brush set vs individual brushes", "electric nail file buying guide"),
+    "hair-care": ("ionic vs ceramic hair dryer", "silk vs satin pillowcase for hair", "how to choose a heat protectant spray"),
+}
 
-    used_slugs = {p["slug"] for p in everything}
-    used_titles = {norm(p["title"]["en"]) for p in everything}
-    used_keywords = {norm(p.get("keyword", "")) for p in everything if p.get("keyword")}
-    state, made, quota_out = {"last_call": 0.0}, [], False
-    started = time.time()
-    budget = float(os.environ.get("HEALTH_BLOG_BUDGET_MIN", "60")) * 60  # stop in time so written blogs are committed
-    for topic in chosen:
-        if time.time() - started > budget:
-            log("[WARN] Time budget used up; keeping the blogs written so far. The next run continues.")
+
+def generate_slot(day, slot):
+    slot_id = f"{day}-{slot}"
+    query = "?select=slot&slot=eq." + slot_id
+    if reviews("GET", query):
+        return
+    markets = ("Canada", "United Kingdom", "United States", "Australia")
+    topics = ("fitness", "diet", "mind") if slot == "morning" else ("skin-care", "beauty", "hair-care")
+    index = day.toordinal()
+    tag = topics[index % len(topics)]
+    market = markets[(index + (slot == "evening")) % len(markets)]
+    topic = next(t.copy() for t in TOPICS if t["tag"] == tag)
+    topic["brief"] = f"Write for readers living in {market}. Focus on practical everyday {topic['name']}. Avoid product endorsements, medical treatment promises and India-specific services."
+    history = reviews("GET", "?select=title:post->title->>en&order=slot.desc&limit=80")
+    titles = [row["title"] for row in history if row.get("title")]
+    titles.extend(item["title"]["en"] for item in load(DATA, {"posts":[]})["posts"])
+    keywords = COMMERCIAL_KEYWORDS[tag]
+    keyword = keywords[(index // len(topics)) % len(keywords)]
+    post, words = generate_post(topic, titles, {}, 800, keyword, [])
+    if any(norm(t) == norm(post["title"]["en"]) for t in titles):
+        raise ValueError("Gemini repeated an existing title")
+    post.update(slug=post["slug"][:62].rstrip("-") + "-" + slot_id, image=topic["images"][0],
+                date=str(day), tag=tag, minutes=max(3, round(words/200)), auto=True,
+                author=dict.fromkeys(LANGS, "PrimezNews Health Desk"))
+    reviews("POST", "?on_conflict=slot", {"slot":slot_id, "post":post, "status":"draft"})
+    if not reviews("GET", query):
+        raise RuntimeError("Draft could not be verified in dashboard queue")
+
+
+def export_approved():
+    data = load(DATA, {"posts":[], "tags":{}})
+    existing = {p["slug"] for p in data["posts"]}
+    fresh = []
+    offset = 0
+    while True:
+        rows = reviews("GET", f"?status=eq.approved&select=post&order=slot.desc&limit=100&offset={offset}")
+        for row in rows:
+            post = row["post"]
+            if post["slug"] not in existing:
+                validate(post, 800)
+                fresh.append(post)
+                existing.add(post["slug"])
+        if len(rows) < 100:
             break
-        avoid = [p["title"]["en"] for p in everything if p.get("tag") == topic["tag"]]
-        post = words = None
-        keyword = pick_keyword(topic, used_keywords, today)
-        log(f"[INFO] {topic['name']}: target keyword -> {keyword}")
-        for attempt in (1, 2):
-            try:
-                post, words = generate_post(topic, avoid, state, min_words, keyword, hints)
-                if norm(post["title"]["en"]) in used_titles or any(similar(post["title"]["en"], t) for t in avoid):
-                    raise ValueError("duplicate or too-similar title")
-                break
-            except QuotaExhausted as exc:
-                log(f"[WARN] Gemini quota used up for today ({exc}). Keeping the blogs written so far; the next run continues.")
-                quota_out = True
-                post = None
-                break
-            except Exception as exc:
-                log(f"[WARN] {topic['name']} attempt {attempt} failed: {exc}")
-                post = None
-        if not post:
-            if quota_out:
-                break
-            continue
-        slug, n = post["slug"], 2
-        while slug in used_slugs:
-            slug = f"{post['slug']}-{n}"; n += 1
-        image = topic["images"][zlib.crc32(slug.encode()) % len(topic["images"])]
-        if not (ROOT / "assets" / "images" / f"{image}.webp").exists():
-            image = "news-health"
-        entry = {
-            "slug": slug, "image": image, "date": iso,
-            "author": {"pa": "PrimezNews ਸਿਹਤ ਡੈਸਕ", "hi": "PrimezNews हेल्थ डेस्क", "en": "PrimezNews Health Desk"},
-            "tag": topic["tag"], "minutes": max(3, round(words / 200)),
-            "title": {k: post["title"][k].strip() for k in LANGS},
-            "excerpt": {k: post["excerpt"][k].strip() for k in LANGS},
-            "points": [{k: x[k].strip() for k in LANGS} for x in post["points"]],
-            "faq": post["faq"], "keyword": post.get("keyword") or keyword, "keywords": post.get("keywords", []),
-            "body": post["body"],
-            "auto": True,
-        }
-        used_keywords.add(norm(entry["keyword"])); used_slugs.add(slug); used_titles.add(norm(entry["title"]["en"])); everything.append(entry); made.append(entry)
-        log(f"[OK] {topic['name']}: {entry['title']['en']}  ({slug}, {words} words)")
-
-    if not made:
-        log("[WARN] No blog could be generated.")
-        if quota_out:
-            print("::warning::Gemini quota used up - no health blog written today. It will retry on the next run (use a separate GEMINI_API_KEY_BLOGS key or enable billing to avoid this).")
-            return 0
-        return 1
-    if draft_mode:
-        drafts["posts"] = made + drafts["posts"]
-        save(DRAFTS, drafts)
-    else:
-        for t, label in TAGS.items():
-            data["tags"].setdefault(t, label)
-        data["posts"] = made + data["posts"]
+        offset += len(rows)
+    if fresh:
+        data["posts"] = fresh + data["posts"]
+        data["tags"].update(TAGS)
         save(DATA, data)
-    log(f"[OK] {len(made)} new blog(s) written to {(DRAFTS if draft_mode else DATA).relative_to(ROOT)}")
-    return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    if sys.argv[1:] == ["export"]:
+        export_approved()
+    else:
+        today = datetime.now(IST).date()
+        slots = ("evening", "morning") if os.environ.get("BLOG_SLOT") == "evening" else ("morning",)
+        failures = []
+        for slot in slots:
+            try:
+                generate_slot(today, slot)
+            except Exception as exc:
+                log(f"[ERROR] {slot} draft failed: {type(exc).__name__}: {exc}")
+                failures.append(slot)
+        sys.exit(bool(failures))
