@@ -4,6 +4,9 @@ on:
     - cron: '40 4 * * *'
     - cron: '40 10 * * *'
     - cron: '*/15 * * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/health-blog-daily.yml']
   workflow_dispatch:
     inputs:
       slot:
@@ -25,7 +28,7 @@ jobs:
       - name: Save private dashboard drafts
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_BLOGS || secrets.GEMINI_API_KEY }}
-          BLOG_SLOT: ${{ inputs.slot || (github.event.schedule == '40 10 * * *' && 'evening' || 'morning') }}
+          BLOG_SLOT: ${{ inputs.slot || (github.event_name == 'push' && 'evening') || (github.event.schedule == '40 10 * * *' && 'evening' || 'morning') }}
         run: python3 scripts/generate_health_blogs.py
   publish:
     if: github.ref == 'refs/heads/main' && (github.event.schedule == '*/15 * * * *' || inputs.slot == 'export')
