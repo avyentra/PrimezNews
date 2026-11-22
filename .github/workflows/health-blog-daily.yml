@@ -3,6 +3,7 @@ on:
   schedule:
     - cron: '40 4 * * *'
     - cron: '40 10 * * *'
+    - cron: '25 5-17 * * *'
     - cron: '*/15 * * * *'
   push:
     branches: [main]
@@ -22,14 +23,21 @@ jobs:
   draft:
     if: github.ref == 'refs/heads/main' && github.event.schedule != '*/15 * * * *' && inputs.slot != 'export'
     runs-on: ubuntu-latest
+    concurrency: health-blog-private-drafts
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - name: Save private dashboard drafts
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_BLOGS || secrets.GEMINI_API_KEY }}
-          BLOG_SLOT: ${{ inputs.slot || (github.event_name == 'push' && 'evening') || (github.event.schedule == '40 10 * * *' && 'evening' || 'morning') }}
-        run: python3 scripts/generate_health_blogs.py
+          BLOG_SLOT: ${{ inputs.slot }}
+        run: |
+          if [ -z "$BLOG_SLOT" ]; then
+            now=$(TZ=Asia/Kolkata date +%H%M)
+            if [[ "$now" < "1010" ]]; then exit 0; fi
+            if [[ "$now" < "1610" ]]; then export BLOG_SLOT=morning; else export BLOG_SLOT=evening; fi
+          fi
+          python3 scripts/generate_health_blogs.py
   publish:
     if: github.ref == 'refs/heads/main' && (github.event.schedule == '*/15 * * * *' || inputs.slot == 'export')
     concurrency: health-blog-approved-export
