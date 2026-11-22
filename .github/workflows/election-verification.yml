@@ -17,7 +17,23 @@ jobs:
         run: |
           python - <<'PY'
           import os
+          import json, urllib.request, urllib.error
           from fetch_rss_news import election_screen
+          req = urllib.request.Request("https://generativelanguage.googleapis.com/v1beta/models", headers={"x-goog-api-key": os.environ["GEMINI_API_KEY"]})
+          with urllib.request.urlopen(req) as response:
+              models = json.load(response)["models"]
+          import fetch_rss_news as rss
+          names = [m["name"].split("/")[-1] for m in models]
+          print("Configured models in catalog:", [m for m in rss.GEMINI_MODELS if m in names], flush=True)
+          original_generate = rss._gemini_generate
+          def diagnose(*args, **kwargs):
+              try:
+                  return original_generate(*args, **kwargs)
+              except RuntimeError as exc:
+                  import re
+                  print("Gemini API diagnostic:", re.findall(r"HTTP [0-9]{3}|RESOURCE_EXHAUSTED|PERMISSION_DENIED|UNAVAILABLE|INVALID_ARGUMENT|NOT_FOUND|PerDay|PerMinute", str(exc)), flush=True)
+                  raise
+          rss._gemini_generate = diagnose
           state = {"gemini_key": os.environ["GEMINI_API_KEY"]}
           assert state["gemini_key"], "Gemini key unavailable"
           assert election_screen({"title": "Local chess club announces its junior tournament"}, "A private chess club will host matches for its members.", state), "Unrelated control did not pass"
