@@ -351,7 +351,7 @@ def generate_post(topic, avoid_titles, state, min_words, keyword, hints):
 
 
 def reviews(method, query="", post=None):
-    base = os.environ["SUPABASE_URL"].rstrip("/") + "/rest/v1/health_blog_reviews"
+    base = rss.load_supabase_url() + "/rest/v1/health_blog_reviews"
     status, raw = rss.rest_request(method, base + query, os.environ["SUPABASE_SERVICE_KEY"],
                                    post, "resolution=ignore-duplicates,return=minimal" if post else None)
     if status not in (200, 201, 204):
