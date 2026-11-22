@@ -400,24 +400,33 @@ def generate_slot(day, slot):
 
 def export_approved():
     data = load(DATA, {"posts":[], "tags":{}})
-    existing = {p["slug"] for p in data["posts"]}
+    published = {p["slug"]: p for p in data["posts"]}
     fresh = []
     offset = 0
     while True:
-        rows = reviews("GET", f"?status=eq.approved&select=post&order=slot.desc&limit=100&offset={offset}")
+        rows = reviews("GET", f"?status=in.(approved,deleted)&select=post,status&order=slot.desc&limit=100&offset={offset}")
         for row in rows:
             post = row["post"]
-            if post["slug"] not in existing:
+            slug = post["slug"]
+            if row["status"] == "deleted":
+                published.pop(slug, None)
+            elif slug in published:
+                prior = published[slug]
+                published[slug] = dict(post)
+                if prior.get("first_public_date"):
+                    published[slug]["first_public_date"] = prior["first_public_date"]
+            else:
                 validate(post, 800)
-                fresh.append(post)
-                existing.add(post["slug"])
+                fresh.append(dict(post, first_public_date=datetime.now(IST).date().isoformat()))
         if len(rows) < 100:
             break
         offset += len(rows)
-    if fresh:
-        data["posts"] = fresh + data["posts"]
+    result = fresh + list(published.values())
+    if result != data["posts"]:
+        data["posts"] = result
         data["tags"].update(TAGS)
         save(DATA, data)
+
 
 
 if __name__ == "__main__":
