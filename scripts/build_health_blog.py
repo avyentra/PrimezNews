@@ -197,7 +197,7 @@ def build():
     OUT.mkdir(exist_ok=True)
 
     # ---- list page ----
-    lead, rest = posts[0], posts[1:]
+    lead, rest = (posts[0] if posts else None), posts[1:]
     chips = f'<button type="button" class="hb-chip active" data-blog-tag="" aria-pressed="true">{L(T("ਸਭ", "सभी", "All"))}</button>' + ''.join(
         f'<button type="button" class="hb-chip" data-blog-tag="{e(k)}" aria-pressed="false">{L(v)}</button>' for k, v in tags.items() if any(p['tag'] == k for p in posts))
     list_main = (
@@ -210,7 +210,7 @@ def build():
         f'<div class="hb-chips bl-chips" role="group" aria-label="Topics">{chips}</div></section>'
         '<div class="hb-grid"><div class="hb-main">'
         '<h2 class="bl-sec">' + L(T('ਤਾਜ਼ਾ ਲੇਖ', 'ताज़ा लेख', 'Latest article')) + '</h2>'
-        + card(lead, tags, 'bl-card bl-featured') +
+        + (card(lead, tags, 'bl-card bl-featured') if lead else '') +
         '<h2 class="bl-sec">' + L(T('ਹੋਰ ਲੇਖ', 'और लेख', 'More articles')) + '</h2>'
         '<div class="bl-grid" id="blogGrid">' + ''.join(card(p, tags) for p in rest) + '</div>'
         '<p class="bl-empty" id="blogEmpty" hidden>' + L(T('ਇਸ ਵਿਸ਼ੇ ’ਤੇ ਲੇਖ ਜਲਦੀ ਆਉਣਗੇ।', 'इस विषय पर लेख जल्द आएँगे।', 'Articles on this topic are coming soon.')) + '</p>'
@@ -219,7 +219,7 @@ def build():
     list_desc = 'Simple health, fitness, diet, mental-health and beauty articles from PrimezNews in Punjabi, Hindi and English.'
     ld = {'@context': 'https://schema.org', '@type': 'Blog', 'name': 'PrimezNews Health & Beauty Blog', 'url': f'{SITE}/health-blog/', 'inLanguage': ['pa', 'hi', 'en'],
           'blogPost': [{'@type': 'BlogPosting', 'headline': p['title']['en'], 'url': f'{SITE}/health-blog/{p["slug"]}/', 'datePublished': p['date']} for p in posts]}
-    h = set_meta(head, '../', list_title, list_desc, f'{SITE}/health-blog/', f'{SITE}/media/share/blog-{lead["slug"]}.jpg', 'website',
+    h = set_meta(head, '../', list_title, list_desc, f'{SITE}/health-blog/', (f'{SITE}/media/share/blog-{lead["slug"]}.jpg' if lead else f'{SITE}/assets/images/primznews-logo-new.webp'), 'website',
                  '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False).replace('</', '<\\/') + '</script>')
     (OUT / 'index.html').write_text(h + '</head>\n' + pre + list_main + '\n' + post_html)
 
@@ -272,11 +272,12 @@ def build():
         xml = sm.read_text()
         want = [f'{SITE}/health-blog/'] + [f'{SITE}/health-blog/{p["slug"]}/' for p in posts]
         add = ''.join(f'<url><loc>{u}</loc></url>' for u in want if f'<loc>{u}</loc>' not in xml)
-        if add and '</urlset>' in xml:
+        xml = re.sub(r'<url>\s*<loc>' + re.escape(SITE) + r'/health-blog/([a-z0-9-]+)/</loc>[^<]*(?:<lastmod>[^<]+</lastmod>\s*)?</url>', lambda m: m[0] if m[1] in seen else '', xml)
+        if (add or xml != sm.read_text()) and '</urlset>' in xml:
             sm.write_text(xml.replace('</urlset>', add + '</urlset>'))
     # latest 3 posts on the Health & Beauty page (between markers)
     page = SHELL.read_text()
-    lead_p, others = posts[0], posts[1:4]
+    lead_p, others = (posts[0] if posts else None), posts[1:4]
     def feat(p):
         tag = tags.get(p['tag'], T(p['tag'], p['tag'], p['tag']))
         return (f'<a class="hf-feat" href="health-blog/{p["slug"]}/" data-tag="{e(p["tag"])}">'
@@ -292,7 +293,7 @@ def build():
                 f'<span class="hf-rbody"><span class="hf-rtitle">{L(p["title"])}</span>'
                 f'<small>{L(nice_date(p["date"]))} · {p["minutes"]} {L(T("ਮਿੰਟ ਪੜ੍ਹੋ", "मिनट पढ़ें", "min read"))}</small></span></a>')
 
-    block_html = ('<!--blog-latest--><section class="hf-top" aria-labelledby="blLatestTitle">' + feat(lead_p) +
+    block_html = ('<!--blog-latest--><section class="hf-top" aria-labelledby="blLatestTitle">' + (feat(lead_p) if lead_p else '') +
                   '<aside class="hf-side"><div class="hf-side-head"><h2 id="blLatestTitle">' + L(T('ਤਾਜ਼ਾ ਸਿਹਤ ਬਲੌਗ', 'ताज़ा हेल्थ ब्लॉग', 'Latest Health Blogs')) + '</h2>'
                   '<a href="health-blog/">' + L(T('ਸਾਰੇ ਲੇਖ →', 'सभी लेख →', 'View All →')) + '</a></div>' +
                   ''.join(row(p) for p in others) + '</aside></section><!--/blog-latest-->')
@@ -303,6 +304,7 @@ def build():
         if d.is_dir() and d.name not in seen and (d / 'index.html').exists() and 'bl-article' in (d / 'index.html').read_text():
             for f in d.iterdir(): f.unlink()
             d.rmdir()
+            (ROOT / 'media' / 'share' / f'blog-{d.name}.jpg').unlink(missing_ok=True)
     return [p['slug'] for p in posts]
 
 
