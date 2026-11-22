@@ -58,6 +58,398 @@
  },
  "posts": [
   {
+   "faq": [
+    {
+     "a": {
+      "en": "Price the number of classes you can attend before the pass expires.",
+      "hi": "पास की अवधि में जितनी कक्षाएँ ले सकते हैं उनका खर्च जोड़ें।",
+      "pa": "ਪਾਸ ਦੀ ਮਿਆਦ ਅੰਦਰ ਜਿੰਨੀਆਂ ਕਲਾਸਾਂ ਲੈ ਸਕਦੇ ਹੋ, ਉਨ੍ਹਾਂ ਦਾ ਹਿਸਾਬ ਕਰੋ।"
+     },
+     "q": {
+      "en": "How should I compare a class pass with membership?",
+      "hi": "क्लास पास की तुलना कैसे करूँ?",
+      "pa": "ਕਲਾਸ ਪਾਸ ਦੀ ਤੁਲਨਾ ਕਿਵੇਂ ਕਰਾਂ?"
+     }
+    },
+    {
+     "a": {
+      "en": "Visit during the same hour you intend to go each week.",
+      "hi": "हर हफ्ते जिस समय जाना है उसी समय जाकर देखें।",
+      "pa": "ਹਰ ਹਫ਼ਤੇ ਜਿਸ ਵੇਲੇ ਜਾਓਗੇ, ਉਸੇ ਵੇਲੇ ਜਾ ਕੇ ਵੇਖੋ।"
+     },
+     "q": {
+      "en": "When should I tour the gym?",
+      "hi": "जिम देखने कब जाऊँ?",
+      "pa": "ਜਿਮ ਕਦੋਂ ਵੇਖਣਾ ਚਾਹੀਦਾ ਹੈ?"
+     }
+    },
+    {
+     "a": {
+      "en": "Keep a dated copy of the agreement, payment receipt and cancellation instructions.",
+      "hi": "तारीख सहित अनुबंध, भुगतान रसीद और रद्द करने के निर्देश रखें।",
+      "pa": "ਤਾਰੀਖ ਵਾਲਾ ਇਕਰਾਰਨਾਮਾ, ਰਸੀਦ ਅਤੇ ਰੱਦ ਕਰਨ ਦੀਆਂ ਹਦਾਇਤਾਂ ਰੱਖੋ।"
+     },
+     "q": {
+      "en": "What should I keep after joining?",
+      "hi": "सदस्य बनने के बाद क्या रखूँ?",
+      "pa": "ਮੈਂਬਰ ਬਣਨ ਮਗਰੋਂ ਕੀ ਸੰਭਾਲਾਂ?"
+     }
+    }
+   ],
+   "tag": "fitness",
+   "auto": true,
+   "body": [
+    {
+     "h2": {
+      "en": "Start with an ordinary Tuesday",
+      "hi": "एक आम मंगलवार से शुरू करें",
+      "pa": "ਆਮ ਮੰਗਲਵਾਰ ਤੋਂ ਸ਼ੁਰੂ ਕਰੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "Think about the last Tuesday when you worked late, picked up groceries and still wanted a little time to yourself. Where would a visit to the gym have fitted? Put a start time and a finish time on paper. Include changing clothes, finding a locker and getting back home. Comparing clubs becomes much easier once you know the size of the gap you are actually trying to fill. A place with dozens of classes may be worth less to you than a modest room you can reach on foot before dinner. Give yourself permission to choose the simpler option.",
+      "hi": "पिछला कोई व्यस्त मंगलवार याद करें। कपड़े बदलने, लॉकर लेने और घर लौटने समेत जिम के लिए समय लिखें। रात के खाने से पहले पैदल पहुँच सकने वाला साधारण जिम दूर के कई कक्षाओं वाले क्लब से आपके अधिक काम आ सकता है।",
+      "pa": "ਪਿਛਲਾ ਕੋਈ ਰੁਝੇਵੇਂ ਵਾਲਾ ਮੰਗਲਵਾਰ ਯਾਦ ਕਰੋ। ਕੱਪੜੇ ਬਦਲਣ, ਲਾਕਰ ਲੱਭਣ ਅਤੇ ਘਰ ਪਰਤਣ ਸਮੇਤ ਜਿਮ ਲਈ ਸਮਾਂ ਲਿਖੋ। ਜੇ ਰਾਤ ਦੇ ਖਾਣੇ ਤੋਂ ਪਹਿਲਾਂ ਨੇੜੇ ਦਾ ਸਾਦਾ ਜਿਮ ਪਹੁੰਚ ਵਿੱਚ ਹੈ, ਤਾਂ ਦੂਰ ਦੇ ਕਈ ਕਲਾਸਾਂ ਵਾਲੇ ਕਲੱਬ ਨਾਲੋਂ ਉਹ ਤੁਹਾਡੇ ਕੰਮ ਵੱਧ ਆ ਸਕਦਾ ਹੈ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Test the trip in both directions",
+      "hi": "आने और लौटने का रास्ता देखें",
+      "pa": "ਆਉਣ ਤੇ ਜਾਣ ਦਾ ਰਾਹ ਪਰਖੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "Visit at the hour you intend to train. A tour at midday tells you very little about the bus connection after work or the queue for the changing room at six. If a friend usually gives you a lift, make one visit without that lift. Check what happens when the bus is late or the car park is full. In a Canadian winter or a rainy British evening, a short route with a sheltered connection can be easier to repeat than a cheaper membership across town. Compare the door to door time, including the walk from the stop.",
+      "hi": "जिस समय व्यायाम करना है उसी समय जाएँ। बस, पार्किंग, चेंजिंग रूम की कतार और वापसी का समय देखें। दोस्त की लिफ्ट के बिना भी एक बार रास्ता आज़माएँ।",
+      "pa": "ਉਸੇ ਵੇਲੇ ਜਾਓ ਜਦੋਂ ਤੁਸੀਂ ਕਸਰਤ ਕਰੋਗੇ। ਬੱਸ, ਪਾਰਕਿੰਗ, ਕੱਪੜੇ ਬਦਲਣ ਦੀ ਕਤਾਰ ਅਤੇ ਵਾਪਸੀ ਦਾ ਸਮਾਂ ਵੇਖੋ। ਦੋਸਤ ਦੀ ਲਿਫਟ ਤੋਂ ਬਿਨਾਂ ਵੀ ਇੱਕ ਵਾਰ ਰਾਹ ਅਜ਼ਮਾਓ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Price a week that goes wrong",
+      "hi": "कम हाज़िरी वाले हफ्ते का हिसाब",
+      "pa": "ਘੱਟ ਹਾਜ਼ਰੀ ਵਾਲੇ ਹਫ਼ਤੇ ਦਾ ਹਿਸਾਬ"
+     }
+    },
+    {
+     "p": {
+      "en": "Ask for a written price for the full period you are considering. Add joining fees, a required access card, parking, class supplements and any charge for towels you intend to use. Divide that amount by the number of visits you made in a recent comparable month. If you do not have a history to work with, calculate two examples, one for four visits and another for eight. A monthly fee of forty in your local currency works out to ten a visit at four visits and five at eight, before extras. Repeat the arithmetic with the actual offers in front of you.",
+      "hi": "प्रवेश शुल्क, कार्ड, पार्किंग और कक्षाओं का खर्च जोड़ें। चार और आठ बार जाने का अलग हिसाब करें। उदाहरण के लिए चालीस की मासिक फीस पर चार बार जाने का खर्च दस और आठ बार का पाँच प्रति बार है।",
+      "pa": "ਦਾਖ਼ਲਾ ਫੀਸ, ਕਾਰਡ, ਪਾਰਕਿੰਗ ਤੇ ਕਲਾਸਾਂ ਦੇ ਪੈਸੇ ਜੋੜੋ। ਚਾਰ ਅਤੇ ਅੱਠ ਦਿਨ ਜਾਣ ਦੇ ਦੋ ਹਿਸਾਬ ਕਰੋ। ਮਿਸਾਲ ਵਜੋਂ ਮਹੀਨੇ ਦੀ ਫੀਸ ਚਾਲੀ ਹੋਵੇ ਤਾਂ ਚਾਰ ਵਾਰ ਜਾਣ ਦਾ ਪ੍ਰਤੀ ਵਾਰ ਦਸ ਅਤੇ ਅੱਠ ਵਾਰ ਜਾਣ ਦਾ ਪੰਜ ਬਣਦਾ ਹੈ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Take your own session to the trial",
+      "hi": "ट्रायल में अपना सत्र आज़माएँ",
+      "pa": "ਆਪਣੀ ਕਸਰਤ ਅਜ਼ਮਾਓ"
+     }
+    },
+    {
+     "p": {
+      "en": "Write down the three things you normally do when you exercise. During a trial visit, try to do those things in that order. Notice whether the equipment is available, whether the signs make sense and how you would ask for help. A gym can have beautiful photographs and still have a long wait for the only station you came to use. If a class matters to you, ask to see bookings for that class next week. Find out when the booking window opens and what happens if work prevents you from attending at the last minute.",
+      "hi": "अपनी तीन सामान्य गतिविधियाँ लिखकर ट्रायल में उसी क्रम में करें। उपकरण की प्रतीक्षा और मदद मिलने का तरीका देखें। पसंद की कक्षा की अगले हफ्ते की बुकिंग और रद्द करने की शर्त पूछें।",
+      "pa": "ਆਪਣੀਆਂ ਤਿੰਨ ਆਮ ਕਸਰਤਾਂ ਲਿਖ ਕੇ ਟਰਾਇਲ ਵਿੱਚ ਉਸੇ ਕ੍ਰਮ ਵਿੱਚ ਕਰੋ। ਸਾਜ਼ ਦੀ ਉਡੀਕ ਅਤੇ ਮਦਦ ਮਿਲਣ ਦਾ ਤਰੀਕਾ ਵੇਖੋ। ਮਨਪਸੰਦ ਕਲਾਸ ਦੀ ਅਗਲੇ ਹਫ਼ਤੇ ਦੀ ਬੁਕਿੰਗ ਅਤੇ ਰੱਦ ਕਰਨ ਦੀ ਸ਼ਰਤ ਪੁੱਛੋ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Read the exit terms while you are still outside",
+      "hi": "अभी छोड़ने की शर्तें पढ़ें",
+      "pa": "ਹੁਣੇ ਛੱਡਣ ਦੀਆਂ ਸ਼ਰਤਾਂ ਪੜ੍ਹੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "Ask the club to show you the paragraph that explains how to cancel. Look for the notice period, the accepted delivery method and the final payment date. A month to month offer can still require advance notice. For a fixed term, ask what happens if you move or your working hours change. Request the answer in writing and keep it with the price quote. If the staff promise a concession that does not appear in the agreement, wait until it is recorded before deciding. This is also the moment to check whether a free trial starts a paid plan automatically.",
+      "hi": "नोटिस की अवधि, रद्द करने का तरीका और अंतिम भुगतान की तारीख लिखित में लें। घर या काम का समय बदलने की शर्त पढ़ें। मुफ़्त ट्रायल के बाद फीस अपने आप शुरू होती है या नहीं, यह भी पूछें।",
+      "pa": "ਨੋਟਿਸ ਦਾ ਸਮਾਂ, ਰੱਦ ਕਰਨ ਦਾ ਤਰੀਕਾ ਅਤੇ ਆਖ਼ਰੀ ਭੁਗਤਾਨ ਦੀ ਤਾਰੀਖ ਲਿਖਤੀ ਰੂਪ ਵਿੱਚ ਲਵੋ। ਪਤਾ ਬਦਲਣ ਜਾਂ ਕੰਮ ਦਾ ਸਮਾਂ ਬਦਲਣ ਦੀ ਸ਼ਰਤ ਪੜ੍ਹੋ। ਮੁਫ਼ਤ ਟਰਾਇਲ ਤੋਂ ਬਾਅਦ ਫੀਸ ਆਪਣੇ ਆਪ ਲੱਗਦੀ ਹੈ ਜਾਂ ਨਹੀਂ, ਇਹ ਵੀ ਪੁੱਛੋ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Compare one pay as you go option",
+      "hi": "प्रति यात्रा वाला विकल्प देखें",
+      "pa": "ਪ੍ਰਤੀ ਫੇਰੀ ਵਾਲਾ ਬਦਲ ਵੇਖੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "Get a price for a day pass or a small bundle of visits at a local leisure centre. Check whether the bundle expires and whether visits can be shared. Treat this as a reference price even if you eventually choose a subscription. For someone who travels for work, paying more per visit can still cost less over a year with several months away. Someone who likes a particular class every week may draw a different conclusion. Put the two totals beside each other and write down which assumption would have to change for the other choice to win.",
+      "hi": "स्थानीय खेल केंद्र का डे पास या कुछ यात्राओं का पैक देखें। उसकी अवधि पूछें। काम के लिए बाहर रहने वाले व्यक्ति का साल भर का कुल खर्च इससे कम हो सकता है।",
+      "pa": "ਨੇੜੇ ਦੇ ਖੇਡ ਕੇਂਦਰ ਦਾ ਦਿਨ ਦਾ ਪਾਸ ਜਾਂ ਕੁਝ ਫੇਰੀਆਂ ਵਾਲਾ ਪੈਕ ਦੇਖੋ। ਮਿਆਦ ਵੀ ਪੁੱਛੋ। ਕੰਮ ਲਈ ਬਾਹਰ ਰਹਿਣ ਵਾਲੇ ਲਈ ਸਾਲ ਦਾ ਕੁੱਲ ਖ਼ਰਚਾ ਘੱਟ ਹੋ ਸਕਦਾ ਹੈ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Check the practical details that matter to you",
+      "hi": "अपने काम की सुविधाएँ जाँचें",
+      "pa": "ਆਪਣੀ ਲੋੜ ਵਾਲੀਆਂ ਸਹੂਲਤਾਂ ਵੇਖੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "If you need step free access, follow the entire route from the entrance to the room you plan to use. If you bring a bicycle, look for a place where you would actually leave it. If you change before going to work, check the locker size with your usual bag. These details are difficult to judge from a photograph and easy to forget during a sales tour. Write one sentence after the visit about the most inconvenient part. Decide whether it was a one time incident or something built into the location that you will meet every week.",
+      "hi": "बिना सीढ़ी का रास्ता, साइकिल रखने की जगह या अपने बैग के लिए लॉकर खुद जाँचें। यात्रा के बाद सबसे बड़ी असुविधा लिखें और सोचें कि क्या वह हर हफ्ते आएगी।",
+      "pa": "ਬਿਨਾਂ ਪੌੜੀ ਵਾਲੇ ਰਸਤੇ, ਸਾਈਕਲ ਖੜ੍ਹੀ ਕਰਨ ਦੀ ਥਾਂ ਜਾਂ ਆਪਣੇ ਬੈਗ ਲਈ ਲਾਕਰ ਨੂੰ ਖ਼ੁਦ ਪਰਖੋ। ਫੇਰੀ ਤੋਂ ਬਾਅਦ ਸਭ ਤੋਂ ਵੱਡੀ ਔਖ ਲਿਖੋ ਤੇ ਸੋਚੋ ਕਿ ਕੀ ਇਹ ਹਰ ਹਫ਼ਤੇ ਆਵੇਗੀ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Make the first month a trial you control",
+      "hi": "पहले महीने का आकलन करें",
+      "pa": "ਪਹਿਲੇ ਮਹੀਨੇ ਦਾ ਮੁਲਾਂਕਣ ਕਰੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "Keep a simple note of the dates you went and the reason a planned visit fell through. A week before the next billing decision, compare those notes with the estimate you made. If transport is the problem, try the nearer option before buying a longer membership. If classes are always full, ask about a different time that you could genuinely attend. A useful membership earns its place in your routine through repeat visits. The decision to renew can be based on your own calendar and receipts, even when a salesperson offers a discount that expires today. Take the calendar with you when discussing renewal so the final decision reflects the weeks you actually had.",
+      "hi": "किस दिन गए या किस कारण नहीं जा सके, लिखते रहें। अगली फीस से एक हफ्ते पहले अपनी असली हाज़िरी से हिसाब मिलाएँ। सदस्यता बढ़ाने का फैसला अपनी डायरी और रसीदों के आधार पर करें।",
+      "pa": "ਜਿਸ ਦਿਨ ਗਏ ਜਾਂ ਕਿਸ ਕਾਰਨ ਨਾ ਜਾ ਸਕੇ, ਲਿਖਦੇ ਰਹੋ। ਅਗਲੀ ਫੀਸ ਤੋਂ ਇੱਕ ਹਫ਼ਤਾ ਪਹਿਲਾਂ ਅਸਲ ਹਾਜ਼ਰੀ ਨਾਲ ਹਿਸਾਬ ਮਿਲਾਓ। ਇਕਰਾਰ ਵਧਾਉਣ ਦਾ ਫ਼ੈਸਲਾ ਆਪਣੀ ਡਾਇਰੀ ਅਤੇ ਰਸੀਦਾਂ ਦੇ ਆਧਾਰ ਤੇ ਕਰੋ।"
+     }
+    }
+   ],
+   "date": "2026-11-22",
+   "slug": "how-to-compare-gym-memberships",
+   "image": "sport",
+   "title": {
+    "en": "A gym membership that fits your real week",
+    "hi": "अपने असली हफ्ते के हिसाब से जिम कैसे चुनें",
+    "pa": "ਤੁਹਾਡੇ ਹਫ਼ਤੇ ਮੁਤਾਬਕ ਜਿਮ ਮੈਂਬਰਸ਼ਿਪ ਕਿਵੇਂ ਚੁਣੀਏ"
+   },
+   "author": {
+    "en": "PrimezNews Health Desk",
+    "hi": "PrimezNews Health Desk",
+    "pa": "PrimezNews Health Desk"
+   },
+   "points": [
+    {
+     "en": "Price the number of classes you can attend before the pass expires.",
+     "hi": "पास की अवधि में जितनी कक्षाएँ ले सकते हैं उनका खर्च जोड़ें।",
+     "pa": "ਪਾਸ ਦੀ ਮਿਆਦ ਅੰਦਰ ਜਿੰਨੀਆਂ ਕਲਾਸਾਂ ਲੈ ਸਕਦੇ ਹੋ, ਉਨ੍ਹਾਂ ਦਾ ਹਿਸਾਬ ਕਰੋ।"
+    },
+    {
+     "en": "Visit during the same hour you intend to go each week.",
+     "hi": "हर हफ्ते जिस समय जाना है उसी समय जाकर देखें।",
+     "pa": "ਹਰ ਹਫ਼ਤੇ ਜਿਸ ਵੇਲੇ ਜਾਓਗੇ, ਉਸੇ ਵੇਲੇ ਜਾ ਕੇ ਵੇਖੋ।"
+    },
+    {
+     "en": "Keep a dated copy of the agreement, payment receipt and cancellation instructions.",
+     "hi": "तारीख सहित अनुबंध, भुगतान रसीद और रद्द करने के निर्देश रखें।",
+     "pa": "ਤਾਰੀਖ ਵਾਲਾ ਇਕਰਾਰਨਾਮਾ, ਰਸੀਦ ਅਤੇ ਰੱਦ ਕਰਨ ਦੀਆਂ ਹਦਾਇਤਾਂ ਰੱਖੋ।"
+    }
+   ],
+   "excerpt": {
+    "en": "Before signing an annual gym contract, try the journey, price a realistic month and check how you can leave.",
+    "hi": "सालाना सदस्यता से पहले रास्ता आज़माएँ, महीने का असली खर्च जोड़ें और छोड़ने की शर्तें पढ़ें।",
+    "pa": "ਸਾਲਾਨਾ ਇਕਰਾਰ ਤੋਂ ਪਹਿਲਾਂ ਸਫ਼ਰ ਅਜ਼ਮਾਓ, ਮਹੀਨੇ ਦਾ ਅਸਲ ਖ਼ਰਚਾ ਗਿਣੋ ਅਤੇ ਛੱਡਣ ਦੀਆਂ ਸ਼ਰਤਾਂ ਪੜ੍ਹੋ।"
+   },
+   "keyword": "gym membership comparison",
+   "minutes": 5,
+   "keywords": [
+    "gym membership comparison"
+   ]
+  },
+  {
+   "faq": [
+    {
+     "a": {
+      "en": "Mark the dimensions on paper and hold it at eye level while seated.",
+      "hi": "कागज़ पर माप बनाकर बैठते समय आँखों के स्तर पर पकड़ें।",
+      "pa": "ਕਾਗਜ਼ ਉੱਤੇ ਮਾਪ ਲਾ ਕੇ ਬੈਠਿਆਂ ਅੱਖਾਂ ਦੀ ਪੱਧਰ ਉੱਤੇ ਫੜੋ।"
+     },
+     "q": {
+      "en": "How can I test height at home?",
+      "hi": "घर में ऊँचाई कैसे जाँचूँ?",
+      "pa": "ਘਰ ਵਿੱਚ ਉਚਾਈ ਕਿਵੇਂ ਪਰਖਾਂ?"
+     }
+    },
+    {
+     "a": {
+      "en": "Test low and high settings in your usual room and check for shadows.",
+      "hi": "अपने कमरे में हल्की और तेज़ सेटिंग पर परछाईं देखें।",
+      "pa": "ਆਪਣੇ ਕਮਰੇ ਵਿੱਚ ਹਲਕੀ ਤੇ ਤੇਜ਼ ਸੈਟਿੰਗ ਉੱਤੇ ਪਰਛਾਵਾਂ ਦੇਖੋ।"
+     },
+     "q": {
+      "en": "Is the strongest setting the most useful?",
+      "hi": "क्या सबसे तेज़ रोशनी सबसे उपयोगी है?",
+      "pa": "ਕੀ ਸਭ ਤੋਂ ਤੇਜ਼ ਰੌਸ਼ਨੀ ਸਭ ਤੋਂ ਚੰਗੀ ਹੈ?"
+     }
+    },
+    {
+     "a": {
+      "en": "Check the cost of return shipping and whether you may inspect an opened unit.",
+      "hi": "वापसी का डाक खर्च और डिब्बा खोलकर जाँचने की शर्त पूछें।",
+      "pa": "ਵਾਪਸੀ ਦੀ ਡਾਕ ਅਤੇ ਡੱਬਾ ਖੋਲ੍ਹ ਕੇ ਪਰਖਣ ਦੀ ਸ਼ਰਤ ਪੁੱਛੋ।"
+     },
+     "q": {
+      "en": "What should I ask before ordering online?",
+      "hi": "ऑनलाइन मंगाने से पहले क्या पूछूँ?",
+      "pa": "ਆਨਲਾਈਨ ਮੰਗਵਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਕੀ ਪੁੱਛਾਂ?"
+     }
+    }
+   ],
+   "tag": "beauty",
+   "auto": true,
+   "body": [
+    {
+     "h2": {
+      "en": "Start with the mirror you already have",
+      "hi": "पहले मौजूदा दर्पण जाँचें",
+      "pa": "ਪਹਿਲਾਂ ਮੌਜੂਦਾ ਸ਼ੀਸ਼ਾ ਪਰਖੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "Before you buy anything, put your everyday makeup bag beside the mirror you currently use. Go through your usual routine and note the first moment when the setup becomes awkward. Perhaps the mirror sits below eye level, the window is behind your head, or there is nowhere to put down a brush. Those are three different problems with different solutions. Move a chair, try another table or clear the sill, then repeat the step. If the difficulty disappears, you have learned more from a five minute experiment than you would from comparing a page of product photographs.",
+      "hi": "अपना मेकअप बैग पास रखकर रोज़ का तरीका आज़माएँ। परेशानी ऊँचाई, पीछे की खिड़की या ब्रश रखने की जगह हो सकती है। कुर्सी या मेज़ बदलकर देखें कि नया दर्पण लेना भी ज़रूरी है या नहीं।",
+      "pa": "ਆਪਣਾ ਮੇਕਅੱਪ ਬੈਗ ਕੋਲ ਰੱਖ ਕੇ ਰੋਜ਼ ਵਾਲਾ ਤਰੀਕਾ ਅਜ਼ਮਾਓ। ਮੁਸ਼ਕਲ ਉਚਾਈ, ਪਿੱਛੇ ਦੀ ਖਿੜਕੀ ਜਾਂ ਬੁਰਸ਼ ਰੱਖਣ ਦੀ ਥਾਂ ਹੋ ਸਕਦੀ ਹੈ। ਕੁਰਸੀ ਜਾਂ ਮੇਜ਼ ਬਦਲ ਕੇ ਵੇਖੋ ਕਿ ਨਵਾਂ ਸ਼ੀਸ਼ਾ ਲੈਣ ਦੀ ਲੋੜ ਹੈ ਵੀ ਜਾਂ ਨਹੀਂ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Measure the reflection you need",
+      "hi": "ज़रूरत के हिसाब से मापें",
+      "pa": "ਆਪਣੀ ਲੋੜ ਮੁਤਾਬਕ ਮਾਪ ਲਵੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "Sit where you normally sit and hold a sheet of paper about the size of the mirror you are considering. Mark where the base would stand and how far away your face would be. Look at how much space remains for an open palette and your elbows. A tall stand can bring a small mirror to a comfortable height; a wide mirror on a very short stand may still make you bend forward. Check whether the advertised measurement refers to the reflective surface, the outside frame or the entire unit. Those measurements can describe noticeably different objects on a small desk.",
+      "hi": "कागज़ से दर्पण के आकार का अंदाज़ा लगाकर आधार, चेहरे की दूरी और कोहनियों की जगह देखें। माप केवल शीशे का है या फ्रेम सहित, यह पक्का करें।",
+      "pa": "ਕਾਗਜ਼ ਨਾਲ ਸ਼ੀਸ਼ੇ ਦੇ ਆਕਾਰ ਦਾ ਅੰਦਾਜ਼ਾ ਲਾ ਕੇ ਬੇਸ, ਚਿਹਰੇ ਦੀ ਦੂਰੀ ਅਤੇ ਕੂਹਣੀਆਂ ਦੀ ਥਾਂ ਵੇਖੋ। ਮਾਪ ਸਿਰਫ਼ ਸ਼ੀਸ਼ੇ ਦਾ ਹੈ ਜਾਂ ਫਰੇਮ ਸਮੇਤ, ਇਹ ਪੱਕਾ ਕਰੋ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Try magnification at your own distance",
+      "hi": "बड़ा प्रतिबिंब अपनी दूरी से देखें",
+      "pa": "ਵੱਡਾ ਪ੍ਰਤੀਬਿੰਬ ਆਪਣੀ ਦੂਰੀ ਤੋਂ ਵੇਖੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "If a model offers a magnifying side, try it at the distance at which you can comfortably hold a brush. Can you see the detail you want without the handle hitting the glass? Can you switch back to a regular reflection without rearranging the table? A high number on the box is a poor substitute for this test. Someone choosing a small travel mirror for close work may want a different view from someone checking a complete look before leaving home. If you wear glasses for part of your routine, bring them to the shop and try the same movement there.",
+      "hi": "ब्रश पकड़कर आरामदायक दूरी से देखें। क्या उसका हैंडल शीशे से टकराता है? सामान्य तरफ लौटना आसान है? चश्मा पहनते हैं तो दुकान में चश्मे के साथ ही परखें।",
+      "pa": "ਬੁਰਸ਼ ਫੜ ਕੇ ਆਪਣੀ ਆਰਾਮ ਵਾਲੀ ਦੂਰੀ ਤੋਂ ਵੇਖੋ। ਕੀ ਹੈਂਡਲ ਸ਼ੀਸ਼ੇ ਨਾਲ ਟਕਰਾਉਂਦਾ ਹੈ? ਸਧਾਰਨ ਪਾਸੇ ਵਾਪਸ ਆਉਣਾ ਸੌਖਾ ਹੈ? ਜੇ ਐਨਕ ਪਾਉਂਦੇ ਹੋ ਤਾਂ ਦੁਕਾਨ ਵਿੱਚ ਐਨਕ ਨਾਲ ਹੀ ਪਰਖੋ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Look at the light on both sides",
+      "hi": "दोनों तरफ का प्रकाश देखें",
+      "pa": "ਦੋਵੇਂ ਪਾਸਿਆਂ ਦੀ ਰੌਸ਼ਨੀ ਦੇਖੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "Turn the mirror light on in a room that resembles yours. Check for shadows beside the nose and under the chin, then turn your head slightly. A bright strip at the top can look impressive in the shop while leaving the lower half of your face in shade. Try the lowest setting as well as the highest; a glaring light can be uncomfortable in a dark bedroom early in the morning. If you can, compare a familiar lipstick in the mirror and beside a window. The useful question is whether you can make a consistent choice in the light available at home.",
+      "hi": "नाक के पास और ठुड्डी के नीचे परछाईं देखें। सबसे हल्की और तेज़ सेटिंग दोनों परखें। जानी-पहचानी लिपस्टिक का रंग दर्पण के पास और खिड़की के पास देखकर तुलना करें।",
+      "pa": "ਨੱਕ ਦੇ ਪਾਸਿਆਂ ਅਤੇ ਠੋਡੀ ਹੇਠਾਂ ਪਰਛਾਵਾਂ ਵੇਖੋ। ਸਭ ਤੋਂ ਹਲਕੀ ਤੇ ਤੇਜ਼ ਸੈਟਿੰਗ ਦੋਵੇਂ ਪਰਖੋ। ਜਾਣੀ-ਪਛਾਣੀ ਲਿਪਸਟਿਕ ਦਾ ਰੰਗ ਸ਼ੀਸ਼ੇ ਕੋਲ ਤੇ ਖਿੜਕੀ ਕੋਲ ਦੇਖ ਕੇ ਤੁਲਨਾ ਕਰੋ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Pay attention to the base and hinge",
+      "hi": "आधार और कब्ज़ा जाँचें",
+      "pa": "ਬੇਸ ਤੇ ਕਬਜ਼ਾ ਪਰਖੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "Adjust the angle with one hand, then take your hand away. If the mirror slowly tilts back, you will repeat that adjustment every time you use it. Check the base on a surface similar to your dresser. A narrow foot may suit a crowded shelf, but stability matters when you reach past the mirror to pick up something else. For a folding model, open and close it several times and check where your fingers naturally land. Ask how the hinge is covered under the warranty and whether the seller can supply a replacement stand if that is a separate part.",
+      "hi": "एक हाथ से कोण बदलकर हाथ हटाएँ। क्या दर्पण अपनी जगह रहता है? फोल्डिंग मॉडल खोल-बंद करके कब्ज़े और स्टैंड की वारंटी पूछें।",
+      "pa": "ਇੱਕ ਹੱਥ ਨਾਲ ਕੋਣ ਬਦਲ ਕੇ ਹੱਥ ਹਟਾਓ। ਸ਼ੀਸ਼ਾ ਹਿੱਲਦਾ ਤਾਂ ਨਹੀਂ? ਫੋਲਡਿੰਗ ਮਾਡਲ ਖੋਲ੍ਹ ਤੇ ਬੰਦ ਕਰਕੇ ਕਬਜ਼ਾ ਅਤੇ ਸਟੈਂਡ ਦੀ ਵਾਰੰਟੀ ਪੁੱਛੋ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Map the cable before buying",
+      "hi": "तार का रास्ता पहले देखें",
+      "pa": "ਤਾਰ ਦਾ ਰਸਤਾ ਪਹਿਲਾਂ ਵੇਖੋ"
+     }
+    },
+    {
+     "p": {
+      "en": "Place a piece of string between the proposed mirror position and your outlet. Route it the way the real cable would run around your furniture and measure that length. A short lead that stretches across a drawer makes a tidy setup irritating very quickly. For a rechargeable model, ask whether it can be used while charging and whether the cable and adapter are included. If you want to take it abroad, check the input information on the supplied adapter against the destination and follow the manufacturer's instructions. Consider whether a simple unpowered folding mirror would travel better for your particular trips.",
+      "hi": "मेज़ से सॉकेट तक धागे से तार की लंबाई मापें। चार्ज करते हुए इस्तेमाल, केबल और अडैप्टर के बारे में पूछें। विदेश ले जाने से पहले अडैप्टर की जानकारी निर्माता के निर्देश से मिलाएँ।",
+      "pa": "ਮੇਜ਼ ਤੋਂ ਸਾਕਟ ਤੱਕ ਧਾਗੇ ਨਾਲ ਤਾਰ ਦੀ ਲੰਬਾਈ ਮਾਪੋ। ਚਾਰਜ ਹੁੰਦੇ ਸਮੇਂ ਵਰਤੋਂ, ਕੇਬਲ ਅਤੇ ਅਡੈਪਟਰ ਬਾਰੇ ਪੁੱਛੋ। ਵਿਦੇਸ਼ ਲਿਜਾਣ ਤੋਂ ਪਹਿਲਾਂ ਅਡੈਪਟਰ ਦੀ ਜਾਣਕਾਰੀ ਨਿਰਮਾਤਾ ਦੀ ਹਦਾਇਤ ਨਾਲ ਮਿਲਾਓ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Compare the delivered price",
+      "hi": "डिलीवरी सहित कीमत मिलाएँ",
+      "pa": "ਪਹੁੰਚਣ ਤੱਕ ਦੀ ਕੀਮਤ ਮਿਲਾਓ"
+     }
+    },
+    {
+     "p": {
+      "en": "Write the price you would actually pay beside each option, including delivery, the adapter if required and any return shipping charge. For an online purchase, check whether the seller accepts a return after the box has been opened for inspection. Look at replacement terms for a damaged delivery and keep the packaging until you have tested the mirror. Photograph the model number and retain the receipt. A bargain with expensive return postage may make less sense than a slightly higher price at a shop where you can test the height and the light before taking it home.",
+      "hi": "डिलीवरी, अडैप्टर और वापसी का खर्च जोड़ें। डिब्बा खोलने के बाद वापसी और टूटी डिलीवरी की शर्त पूछें। जाँच पूरी होने तक डिब्बा और रसीद रखें।",
+      "pa": "ਡਿਲੀਵਰੀ, ਅਡੈਪਟਰ ਅਤੇ ਵਾਪਸੀ ਦੇ ਪੈਸੇ ਜੋੜੋ। ਡੱਬਾ ਖੋਲ੍ਹਣ ਮਗਰੋਂ ਵਾਪਸੀ ਅਤੇ ਟੁੱਟੀ ਡਿਲੀਵਰੀ ਦੀ ਸ਼ਰਤ ਪੁੱਛੋ। ਪਰਖ ਮੁਕਣ ਤੱਕ ਡੱਬਾ ਅਤੇ ਰਸੀਦ ਸੰਭਾਲੋ।"
+     }
+    },
+    {
+     "h2": {
+      "en": "Give the mirror two ordinary outings",
+      "hi": "दो आम मौकों पर आज़माएँ",
+      "pa": "ਦੋ ਆਮ ਮੌਕਿਆਂ ਉੱਤੇ ਅਜ਼ਮਾਓ"
+     }
+    },
+    {
+     "p": {
+      "en": "On the first morning, use the mirror for the routine you were doing when you first noticed the problem. On another evening, use it after daylight has faded. Write down what improved and what still gets in your way. Did your brush clear the glass? Could you find a comfortable brightness without cycling through every setting? Could you put the mirror away easily afterwards? These answers give you a concrete basis for keeping or returning it. They also tell you what to look for next time, even if your final choice is to keep the mirror you started with. Keep your original measurements on your phone so you can compare a replacement model without having to measure the dresser again.",
+      "hi": "एक बार सुबह और दूसरी बार शाम को इस्तेमाल करें। ब्रश की दूरी, रोशनी बदलने और दर्पण वापस रखने का अनुभव लिखें। इसके आधार पर रखने या लौटाने का फैसला करें।",
+      "pa": "ਇੱਕ ਵਾਰ ਸਵੇਰੇ ਤੇ ਦੂਜੀ ਵਾਰ ਸ਼ਾਮ ਨੂੰ ਵਰਤੋ। ਬੁਰਸ਼ ਦੀ ਦੂਰੀ, ਰੌਸ਼ਨੀ ਬਦਲਣ ਅਤੇ ਸ਼ੀਸ਼ਾ ਵਾਪਸ ਰੱਖਣ ਦਾ ਅਨੁਭਵ ਲਿਖੋ। ਇਸੇ ਨਾਲ ਰੱਖਣ ਜਾਂ ਵਾਪਸ ਕਰਨ ਦਾ ਫ਼ੈਸਲਾ ਕਰੋ।"
+     }
+    }
+   ],
+   "date": "2026-11-22",
+   "slug": "how-to-choose-a-makeup-mirror",
+   "image": "people",
+   "title": {
+    "en": "How to choose a makeup mirror for the room you actually use",
+    "hi": "अपने कमरे के लिए मेकअप दर्पण कैसे चुनें",
+    "pa": "ਆਪਣੇ ਕਮਰੇ ਲਈ ਮੇਕਅੱਪ ਸ਼ੀਸ਼ਾ ਕਿਵੇਂ ਚੁਣੀਏ"
+   },
+   "author": {
+    "en": "PrimezNews Health Desk",
+    "hi": "PrimezNews Health Desk",
+    "pa": "PrimezNews Health Desk"
+   },
+   "points": [
+    {
+     "en": "Mark the dimensions on paper and hold it at eye level while seated.",
+     "hi": "कागज़ पर माप बनाकर बैठते समय आँखों के स्तर पर पकड़ें।",
+     "pa": "ਕਾਗਜ਼ ਉੱਤੇ ਮਾਪ ਲਾ ਕੇ ਬੈਠਿਆਂ ਅੱਖਾਂ ਦੀ ਪੱਧਰ ਉੱਤੇ ਫੜੋ।"
+    },
+    {
+     "en": "Test low and high settings in your usual room and check for shadows.",
+     "hi": "अपने कमरे में हल्की और तेज़ सेटिंग पर परछाईं देखें।",
+     "pa": "ਆਪਣੇ ਕਮਰੇ ਵਿੱਚ ਹਲਕੀ ਤੇ ਤੇਜ਼ ਸੈਟਿੰਗ ਉੱਤੇ ਪਰਛਾਵਾਂ ਦੇਖੋ।"
+    },
+    {
+     "en": "Check the cost of return shipping and whether you may inspect an opened unit.",
+     "hi": "वापसी का डाक खर्च और डिब्बा खोलकर जाँचने की शर्त पूछें।",
+     "pa": "ਵਾਪਸੀ ਦੀ ਡਾਕ ਅਤੇ ਡੱਬਾ ਖੋਲ੍ਹ ਕੇ ਪਰਖਣ ਦੀ ਸ਼ਰਤ ਪੁੱਛੋ।"
+    }
+   ],
+   "excerpt": {
+    "en": "Compare distance, light, placement and the return policy before spending extra on a lighted vanity mirror.",
+    "hi": "रोशनी वाला दर्पण खरीदने से पहले दूरी, जगह, प्रकाश और वापसी की शर्त देखें।",
+    "pa": "ਰੌਸ਼ਨੀ ਵਾਲਾ ਸ਼ੀਸ਼ਾ ਖਰੀਦਣ ਤੋਂ ਪਹਿਲਾਂ ਦੂਰੀ, ਥਾਂ, ਰੌਸ਼ਨੀ ਅਤੇ ਵਾਪਸੀ ਦੀ ਸ਼ਰਤ ਵੇਖੋ।"
+   },
+   "keyword": "lighted makeup mirror buying guide",
+   "minutes": 5,
+   "keywords": [
+    "lighted makeup mirror buying guide"
+   ]
+  },
+  {
    "slug": "nail-care-tips-at-home-punjab-guide",
    "image": "people",
    "date": "2026-11-20",
