@@ -527,9 +527,38 @@ def fallback_rewrite(item: dict) -> dict:
     }
 
 
+# Match political/government coverage across the three newsroom languages.
+GOVERNMENT_NEWS = re.compile(
+    r"\b(?:minister|government|govt|politic\w*|cabinet|mla|councillor|candidate|"
+    r"campaign|party|parties|election|congress|aap|bjp|cm|chief secretary|"
+    r"state department|administration|deputy commissioner|municipal corporation|"
+    r"bhagwant mann|parliament|legislatur\w*|opposition|ruling coalition)\b"
+    r"|ਸਰਕਾਰ|ਸਿਆਸਤ|ਮੰਤਰੀ|ਵਿਧਾਇਕ|ਚੋਣ|ਉਮੀਦਵਾਰ|ਪਾਰਟੀ|ਪ੍ਰਸ਼ਾਸਨ|ਕਾਂਗਰਸ|ਭਾਜਪਾ|ਭਗਵੰਤ ਮਾਨ"
+    r"|सरकार|राजनीति|मंत्री|विधायक|चुनाव|उम्मीदवार|प्रशासन|कांग्रेस|भाजपा|भगवंत मान", re.I)
+
+
+def election_hold(item, article, areas, now):
+    text = " ".join(str(item.get(key) or "") for key in ("title", "en", "summary"))
+    text = (text + " " + (article or "")).casefold()
+    if not GOVERNMENT_NEWS.search(text):
+        return False
+    for area in areas:
+        if not area["enabled"] or datetime.fromisoformat(area["starts_at"]) > now:
+            continue
+        end = area["confirmed_end"]
+        if end and datetime.fromisoformat(end) <= now:
+            continue
+        for name in area["aliases"]:
+            if name == "*" or re.search(r"(?<!\w)" + re.escape(name.casefold()) + r"(?!\w)", text):
+                return True
+    return False
+
+
 def build_article(item: dict, state: dict) -> dict:
     """Resolve -> extract -> Gemini, with graceful fallbacks. Returns title/en/summary/body/source_url/mode."""
     url, text = fetch_source_text(item["link"])
+    if election_hold(item, text, state["election_areas"], datetime.now(timezone.utc)):
+        return {"mode": "election-hold"}
     if text:
         print(f"[INFO] Source text: {len(text)} chars from {urllib.parse.urlparse(url).hostname}")
     else:
@@ -696,7 +725,7 @@ def regenerate_drafts(supabase_url: str, service_key: str, state: dict, limit: i
             "link": link, "source_name": publisher, "district": row.get("district") or "Chandigarh",
         }
         art = build_article(item, state)
-        if art["mode"] == "rss-fallback":
+        if art["mode"] in ("rss-fallback", "election-hold"):
             print(f"[WARN] Not regenerated (no Gemini article): {item['title'][:70]}")
             continue
         try:
@@ -730,6 +759,11 @@ def main() -> int:
     supabase_url = load_supabase_url()
     print(f"[INFO] Supabase: {supabase_url} · mode={'published' if auto_publish else 'draft'} · gemini={'on' if gemini_key else 'OFF (set GEMINI_API_KEY)'}")
     state = {"gemini_key": gemini_key, "last_call": 0.0}
+    status, raw = rest_request("GET", supabase_url + "/rest/v1/election_areas?select=aliases,enabled,starts_at,confirmed_end&order=starts_at.desc", service_key)
+    if status != 200:
+        print(f"[ERROR] Cannot read election controls (HTTP {status})")
+        return 1
+    state["election_areas"] = json.loads(raw)
     age_limit = max_age_hours()
     print(f"[INFO] Freshness filter: only items published in the last {age_limit:g} hours (RSS_MAX_AGE_HOURS)")
 
@@ -806,6 +840,9 @@ def main() -> int:
                 break
             processed += 1
             art = build_article(item, state)
+            if art["mode"] == "election-hold":
+                processed -= 1
+                continue
             if art["mode"] == "rss-fallback" and os.environ.get("RSS_ALLOW_THIN", "").lower() not in ("1", "true", "yes"):
                 # Gemini did not produce a full article (quota/outage): do not post a headline-only draft.
                 # The item is not marked as seen, so the next hourly run tries it again while it is still fresh.
