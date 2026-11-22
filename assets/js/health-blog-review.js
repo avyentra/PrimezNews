@@ -1,6 +1,6 @@
 (() => {
   const byId = id => document.getElementById(id);
-  const dialog = byId('healthReviews');
+  const library = byId('healthReviews');
   const list = byId('healthReviewList');
   const message = byId('healthReviewMessage');
   const queue = () => window.PrimezAPI.db().from('health_blog_reviews');
@@ -14,14 +14,15 @@
   const badge = element('em', '');
   badge.className = 'ad-count';
   badge.hidden = true;
-  opener.append(badge);
+  opener?.append(badge);
   let active = false;
   let request = 0;
   function updateCount(count) {
     badge.textContent = String(count);
     badge.hidden = !count;
   }
-  const filter = byId('healthReviewFilter');
+  const filters = [...document.querySelectorAll('[data-filter]')];
+  let selected = location.hash === '#drafts' ? 'draft' : 'all';
   let publicPosts = null;
   let editing = false;
   function action(label, handler) {
@@ -68,7 +69,8 @@
       link.target = '_blank'; link.rel = 'noopener';
       entry.append(link);
     } else if (row.status === 'approved') status += ' · Publication queued';
-    entry.append(element('p',status),element('small',row.received_at ? 'Received: ' + new Date(row.received_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}) + ' IST' : 'Article date: ' + post.date));
+    entry.querySelector('summary').append(element('small',status));
+    entry.append(element('small',row.received_at ? 'Received: ' + new Date(row.received_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}) + ' IST' : 'Article date: ' + post.date));
     const form = document.createElement('form');
     function field(label, value, minimum = 3) {
       if (!edit) { form.append(element('p', value[lang])); return; }
@@ -90,7 +92,7 @@
     for (const faq of post.faq || []) {field('Question',faq.q,8);field('Answer',faq.a,8);}
     entry.append(form);
     if (edit) {
-      const button = action('Save changes',() => {if (!form.reportValidity()) return;
+      const button = action(row.status === 'approved' ? 'Save and publish changes' : 'Save draft changes',() => {if (!form.reportValidity()) return;
         if (row.status === 'draft' || (row.status === 'approved' && !live && !row.first_public_date)) {
           const words = post.body.flatMap(block => Object.entries(block).filter(([key]) => key !== 'h2').flatMap(([,v]) => Array.isArray(v) ? v : [v])).reduce((n,v) => n + v.en.trim().split(/\s+/).length,0);
           if (words < 800) {message.textContent = 'The English article body needs at least 800 words before publication.'; return;}
@@ -100,7 +102,7 @@
     } else if (row.status !== 'deleted') {
       entry.append(action('Edit ' + lang.toUpperCase(),() => {editing = true;render();list.replaceChildren(show(row,true));}));
       for (const [status,label] of [['approved','Approve for publication'],['rejected','Reject'],['deleted','Delete blog']]) {
-        if (row.status !== 'draft' && status !== 'deleted') continue;
+        if (row.status !== 'draft' && status !== 'deleted' && !(row.status === 'rejected' && status === 'approved')) continue;
         const button = action(label,() => {
           if (status === 'deleted' && !confirm('Delete this blog and remove its public article on the next export?')) return;
           save(row,{status},button);
@@ -111,18 +113,25 @@
     return entry;
   }
   function render() {
-    filter.disabled = byId('healthReviewLanguage').disabled = editing;
-    if (editing) { filter.disabled = byId('healthReviewLanguage').disabled = true; return; }
-    list.replaceChildren(...rows.filter(r => r.status === filter.value).map(r => show(r)));
+    byId('healthReviewLanguage').disabled = editing;
+    for (const tab of filters) {tab.disabled = editing; tab.setAttribute('aria-pressed', String(tab.dataset.filter === selected));}
+    if (editing) return;
+    const visible = rows.filter(r => selected === 'all' ? r.status !== 'deleted' : r.status === selected);
+    visible.sort((a,b) => b.post.date.localeCompare(a.post.date) || b.slot.localeCompare(a.slot));
+    list.replaceChildren(...visible.map(r => show(r)));
     if (!list.children.length) list.append(element('p','No blogs in this view.'));
   }
-  filter.onchange = byId('healthReviewLanguage').onchange = render;
-  dialog.addEventListener('close', () => { editing = false; ++request; });
+  for (const tab of filters) tab.onclick = () => {
+    selected = tab.dataset.filter;
+    history.replaceState(null,'',selected === 'draft' ? '#drafts' : '#all');
+    render();
+  };
+  if (library) byId('healthReviewLanguage').onchange = render;
   async function refresh(force = false) {
     if (!active || document.hidden) return;
     const id = ++request;
     try {
-      if (!dialog.open) {
+      if (!library) {
         const {count,error} = await queue().select('slot',{head:true,count:'exact'}).eq('status','draft');
         if (error) throw error;
         if (id === request) updateCount(count);
@@ -152,22 +161,34 @@
     } catch (error) {
       if (id !== request) return;
       badge.hidden = true;
+      if (!message) return;
       message.dataset.failed = 'true';
       message.textContent = error.message;
     }
   }
-  function openQueue() {
-    active = true;
-    if (!dialog.open) dialog.showModal();
-    message.textContent = 'Loading drafts…';
-    refresh(true);
+  if (library) {
+    async function loadLibrary(){
+      try {
+        const db = window.PrimezAPI.db();
+        const {data,error} = await db.auth.getUser();
+        if (error || !data.user) { message.textContent = 'Sign in to your newsroom account to view blogs.'; return; }
+        const membership = await db.from('newsroom_editors').select('user_id').eq('user_id',data.user.id).maybeSingle();
+        if (membership.error) throw membership.error;
+        if (!membership.data) {
+          const admin = await db.rpc('is_super_admin');
+          if (admin.error || !admin.data) throw new Error('Newsroom administrator access required.');
+        }
+        active = true;
+        await refresh(true);
+      } catch(error) {message.textContent = error.message;}
+    }
+    loadLibrary();
+  } else {
+    document.addEventListener('primez-admin-stories', () => {
+      if (location.hash === '#blog-drafts') { location.replace('admin-blogs.html#drafts'); return; }
+      active = true; refresh();
+    },{once:true});
   }
-  opener.onclick = openQueue;
-  document.addEventListener('primez-admin-stories', () => {
-    active = true;
-    if (location.hash === '#blog-drafts') openQueue();
-    else refresh();
-  }, {once:true});
   document.addEventListener('visibilitychange', () => refresh());
   window.setInterval(() => refresh(), 60000);
 })();
