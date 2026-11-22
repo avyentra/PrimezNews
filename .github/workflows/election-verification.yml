@@ -1,0 +1,25 @@
+name: Verify Gemini election screening
+on:
+  push:
+    branches: [verify-election-filter]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run read-only screening examples
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PYTHONPATH: scripts
+        run: |
+          python - <<'PY'
+          import os
+          from fetch_rss_news import election_screen
+          state = {"gemini_key": os.environ["GEMINI_API_KEY"]}
+          assert state["gemini_key"], "Gemini key unavailable"
+          assert election_screen({"title": "Local chess club announces its junior tournament"}, "A private chess club will host matches for its members.", state), "Unrelated control did not pass"
+          assert not election_screen({"title": "Minister accused of campaign misconduct"}, "The constituency and dates are disputed and unconfirmed.", state), "Ambiguous political story passed"
+          PY
