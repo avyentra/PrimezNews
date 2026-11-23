@@ -72,6 +72,59 @@
     entry.querySelector('summary').append(element('small',status));
     entry.append(element('small',row.received_at ? 'Received: ' + new Date(row.received_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}) + ' IST' : 'Article date: ' + post.date));
     const form = document.createElement('form');
+    const articleFields = document.createElement('div');
+    const publishFields = document.createElement('div');
+    let fields = form;
+    let chosenFile;
+    let previewUrl;
+    if (edit) {
+      const cover = element('fieldset', '');
+      cover.className = 'blog-cover';
+      cover.append(element('legend', 'Cover image'));
+      const image = document.createElement('img');
+      image.alt = 'Blog cover preview';
+      const note = element('p', '');
+      const file = document.createElement('input');
+      file.type = 'file';
+      file.accept = 'image/jpeg,image/png,image/webp';
+      file.setAttribute('aria-label', 'Upload cover image');
+      function updateCover() {
+        const value = post.image || '';
+        const url = previewUrl || (value.startsWith('https://') ? value : value ? 'assets/images/' + value + '.webp' : '');
+        image.hidden = !url;
+        if (url) image.src = url;
+        else image.removeAttribute('src');
+        note.textContent = url ? 'JPG, PNG or WebP. The cover is used for social sharing.' : 'No custom cover. The public blog uses the default Health & Beauty image.';
+      }
+      function clearPreview() {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        previewUrl = undefined;
+      }
+      file.onchange = () => {
+        const next = file.files[0];
+        if (!next) return;
+        if (!['image/jpeg','image/png','image/webp'].includes(next.type) || next.size > 15 * 1024 * 1024) {
+          message.textContent = 'Choose a JPG, PNG or WebP image up to 15 MB.';
+          file.value = '';
+          return;
+        }
+        clearPreview();
+        chosenFile = next;
+        previewUrl = URL.createObjectURL(next);
+        updateCover();
+      };
+      const remove = action('Remove image', () => {
+        clearPreview();
+        chosenFile = undefined;
+        post.image = '';
+        file.value = '';
+        updateCover();
+      });
+      cover.append(image, file, remove, note);
+      updateCover();
+      form.append(cover);
+      entry.addEventListener('blog-cover-close', clearPreview, {once:true});
+    }
     function field(label, value, minimum = 3) {
       if (!edit) { form.append(element('p', value[lang])); return; }
       const wrap = element('label',label);
@@ -81,9 +134,10 @@
       input.style.cssText = 'width:100%;display:block;margin:4px 0 12px';
       input.value = value[lang];
       input.oninput = () => { value[lang] = input.value.trim(); const script = {en:/[A-Za-z]/,pa:/[ਁ-੿]/,hi:/[ऀ-ॿ]/}[lang]; input.setCustomValidity(value[lang].length >= minimum && script.test(value[lang]) ? '' : 'Enter complete text in the selected language.'); };
-      wrap.append(input); form.append(wrap);
+      wrap.append(input); fields.append(wrap);
     }
     field('Title',post.title,8); field('Summary',post.excerpt,8); field('Author',post.author);
+    if (edit) fields = articleFields;
     post.points.forEach((v,i) => field('Key point ' + (i+1), v,8));
     for (const block of post.body) for (const [kind,value] of Object.entries(block)) {
       if (Array.isArray(value)) value.forEach(v => field('List item', v));
@@ -92,13 +146,45 @@
     for (const faq of post.faq || []) {field('Question',faq.q,8);field('Answer',faq.a,8);}
     entry.append(form);
     if (edit) {
-      const button = action(row.status === 'approved' ? 'Save and publish changes' : 'Save draft changes',() => {if (!form.reportValidity()) return;
+      const button = action(row.status === 'approved' ? 'Save and publish changes' : 'Save draft changes', async () => {
+        if (!form.reportValidity()) return;
         if (row.status === 'draft' || (row.status === 'approved' && !live && !row.first_public_date)) {
           const words = post.body.flatMap(block => Object.entries(block).filter(([key]) => key !== 'h2').flatMap(([,v]) => Array.isArray(v) ? v : [v])).reduce((n,v) => n + v.en.trim().split(/\s+/).length,0);
           if (words < 800) {message.textContent = 'The English article body needs at least 800 words before publication.'; return;}
         }
-        save(row,{post},button);});
-      entry.append(button,action('Cancel',() => {editing = false;render();}));
+        button.disabled = true;
+        try {
+          if (chosenFile) {
+            post.image = await window.PrimezAPI.upload(chosenFile);
+            chosenFile = undefined;
+          }
+          await save(row,{post},button);
+          if (!editing) entry.dispatchEvent(new Event('blog-cover-close'));
+        } catch (error) { message.textContent = error.message; }
+        finally { button.disabled = false; }
+      });
+      const cancel = action('Cancel',() => {entry.dispatchEvent(new Event('blog-cover-close'));editing = false;render();});
+      const detailsFields = document.createElement('div');
+      detailsFields.append(...form.children);
+      publishFields.append(element('p', row.status === 'approved' ? 'Saved changes are queued for publication.' : 'Save your draft for editorial review.'));
+      const steps = element('nav', '');
+      steps.className = 'blog-steps';
+      steps.setAttribute('aria-label','Edit blog');
+      const panes = [detailsFields, articleFields, publishFields];
+      function selectStep(index) {
+        panes.forEach((pane,i) => {pane.hidden = i !== index; steps.children[i].setAttribute('aria-pressed',String(i === index));});
+      }
+      ['Details','Article','Publish'].forEach((label,i) => steps.append(action(label, () => selectStep(i))));
+      form.append(steps, ...panes);
+      form.addEventListener('invalid', event => {
+        const index = panes.findIndex(pane => pane.contains(event.target));
+        if (index >= 0 && panes[index].hidden) selectStep(index);
+      }, true);
+      const footer = element('div', '');
+      footer.className = 'blog-actions';
+      footer.append(cancel,button);
+      entry.append(footer);
+      selectStep(0);
     } else if (row.status !== 'deleted') {
       entry.append(action('Edit ' + lang.toUpperCase(),() => {editing = true;render();list.replaceChildren(show(row,true));}));
       for (const [status,label] of [['approved','Approve for publication'],['rejected','Reject'],['deleted','Delete blog']]) {
@@ -167,6 +253,12 @@
     }
   }
   if (library) {
+    const menu = byId('blogMenu');
+    if (menu) menu.onclick = () => {
+      const expanded = menu.getAttribute('aria-expanded') !== 'true';
+      menu.setAttribute('aria-expanded', String(expanded));
+      document.body.classList.toggle('ad-menu-open',expanded);
+    };
     async function loadLibrary(){
       try {
         const db = window.PrimezAPI.db();

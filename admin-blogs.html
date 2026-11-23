@@ -1,5 +1,43 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Health &amp; Beauty blogs | PrimezNews Newsroom</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#f6f5f1;color:#132339;font:16px/1.55 system-ui,sans-serif}header{background:#101e32;color:white;padding:16px max(5vw,20px);display:flex;align-items:center;justify-content:space-between}header img{width:110px;vertical-align:middle}header a{color:white}main{max-width:940px;margin:40px auto;padding:0 18px}h1{font: bold clamp(1.8rem,5vw,2.7rem)/1.2 Georgia,serif}nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #d6d4cc;padding:0 0 14px}nav label{margin-left:auto}button,select{font:inherit;border:1px solid #b8bfca;background:white;color:#11233d;border-radius:6px;padding:7px 12px;cursor:pointer}button[aria-pressed=true]{background:#12233b;color:white}details{background:white;border:1px solid #d9dce0;border-radius:9px;margin:12px 0;padding:14px 18px}summary{cursor:pointer;font-weight:650}summary small{display:block;margin:4px 0 0 16px;color:#536177;font-weight:450}details .btn{margin:4px}textarea{font:inherit;padding:9px}details p{max-width:75ch}a{color:#175281}
-</style></head><body><header><a href="admin.html"><img src="assets/images/primznews-logo-new.webp" alt="PrimezNews"></a><a href="admin.html">Newsroom dashboard</a></header><main id="healthReviews"><h1>Health &amp; Beauty blogs</h1><nav aria-label="Blog library"><button data-filter="all">All Blogs</button><button data-filter="draft">Drafts</button><label>Language <select id="healthReviewLanguage"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option><option value="hi">हिन्दी</option></select></label></nav><p id="healthReviewMessage" role="status">Loading blogs…</p><div id="healthReviewList"></div></main>
-<script src="assets/js/backend-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js"></script><script src="assets/js/newsroom-api.js"></script><script src="assets/js/health-blog-review.js?v=page2"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Health &amp; Beauty blogs | PrimezNews Newsroom</title>
+  <link rel="stylesheet" href="assets/css/admin-dashboard.css">
+  <link rel="stylesheet" href="assets/css/blog-editor.css">
+</head>
+<body>
+  <div class="ad-app">
+    <aside class="ad-side" id="blogSidebar">
+      <a class="ad-logo" href="admin.html"><img src="assets/images/newsroom-logo.webp" alt="PrimezNews"></a>
+      <p class="ad-tag">Newsroom</p>
+      <nav class="ad-nav" aria-label="Newsroom">
+        <a href="admin.html"><i class="ic ic-grid"></i> Newsroom dashboard</a>
+        <a href="admin-blogs.html" aria-current="page"><i class="ic ic-edit"></i> Health &amp; Beauty blogs</a>
+        <a href="health-blog/"><i class="ic ic-globe"></i> View live blogs ↗</a>
+      </nav>
+    </aside>
+    <main class="ad-main" id="healthReviews">
+      <header class="ad-top">
+        <button class="btn ad-menu" type="button" id="blogMenu" aria-label="Toggle newsroom menu" aria-controls="blogSidebar" aria-expanded="false">Menu</button>
+        <h1>Health &amp; Beauty blogs</h1>
+      </header>
+      <section class="blog-workspace" aria-label="Blog library">
+        <nav class="blog-tabs" aria-label="Blog filter">
+          <button class="btn" data-filter="all">All Blogs</button>
+          <button class="btn" data-filter="draft">Drafts</button>
+          <label>Language <select id="healthReviewLanguage"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option><option value="hi">हिन्दी</option></select></label>
+        </nav>
+        <p id="healthReviewMessage" role="status">Loading blogs…</p>
+        <div id="healthReviewList"></div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/backend-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js"></script>
+  <script src="assets/js/newsroom-api.js"></script>
+  <script src="assets/js/health-blog-review.js?v=cover-editor1"></script>
+</body>
+</html>

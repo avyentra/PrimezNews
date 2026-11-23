@@ -1,0 +1,30 @@
+:root { --line: #dfe4ee; --ink: #132239; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f1f3f8; color: var(--ink); font: 15px/1.5 system-ui, sans-serif; }
+.ad-logo img { width: 100%; height: auto; }
+.ad-nav a[aria-current="page"] { background: #eef1f7; color: var(--ink); font-weight: 700; }
+.ad-top h1 { margin: 0; font-size: clamp(1.2rem, 3vw, 1.6rem); }
+.blog-workspace { overflow: auto; background: white; border: 1px solid var(--line); border-radius: 16px; margin-bottom: 16px; }
+.blog-tabs, .blog-steps, .blog-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 20px; }
+.blog-tabs, .blog-steps { border-bottom: 1px solid var(--line); }
+.blog-tabs label { margin-left: auto; }
+.blog-actions { justify-content: space-between; position: sticky; bottom: 0; padding-inline: 0; background: #f8f9fc; border-top: 1px solid var(--line); }
+#healthReviewList > details { padding: 16px 20px; border-top: 1px solid var(--line); }
+#healthReviewList summary { cursor: pointer; font-weight: 700; }
+#healthReviewList summary small { display: block; color: #536177; font-weight: 400; margin: 4px 0 8px; }
+#healthReviewMessage { margin: 0; padding: 8px 20px; }
+#healthReviewMessage:empty { display: none; }
+#healthReviewList form { margin-top: 16px; }
+#healthReviewList form label { display: block; font-weight: 600; }
+textarea, select { font: inherit; border: 1px solid #cbd5e5; background: #f8f9fc; border-radius: 8px; padding: 9px 12px; color: inherit; }
+.blog-cover { margin: 16px 0; border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.blog-cover img { max-width: min(100%, 400px); max-height: 240px; object-fit: contain; display: block; margin-bottom: 12px; border-radius: 8px; }
+.blog-cover img[hidden] { display: none; }
+.blog-cover input { max-width: 100%; margin: 0 8px 8px 0; }
+.btn { border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--ink); padding: 8px 13px; cursor: pointer; font: inherit; }
+.btn[aria-pressed="true"], .blog-actions .btn:last-child { background: var(--ink); color: white; }
+.blog-actions .btn:last-child { border-radius: 24px; }
+@media (max-width: 700px) {
+  .blog-tabs, .blog-steps, #healthReviewList > details { padding-inline: 12px; }
+  .blog-tabs label { margin-left: 0; }
+}
