@@ -30,7 +30,7 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
     [category('Weather'),'☁','ਮੌਸਮ','मौसम','Weather','ਮੀਂਹ, ਠੰਢ ਤੇ ਮੌਸਮ ਦੀ ਜਾਣਕਾਰੀ','बारिश, ठंड और मौसम की जानकारी','Rain, cold and forecasts'],
     [category('Technology'),'⌘','ਤਕਨੀਕ','तकनीक','Technology','ਫ਼ੋਨ, ਇੰਟਰਨੈੱਟ ਤੇ ਨਵੀਂ ਤਕਨੀਕ','फ़ोन, इंटरनेट और नई तकनीक','Phones, internet and new tech']
   ];
-  root.innerHTML = `<link rel="stylesheet" href="assets/css/public-navigation.css?v=20261118a"><nav><button class="mobile" aria-expanded="false" aria-controls="sections">☰ <span></span></button><div id="sections"></div><a class="live" href="news/">◉ LIVE</a><button class="more" aria-controls="panel" aria-expanded="false"></button><button class="search" aria-label="Search" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><div id="panel" hidden><div class="cols"></div><footer></footer></div></nav><div class="wire"><div><b></b><div class="headlines"></div></div></div><div class="market"><div></div></div>`;
+  root.innerHTML = `<link rel="stylesheet" href="assets/css/public-navigation.css?v=masthead2"><nav><button class="mobile" aria-expanded="false" aria-controls="sections">☰ <span></span></button><div id="sections"></div><a class="live" href="news/">◉ LIVE</a><button class="more" aria-controls="panel" aria-expanded="false"></button><button class="search" aria-label="Search" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><div id="panel" hidden><div class="cols"></div><footer></footer></div></nav><div class="wire"><div><b></b><div class="headlines"></div></div></div><div class="market"><div></div></div>`;
   const q = s => root.querySelector(s);
   const locale = () => ['pa','hi','en'].includes(document.documentElement.lang) ? document.documentElement.lang : 'pa';
   const t = (...words) => words[['pa','hi','en'].indexOf(locale())];
@@ -38,6 +38,64 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
     const a=document.createElement('a'); a.href=url; a.textContent=text; return a;
   }
   const mobile=q('.mobile'), trigger=q('.more'), panel=q('#panel');
+  const masthead = document.querySelector('.pn-header:has(.pn-logo):has(.pn-topline)');
+  const groups = [
+    [sections[6].slice(1), [sections[6], [category('National'),'ਦੇਸ਼','देश','National']]],
+    [['ਦੇਸ਼','देश','India'], [[category('National'),'ਦੇਸ਼','देश','National'], ['sarkari-yojana','ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ','सरकारी योजनाएँ','Government schemes']]],
+    [['ਦੁਨੀਆ','दुनिया','World'], [[category('World'),'ਅੰਤਰਰਾਸ਼ਟਰੀ','अंतरराष्ट्रीय','International'], sections[8]]],
+    [sections[8].slice(1), [sections[8]], ['Canada','UK','Australia','USA','UAE']],
+    [['ਲਾਈਫਸਟਾਈਲ','लाइफ़स्टाइल','Lifestyle'], [sections[7], ['health-blog/','ਸਿਹਤ ਬਲੌਗ','हेल्थ ब्लॉग','Health blog'], sections[4], ['dharm','ਆਸਥਾ ਤੇ ਸੱਭਿਆਚਾਰ','आस्था व संस्कृति','Faith & culture']]]
+  ];
+  const primary = document.createElement('div');
+  primary.className = 'primary';
+  let quick, clock;
+  if (masthead) {
+    const style = document.createElement('link');
+    style.rel = 'stylesheet';
+    style.href = 'assets/css/masthead.css?v=2';
+    document.head.append(style);
+    masthead.classList.add('pn-compact');
+    host.classList.add('compact-nav');
+    const brand = masthead.querySelector('.pn-logo').cloneNode(true);
+    brand.className = 'brand';
+    q('#sections').after(brand, primary);
+    quick = document.createElement('div');
+    quick.className = 'pn-quick';
+    clock = document.createElement('time');
+    const line = masthead.querySelector('.pn-topline');
+    line.prepend(clock, quick);
+    function updateClock() {
+      clock.textContent = new Intl.DateTimeFormat('en-US',{month:'short', day:'numeric', year:'numeric',timeZone:'Asia/Kolkata'}).format(new Date()) + ' | ' + new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'}).format(new Date()) + ' IST';
+    }
+    updateClock();
+    setInterval(updateClock,60000);
+  }
+  function closeGroups(except) {
+    primary.querySelectorAll('details[open]').forEach(item => { if(item !== except) item.open = false; });
+  }
+  function renderPrimary() {
+    if (!quick) return;
+    const link = ([url,...names]) => anchor(url,t(...names));
+    quick.replaceChildren(anchor('./','PrimezNews'), ...[sections[1],sections[2],sections[6],groups[2][1][0],sections[8],sections[9]].map(link));
+    primary.replaceChildren(anchor('./',t('ਹੋਮ','होम','Home')),link(sections[1]),link(sections[2]));
+    if(location.pathname === '/' || location.pathname === '/index.html') primary.firstChild.setAttribute('aria-current','page');
+    for(const [names,items,future] of groups) {
+      const group = document.createElement('details'), title = document.createElement('summary'), box = document.createElement('div');
+      title.textContent = t(...names);
+      box.append(...items.map(link));
+      for(const country of future || []) {
+        const planned = document.createElement('small');
+        planned.textContent = country + ' · ' + t('ਜਲਦੀ','जल्द','Coming soon');
+        box.append(planned);
+      }
+      group.append(title,box);
+      group.ontoggle = () => { if(group.open) {closeGroups(group); setMore(false); mobile.setAttribute('aria-expanded','false');} };
+      primary.append(group);
+    }
+  }
+  primary.addEventListener('focusout',e=>{if(!primary.contains(e.relatedTarget))closeGroups();});
+  root.addEventListener('keydown',e=>{if(e.key==='Escape'){const current=primary.querySelector('details[open]');if(current){current.open=false;current.querySelector('summary').focus();}}});
+  document.addEventListener('click',e=>{if(!e.composedPath().includes(primary))closeGroups();});
   let closeTimer;
   function setMore(open) {
     clearTimeout(closeTimer);
@@ -104,8 +162,16 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
       }
       q('.cols').append(col);
     }
+    if (masthead) {
+      const countries = document.createElement('div');
+      countries.className = 'planned-countries';
+      countries.textContent = t('NRI ਖ਼ਬਰਾਂ · ਜਲਦੀ','NRI खबरें · जल्द','NRI News · Coming soon') + ' — ' + groups[3][2].join(', ');
+      q('.cols').append(countries);
+    }
     q('footer').replaceChildren(anchor('contact',t('ਆਪਣੀ ਖ਼ਬਰ ਭੇਜੋ','अपनी खबर भेजें','Tell your story')+' →'),anchor('advertise',t('ਇਸ਼ਤਿਹਾਰ ਦਿਓ','विज्ञापन दें','Advertise')+' →'));
     q('.wire b').textContent=t('ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ','ताज़ा खबरें','Latest news');
+    renderPrimary();
+    if (masthead) q('.wire b').textContent='BREAKING NEWS';
     renderRates();
     renderHeadlines();
   }
@@ -148,7 +214,7 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
       source.className='quote-source';cell.append(source);
       return cell;
     });
-    host.replaceChildren(city,...items,anchor(more[0][0],t('ਮੰਡੀ ਭਾਅ ਪੜ੍ਹੋ','मंडी भाव देखें','Market rates')+' →'));
+    host.replaceChildren(city,...items,anchor('mandi-bhav',t('ਮੰਡੀ ਭਾਅ ਪੜ੍ਹੋ','मंडी भाव देखें','Market rates')+' →'));
   }
   async function refreshRates(){
     try {
