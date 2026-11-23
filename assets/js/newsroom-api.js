@@ -142,7 +142,13 @@
     async logout() { check(await db().auth.signOut()); },
     async recover(email) { check(await db().auth.resetPasswordForEmail(email, { redirectTo: new URL('reset-password.html', location.href).href })); },
     async reset(password) { check(await db().auth.updateUser({ password })); },
-    async stories() { return check(await db().from('stories').select('*').order('updated_at', { ascending: false })); },
+    async stories() { const records = check(await db().from('stories').select('*').order('updated_at', { ascending: false }));
+      const cutoff = Date.now() - 10 * 60 * 60 * 1000;
+      return records.filter(story => {
+        if (story.status !== 'draft' || /^blog-/i.test(story.id) || /health desk/i.test(story.author || '')) return true;
+        const entered = Date.parse(story.created_at || story.updated_at);
+        return !Number.isFinite(entered) || entered > cutoff;
+      }); },
     async publicStories() { return check(await db().rpc('published_stories')); },
     async save(story) { await requireEditor(); validateStory(story); return check(await db().from('stories').upsert(story).select().single()); },
     async remove(id) { await requireEditor(); check(await db().from('stories').delete().eq('id', id)); },

@@ -263,7 +263,7 @@ def call_json(prompt, max_tokens, state):
     rotations = 0
     for attempt in range(1, 8):
         try:
-            raw = rss._gemini_generate(prompt, os.environ["GEMINI_API_KEY"], max_tokens=max_tokens, timeout=180)
+            raw = rss._gemini_generate(prompt, state.get("api_key") or os.environ["GEMINI_API_KEY"], max_tokens=max_tokens, timeout=180)
             state["last_call"] = time.time()
             return json.loads(raw["candidates"][0]["content"]["parts"][0]["text"], strict=False)
         except json.JSONDecodeError:
@@ -387,7 +387,14 @@ def generate_slot(day, slot):
     titles.extend(item["title"]["en"] for item in load(DATA, {"posts":[]})["posts"])
     keywords = COMMERCIAL_KEYWORDS[tag]
     keyword = keywords[(index // len(topics)) % len(keywords)]
-    post, words = generate_post(topic, titles, {}, 800, keyword, [])
+    try:
+        post, words = generate_post(topic, titles, {}, 800, keyword, [])
+    except QuotaExhausted:
+        backup = os.environ.get("BLOG_BACKUP_API_KEY")
+        if not backup or backup == os.environ.get("GEMINI_API_KEY"):
+            raise
+        log("[INFO] Retrying this blog slot with the backup Gemini quota.")
+        post, words = generate_post(topic, titles, {"api_key": backup}, 800, keyword, [])
     if any(norm(t) == norm(post["title"]["en"]) for t in titles):
         raise ValueError("Gemini repeated an existing title")
     post.update(slug=post["slug"][:62].rstrip("-") + "-" + slot_id, image=topic["images"][0],
@@ -433,7 +440,7 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["export"]:
         export_approved()
     else:
-        today = datetime.now(IST).date()
+        today = datetime.strptime(os.environ["BLOG_DAY"], "%Y-%m-%d").date() if os.environ.get("BLOG_DAY") else datetime.now(IST).date()
         slots = ("evening", "morning") if os.environ.get("BLOG_SLOT") == "evening" else ("morning",)
         failures = []
         for slot in slots:

@@ -1,7 +1,7 @@
 name: Sync RSS news feeds
 on:
   schedule:
-    - cron: '15 * * * *'
+    - cron: '15,45 * * * *'
   workflow_dispatch:
     inputs:
       regenerate:
@@ -37,7 +37,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          RSS_AUTO_PUBLISH: ${{ vars.RSS_AUTO_PUBLISH || 'false' }}
+          RSS_AUTO_PUBLISH: 'false'
           PYTHONUNBUFFERED: '1'
           RSS_REGENERATE: ${{ inputs.regenerate && 'true' || 'false' }}
           RSS_MAX_NEW: '20'

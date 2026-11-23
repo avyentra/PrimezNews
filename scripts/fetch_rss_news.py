@@ -576,7 +576,7 @@ def build_article(item: dict, state: dict) -> dict:
                 state["gemini_key"] = ""  # bad key / blocked: stop calling Gemini this run
             elif "HTTP 429" in str(exc) and ("free_tier" in str(exc) or "PerDay" in str(exc) or "per day" in str(exc).lower()):
                 state["gemini_key"] = ""  # daily quota is used up: every further call would fail and only waste time/requests
-                print("[WARN] Gemini daily quota used up - no more Gemini calls in this run; held-back items are retried in a later run.")
+                print("[WARN] Gemini daily quota used up - no more Gemini calls in this run; remaining eligible items will be saved as private drafts.")
         finally:
             state["last_call"] = time.time()
     if out is None:
@@ -781,7 +781,7 @@ def main() -> int:
         return 1
     now_iso = datetime.now(timezone.utc).isoformat()
     attempted: list[str] = []
-    skipped = failed = feeds_ok = processed = thin_skipped = 0
+    skipped = failed = feeds_ok = processed = pending_news = 0
 
     for feed_cfg in RSS_FEEDS:
         if processed >= max_new:
@@ -843,14 +843,9 @@ def main() -> int:
             if art["mode"] == "election-hold":
                 processed -= 1
                 continue
-            if art["mode"] == "rss-fallback" and os.environ.get("RSS_ALLOW_THIN", "").lower() not in ("1", "true", "yes"):
-                # Gemini did not produce a full article (quota/outage): do not post a headline-only draft.
-                # The item is not marked as seen, so the next hourly run tries it again while it is still fresh.
-                processed -= 1
-                thin_skipped += 1
-                print(f"[WARN] Skipped (no full article written): {item['title'][:80]}")
-                continue
-            body = (art["body"] or "").strip() or f"{item['title']}\n\nSource: {item['source_name']}"
+            pending_article = art["mode"] == "rss-fallback"
+            publish = auto_publish and not pending_article
+            body = "" if pending_article else art["body"].strip()
             story_row = {
                 "id": row_id,
                 "title": art["title"][:500],
@@ -862,8 +857,8 @@ def main() -> int:
                 "district": item["district"],
                 "author": "PrimezNews Desk",
                 "image": item["image"],
-                "status": "published" if auto_publish else "draft",
-                "publish_at": now_iso if auto_publish else None,
+                "status": "published" if publish else "draft",
+                "publish_at": now_iso if publish else None,
                 "updated_at": now_iso,
                 "external_guid": item["external_guid"],
                 "source_name": item["source_name"],
@@ -884,6 +879,7 @@ def main() -> int:
                 skipped += 1
                 print(f"[WARN] Duplicate ignored: {story_row['title'][:80]}")
                 continue
+            pending_news += int(pending_article)
             attempted.append(row_id)
             print(f"[OK] Sent ({story_row['status']}, {art['mode']}{', core columns' if result == 'inserted-core' else ''}): {story_row['title'][:90]}")
 
@@ -894,7 +890,7 @@ def main() -> int:
         print(f"[WARN] {len(missing)} row(s) were accepted by the API but NOT found afterwards: {missing[:5]}")
     print(
         f"RSS sync finished. New stories added: {inserted} · skipped (already present): {skipped} · "
-        f"failed: {failed} · held back (no full article): {thin_skipped} (mode={'published' if auto_publish else 'draft'})"
+        f"failed: {failed} · source-only drafts: {pending_news} (mode={'published' if auto_publish else 'draft'})"
     )
     if feeds_ok == 0:
         print("[WARN] No feed could be read.")
