@@ -35,6 +35,13 @@ def nice_date(value):
         return f'{d.day} {PA_MONTHS[d.month-1]} {d.year}'
     except (ValueError, TypeError):
         return str(value or '')
+def paragraph_html(text):
+    source = re.fullmatch(r"ਸਰੋਤ: ([^\n]+)\n(https?://[^\s]+)", text, re.I)
+    if source:
+        return '<p>ਸਰੋਤ: <a href="' + escape(source[2]) + '">' + escape(source[1]) + '</a></p>'
+    return '<p>' + escape(text) + '</p>'
+
+
 def page(template,s,share_image=None):
     title=s.get('pa') or s['title'];url=BASE+'news/'+quote(s['slug'])+'/'
     photo=image(s)
@@ -58,8 +65,8 @@ def page(template,s,share_image=None):
     if summary.strip('* ')!=title.strip('* '):body+='<p class="reader-deck">'+escape(s.get('summary',''))+'</p>'
     body+='</header>'
     body+='<figure class="reader-figure"><img class="reader-hero-image" fetchpriority="high" decoding="async" src="'+escape(photo)+'" alt="'+escape(title)+'"></figure>'
-    body+='<p class="reader-meta">'+escape(re.sub(r'^RSS Desk.*$','PrimezNews Desk',s.get('author') or s.get('source') or 'PrimezNews',flags=re.I))+' · '+escape(s.get('district'))+' · '+escape(nice_date(s.get('publish_at') or s.get('published')))+'</p><div class="reader-body">'
-    body+=''.join('<p>'+escape(p)+'</p>' for p in s.get('body','').split('\n\n') if p.strip())+'</div>'
+    body+='<p class="reader-meta">'+escape(re.sub(r'^RSS Desk.*$','PrimezNews Desk',s.get('author') or s.get('source') or 'PrimezNews',flags=re.I))+(' · '+escape(s['district']) if s.get('district') and s['district'] != 'District unconfirmed' else '')+' · '+escape(nice_date(s.get('publish_at') or s.get('published')))+'</p><div class="reader-body">'
+    body+=''.join(paragraph_html(p) for p in s.get('body','').split('\n\n') if p.strip())+'</div>'
     if s.get('sourceUrl'):body+='<p>Source: <a rel="noopener noreferrer" href="'+escape(s['sourceUrl'])+'">'+escape(s['source'])+'</a> · Curated news brief. Photograph is illustrative.</p>'
     out=out.replace('<section id="newsContent" aria-label="ਖ਼ਬਰਾਂ"></section>','<section id="newsContent" class="reader-article" aria-label="ਖ਼ਬਰਾਂ">'+body+'</section>').replace('ਖ਼ਬਰਾਂ ਲੋਡ ਹੋ ਰਹੀਆਂ ਹਨ…','')
     return out.replace('<use href="#', '<use href="assets/images/reader-icons.svg#')

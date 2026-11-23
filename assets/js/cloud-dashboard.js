@@ -2,7 +2,7 @@
  'use strict';
  const api = window.PrimezAPI, el = id => document.getElementById(id);
  const cats = ['Agriculture','Education','Politics','Sports','Faith','Crime','Punjab','Business','Health','Jobs','NRI','Entertainment','National','World','Weather','Technology'];
- const districts = ['Amritsar','Barnala','Bathinda','Faridkot','Fatehgarh Sahib','Fazilka','Ferozepur','Gurdaspur','Hoshiarpur','Jalandhar','Kapurthala','Ludhiana','Malerkotla','Mansa','Moga','Sri Muktsar Sahib','Pathankot','Patiala','Rupnagar','SAS Nagar (Mohali)','Sangrur','SBS Nagar','Tarn Taran','Chandigarh'];
+ const districts = ['District unconfirmed','Amritsar','Barnala','Bathinda','Faridkot','Fatehgarh Sahib','Fazilka','Ferozepur','Gurdaspur','Hoshiarpur','Jalandhar','Kapurthala','Ludhiana','Malerkotla','Mansa','Moga','Sri Muktsar Sahib','Pathankot','Patiala','Rupnagar','SAS Nagar (Mohali)','Sangrur','SBS Nagar','Tarn Taran','Chandigarh'];
  const slots = ['home-hero-side','left-skin','right-skin','top-leaderboard','after-headlines','news-sidebar','before-video','after-video'];
  let statusFilter = '', rows = [], ads = [], selected = null, image = 'fields', dirty = false, saving = false;
  const feedback = text => { el('storyFeedback').textContent = text; };
@@ -35,9 +35,28 @@
   if (!el('storyList').children.length) el('storyList').textContent = statusFilter === 'draft' ? 'No drafts right now.' : 'No stories yet. Create your first story.';
   document.dispatchEvent(new CustomEvent('primez-admin-stories', { detail: rows.map(s => s.status) }));
  }
+ const evidenceMarker = '\n\n[RSS location evidence] ';
+ function rssBody(status) {
+  const body = el('body').value.trim();
+  const evidence = el('locationEvidence').textContent;
+  if (!body) return '';
+  if (status === 'draft' && evidence) return body + evidenceMarker + evidence;
+  const source = selected?.source_url;
+  if (status !== 'draft' && /^https?:\/\/[^\s]+$/i.test(source || '') && !body.includes(source)) {
+   return body + '\n\nਸਰੋਤ: ' + (selected.source_name || 'Original report') + '\n' + source;
+  }
+  return body;
+ }
  function select(story) {
   selected = story || null; const s = story || {};
   ['title','en','summary','body','author'].forEach(key => { el(key).value = s[key] || ''; });
+  const rss = String(s.id || '').startsWith('rss-');
+  const parts = rss && s.status === 'draft' ? (s.body || '').split(evidenceMarker) : [s.body || ''];
+  el('rssReview').hidden = !rss;
+  el('body').value = parts[0];
+  el('locationEvidence').textContent = parts[1] || '';
+  el('rssSource').textContent = [s.source_name, s.source_url].filter(Boolean).join(' · ');
+  el('verificationNote').value = '';
   if (!story) el('author').value = (el('userName').textContent || '').trim() || 'News desk';   // byline = who is signed in
   el('district').value = s.district || 'Chandigarh'; image = s.image || ''; el('storyFile').value = ''; updateImage();
   document.querySelectorAll('#categories input').forEach(input => { input.checked = (s.categories || [s.category || 'Punjab']).includes(input.value); });
@@ -76,7 +95,7 @@
   if (saving || autoBusy || !dirty) return;
   if (selected && selected.status !== 'draft') { feedback('Changes kept on this device · press Publish now to update the live story.'); return; }
   const primary = el('primaryCategory').value; const categories = [primary,...chosen().filter(c => c !== primary)].filter(Boolean);
-  const story = { id: selected?.id || crypto.randomUUID(), title:el('title').value.trim(),en:el('en').value.trim(),summary:el('summary').value.trim(),body:el('body').value.trim(),author:el('author').value.trim() || 'News desk', district:el('district').value,categories,category:primary,image:image || 'fields',status:'draft',publish_at:null };
+  const story = { id: selected?.id || crypto.randomUUID(), title:el('title').value.trim(),en:el('en').value.trim(),summary:el('summary').value.trim(),body:rssBody('draft'),author:el('author').value.trim() || 'News desk', district:el('district').value,categories,category:primary,image:image || 'fields',status:'draft',publish_at:null };
   try { api.validateStory(story); } catch { feedback('Auto-saving on this device · add both headlines, a summary and a category to save online.'); return; }
   autoBusy = true; const mark = edits; const wasNew = !selected;
   try {
@@ -103,7 +122,11 @@
   try {
    const primary = el('primaryCategory').value; const categories = [primary,...chosen().filter(c => c !== primary)].filter(Boolean);
    const publish_at = status === 'scheduled' ? api.istToISO(el('publishAt').value) : status === 'published' ? new Date().toISOString() : null;
-   const story = { id: selected?.id || crypto.randomUUID(), title:el('title').value.trim(),en:el('en').value.trim(),summary:el('summary').value.trim(),body:el('body').value.trim(),author:el('author').value.trim() || 'News desk', district:el('district').value,categories,category:primary,image:image || 'fields',status,publish_at };
+   const story = { id: selected?.id || crypto.randomUUID(), title:el('title').value.trim(),en:el('en').value.trim(),summary:el('summary').value.trim(),body:rssBody(status),author:el('author').value.trim() || 'News desk', district:el('district').value,categories,category:primary,image:image || 'fields',status,publish_at };
+   if (status !== 'draft' && selected?.status === 'draft' && selected.id.startsWith('rss-') && story.district !== 'District unconfirmed'
+       && !confirm('Does the source explicitly place the event or its impact in ' + story.district + '? If uncertain, cancel and choose District unconfirmed.')) {
+    feedback('Check the district against the source before publishing.'); return;
+   }
    api.validateStory(story);
    if (el('storyFile').files[0]) story.image = await api.upload(el('storyFile').files[0]);
    const saved = await api.save(story); dirty = false; dropLocal(story.id); dropLocal(null); rows = [saved,...rows.filter(row=>row.id!==saved.id)]; select(saved); window.PrimezPublication.render(saved, true);
@@ -129,6 +152,13 @@
   el('accessMessage').textContent = error.message;
   const a = document.createElement('a'); a.href = 'login'; a.textContent = ' Sign in →'; el('accessMessage').append(a); return;
  }
+ el('recordVerification').onclick = () => {
+  const fact = el('verificationNote').value.trim();
+  if (!fact || !el('body').value.trim()) { feedback('Add the article and the specific fact you checked first.'); return; }
+  if (!confirm('Record this fact as personally checked? Your editor name, time and note will appear in the article.')) return;
+  el('body').value += '\n\nPrimezNews ਪੁਸ਼ਟੀ · ' + el('userName').textContent + ' · ' + new Date().toISOString() + '\n' + fact;
+  el('verificationNote').value = ''; changed();
+ };
  el('logout').onclick = async () => { if (dirty && !confirm('Discard unsaved changes and sign out?')) return; try { await api.logout(); location.replace('login'); } catch(error) { feedback(error.message); } };
  api.db().auth.onAuthStateChange(event => { if (event === 'SIGNED_OUT') location.replace('login'); });
  el('cloudStoryForm').addEventListener('input', () => { dirty = true; });

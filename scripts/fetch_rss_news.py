@@ -50,42 +50,36 @@ RSS_FEEDS = [
         "name": "Google News Punjab",
         "url": "https://news.google.com/rss/search?q=Punjab+news+Chandigarh+Mohali&hl=en-IN&gl=IN&ceid=IN:en",
         "category": "Punjab",
-        "default_district": "Chandigarh",
         "image": "city",
     },
     {
         "name": "Google News Chandigarh & Tricity",
         "url": "https://news.google.com/rss/search?q=Chandigarh+Mohali+Panchkula+news&hl=en-IN&gl=IN&ceid=IN:en",
         "category": "Punjab",
-        "default_district": "SAS Nagar (Mohali)",
         "image": "city",
     },
     {
         "name": "Google News Punjab Agriculture",
         "url": "https://news.google.com/rss/search?q=Punjab+agriculture+farming+MSP+crop&hl=en-IN&gl=IN&ceid=IN:en",
         "category": "Agriculture",
-        "default_district": "Ludhiana",
         "image": "fields",
     },
     {
         "name": "Google News NRI Punjabi",
         "url": "https://news.google.com/rss/search?q=Punjabi+NRI+Canada+UK+Australia+USA&hl=en-IN&gl=IN&ceid=IN:en",
         "category": "NRI",
-        "default_district": "Chandigarh",
         "image": "people",
     },
     {
         "name": "Google News Visa & Immigration",
         "url": "https://news.google.com/rss/search?q=visa+immigration+Indians+Canada+UK+Australia+USA&hl=en-IN&gl=IN&ceid=IN:en",
         "category": "NRI",
-        "default_district": "Chandigarh",
         "image": "people",
     },
     {
         "name": "Google News Passport & OCI",
         "url": "https://news.google.com/rss/search?q=Indian+passport+OCI+MEA+consular+NRI&hl=en-IN&gl=IN&ceid=IN:en",
         "category": "NRI",
-        "default_district": "Chandigarh",
         "image": "people",
     },
 ]
@@ -135,12 +129,22 @@ def clean_html(raw: str) -> str:
     return " ".join(text.split()).strip()
 
 
-def detect_district(text: str, default_district: str) -> str:
-    low = text.lower()
-    for district, keys in DISTRICT_KEYWORDS.items():
-        if any(k in low for k in keys):
-            return district
-    return default_district
+UNCONFIRMED = "District unconfirmed"
+
+
+def location_evidence(district, excerpt, source):
+    """Only show a proposed location alongside a short verbatim supporting passage."""
+    if not isinstance(district, str) or district not in DISTRICT_KEYWORDS or not isinstance(excerpt, str):
+        return ""
+    excerpt = " ".join(excerpt.split())
+    if not 15 <= len(excerpt) <= 220 or excerpt not in " ".join(source.split()):
+        return ""
+    # A leading place followed by a colon or dash is often just the dateline.
+    location_clause = re.sub(r"^[^:—–]{1,45}\s*[:—–]\s*", "", excerpt)
+    if not any(re.search(r"(?<!\w)" + re.escape(alias) + r"(?!\w)", location_clause, re.I)
+               for alias in DISTRICT_KEYWORDS[district]):
+        return ""
+    return f"{district} · {excerpt}"
 
 
 def parse_pub_date(node) -> datetime | None:
@@ -214,7 +218,6 @@ def parse_feed(xml_bytes: bytes, feed_cfg: dict) -> list[dict]:
         publisher = clean_html(node.findtext("source") or "") or feed_cfg["name"]
         title = strip_publisher(title, publisher)
         guid_hash = hashlib.sha256(guid.encode("utf-8")).hexdigest()[:32]
-        district = detect_district(f"{title} {desc}", feed_cfg["default_district"])
         items.append(
             {
                 "external_guid": f"rss_{guid_hash}",
@@ -224,7 +227,7 @@ def parse_feed(xml_bytes: bytes, feed_cfg: dict) -> list[dict]:
                 "link": link,
                 "source_name": publisher,
                 "category": feed_cfg["category"],
-                "district": district,
+                "district": UNCONFIRMED,
                 "image": feed_cfg["image"],
                 "published": parse_pub_date(node),
             }
@@ -479,7 +482,7 @@ def _gemini_generate(prompt: str, api_key: str, max_tokens: int = 8192, timeout:
 def rewrite_with_gemini(item: dict, source_text: str, api_key: str) -> dict:
     """Original, neutral Gurmukhi article + English headline. Raises on any failure (caller falls back)."""
     thin = len(source_text) < 400
-    nri = item.get("category") == "NRI"
+    material = (source_text or item["summary"] or item["title"])[:MAX_SOURCE_CHARS]
     prompt = (
         "You are a senior editor at PrimezNews (Punjab regional digital news). Using ONLY the source material "
         "below, write ORIGINAL, neutral, factual news copy in your own words. Re-order the information so the most "
@@ -493,12 +496,17 @@ def rewrite_with_gemini(item: dict, source_text: str, api_key: str) -> dict:
         '"pa_body": Punjabi (Gurmukhi) news report of 2-3 short paragraphs, about 120-220 words, paragraphs '
         'separated by a blank line (\\n\\n), strictly based on the source'
         + (" (the source is short, so write only what it supports and keep it shorter; never pad with invention)" if thin else "")
-        + (', and add one last short paragraph starting with "NRI ਲਈ ਮਤਲਬ:" that explains what this means for Punjabis abroad, using only what the source supports' if nri else "")
+        + ". Include a Punjab or NRI impact only when explicitly supported. Attribute reported facts to the source. "
+        "Never claim PrimezNews verified, witnessed or independently reported anything"
         + ", with at least 2 full paragraphs (never a single paragraph), and do NOT mention the publisher or add any source line\n"
         '"priority": "high" if the news is urgent or affects many people (new rules, official announcements, '
         'safety, deadlines, major events), otherwise "low".\n'
-        f"Publisher: {item['source_name']}\nDistrict: {item['district']}\nHeadline: {item['title']}\n"
-        f"Source material:\n{(source_text or item['summary'] or item['title'])[:MAX_SOURCE_CHARS]}"
+        'Also return "district" and "evidence" as empty strings unless the source explicitly places the event '
+        'or its actual impact in one named district. Ignore datelines, publisher addresses and incidental mentions. '
+        'Use the canonical district name and copy a short exact supporting clause from the source. '
+        f'District options: {", ".join(DISTRICT_KEYWORDS)}\n'
+        f"Publisher: {item['source_name']}\nHeadline: {item['title']}\n"
+        f"Source material:\n{material}"
     )
     raw = _gemini_generate(prompt, api_key)
     parsed = json.loads(raw["candidates"][0]["content"]["parts"][0]["text"], strict=False)
@@ -513,7 +521,10 @@ def rewrite_with_gemini(item: dict, source_text: str, api_key: str) -> dict:
     if len([p for p in re.split(r"\n\s*\n", pa_body) if p.strip()]) < 2:
         raise RuntimeError("Gemini returned fewer than 2 paragraphs")
     priority = "high" if str(parsed.get("priority", "")).strip().lower() == "high" else "low"
-    return {"title": pa_title, "en": en_title, "summary": pa_summary, "body": pa_body[:95000], "priority": priority}
+    if re.search(r"primez\s*news|ਪ੍ਰਾਈਮ[ਜ਼ਜਜ਼]+\s*ਨਿਊ[ਜ਼ਜਜ਼]+|प्राइम[ज़ज]+\s*न्यू[जज़]+", " ".join((pa_title,en_title,pa_summary,pa_body)), re.I):
+        raise RuntimeError("Generated copy attributes reporting to the newsroom")
+    evidence = location_evidence(parsed.get("district"), parsed.get("evidence"), material)
+    return {"evidence": evidence, "title": pa_title, "en": en_title, "summary": pa_summary, "body": pa_body[:95000], "priority": priority}
 
 
 def fallback_rewrite(item: dict) -> dict:
@@ -584,6 +595,16 @@ def build_article(item: dict, state: dict) -> dict:
     out["source_url"] = url if url else item["link"]
     out["mode"] = mode
     return out
+
+
+def editorial_body(article, publisher, draft):
+    body = article["body"].strip()
+    url = article.get("source_url") or ""
+    if re.fullmatch(r"https?://[^\s]+", url):
+        body += f"\n\nਸਰੋਤ: {publisher}\n{url}"
+    if draft and article.get("evidence"):
+        body += "\n\n[RSS location evidence] " + article["evidence"]
+    return body
 
 
 def _auth_headers(service_key: str) -> dict:
@@ -722,7 +743,7 @@ def regenerate_drafts(supabase_url: str, service_key: str, state: dict, limit: i
             "title": strip_publisher(row.get("en") or row["title"], publisher),
             "en": strip_publisher(row.get("en") or row["title"], publisher),
             "summary": row.get("summary") or row["title"],
-            "link": link, "source_name": publisher, "district": row.get("district") or "Chandigarh",
+            "link": link, "source_name": publisher, "district": UNCONFIRMED,
         }
         art = build_article(item, state)
         if art["mode"] in ("rss-fallback", "election-hold"):
@@ -731,7 +752,7 @@ def regenerate_drafts(supabase_url: str, service_key: str, state: dict, limit: i
         try:
             patch_story(supabase_url, service_key, row["id"], {
                 "title": art["title"][:500], "en": art["en"][:500], "summary": art["summary"][:3000],
-                "body": art["body"][:100000], "source_url": art["source_url"],
+                "body": editorial_body(art, publisher, draft=True), "district": UNCONFIRMED, "source_url": art["source_url"],
                 "updated_at": datetime.now(timezone.utc).isoformat(),
             })
             done += 1
@@ -845,7 +866,7 @@ def main() -> int:
                 continue
             pending_article = art["mode"] == "rss-fallback"
             publish = auto_publish and not pending_article
-            body = "" if pending_article else art["body"].strip()
+            body = "" if pending_article else editorial_body(art, item["source_name"], draft=not publish)
             story_row = {
                 "id": row_id,
                 "title": art["title"][:500],
