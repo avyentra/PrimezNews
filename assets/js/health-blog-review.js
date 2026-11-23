@@ -201,7 +201,9 @@
         panes.forEach((pane,i) => {pane.hidden = i !== index; steps.children[i].setAttribute('aria-pressed',String(i === index));});
       }
       ['Details','Article','Publish'].forEach((label,i) => steps.append(action(label, () => selectStep(i))));
-      form.append(steps, ...panes);
+      entry.classList.add('blog-editing');
+      entry.insertBefore(steps, form);
+      form.append(...panes);
       form.addEventListener('invalid', event => {
         const index = panes.findIndex(pane => pane.contains(event.target));
         if (index >= 0 && panes[index].hidden) selectStep(index);

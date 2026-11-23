@@ -6,7 +6,7 @@ body { margin: 0; background: #f1f3f8; color: var(--ink); font: 15px/1.5 system-
 .ad-top h1 { margin: 0; font-size: clamp(1.2rem, 3vw, 1.6rem); }
 .blog-workspace { overflow: auto; background: white; border: 1px solid var(--line); border-radius: 16px; margin-bottom: 16px; }
 .blog-tabs, .blog-steps, .blog-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 20px; }
-.blog-tabs, .blog-steps { border-bottom: 1px solid var(--line); }
+.blog-tabs { border-bottom: 1px solid var(--line); }
 .blog-tabs label { margin-left: auto; }
 .blog-actions { justify-content: space-between; position: sticky; bottom: 0; padding-inline: 0; background: #f8f9fc; border-top: 1px solid var(--line); }
 .blog-entry { padding: 16px 20px; border-top: 1px solid var(--line); }
@@ -25,7 +25,7 @@ textarea, select { font: inherit; border: 1px solid #cbd5e5; background: #f8f9fc
 .btn[aria-pressed="true"], .blog-actions .btn:last-child { background: var(--ink); color: white; }
 .blog-actions .btn:last-child { border-radius: 24px; }
 @media (max-width: 700px) {
-  .blog-tabs, .blog-steps, .blog-entry { padding-inline: 12px; }
+  .blog-tabs, .blog-entry { padding-inline: 12px; }
   .blog-tabs label { margin-left: 0; }
 }
 
@@ -38,3 +38,10 @@ textarea, select { font: inherit; border: 1px solid #cbd5e5; background: #f8f9fc
 .blog-icon-delete { color: #b42318; }
 .blog-icon-delete:hover { background: #fff0ee; }
 @media (max-width: 700px) { .blog-entry-toolbar { inset-inline-end: 12px; } }
+
+#healthReviewList { container-type: inline-size; }
+.blog-steps { padding: 8px 0 0; }
+@container (min-width: 680px) {
+  .blog-editing[open] > summary { margin-inline-end: 18rem; overflow-wrap: anywhere; min-height: 2.75rem; }
+  .blog-editing > .blog-steps { position: absolute; inset-block-start: 16px; inset-inline-end: 20px; padding: 0; }
+}
