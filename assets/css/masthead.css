@@ -13,3 +13,8 @@
 @media(max-width:1200px){.pn-quick a:nth-child(n+4){display:none}}
 @media(max-width:760px){.pn-compact .pn-topline{gap:6px;min-height:44px}.pn-quick{display:none}.pn-compact .pn-context{margin-left:auto}.pn-compact .pn-langs{margin:0}.pn-compact .pn-topline>a{padding:5px 8px}.pn-compact .pn-district{padding:3px 5px}.pn-compact time{font-size:11px}}
 @media(max-width:460px){.pn-compact time{max-width:76px;white-space:normal}}
+
+html:is(:lang(hi), :lang(pa)) .pn-compact :is(.pn-quick a:not(:first-child), .pn-topline > a) {
+  font-size: 14px;
+  line-height: 1.45;
+}

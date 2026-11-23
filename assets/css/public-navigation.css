@@ -31,3 +31,12 @@
 @media(max-width:600px){:host(.compact-nav) nav{gap:6px;padding-inline:8px}.brand img{width:clamp(96px,26vw,132px)}:host(.compact-nav) .more,:host(.compact-nav) .live{padding-inline:6px}:host(.compact-nav) .wire>div{width:96%}}
 @media(prefers-reduced-motion:reduce){:host(.compact-nav) .headlines .marquee{animation:none}:host(.compact-nav) .headlines{overflow-x:auto}}
 .planned-countries{grid-column:1/-1;padding:8px 16px;border-top:1px solid #e3e6ed;font-size:13px;color:#536177}@media(max-width:760px){:host(.compact-nav) #panel{max-height:70vh;overflow-y:auto}}
+
+:host(.compact-nav:is([data-lang="hi"], [data-lang="pa"])) :is(.primary, #sections, .more, #panel) {
+  font-size: 15px;
+  line-height: 1.45;
+}
+:host(.compact-nav:is([data-lang="hi"], [data-lang="pa"])) .headlines a {
+  font-size: 13.5px;
+  line-height: 1.5;
+}
