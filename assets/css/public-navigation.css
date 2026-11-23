@@ -2,7 +2,9 @@
 .cols section.compact{display:grid;grid-template-columns:1fr 1fr;column-gap:10px;align-content:start}.cols section.compact strong{grid-column:1/-1}.cols section.compact small{display:none}.cols section.compact a{min-height:46px;padding:5px 0}.cols section.compact b{font-size:13px}
 
 :host(.compact-nav){background:#051e44}
-:host(.compact-nav) nav{max-width:1780px;min-height:76px;gap:clamp(8px,1vw,20px);padding-inline:clamp(12px,2vw,36px);color:white}
+:host(.compact-nav) nav{background:#051e44;max-width:1780px;min-height:76px;gap:clamp(8px,1vw,20px);padding-inline:clamp(12px,2vw,36px);color:white}
+/* Extend the navy band beyond the centered navigation on wide screens. */
+:host(.compact-nav) nav::before{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:0 0 0 100vmax #051e44;clip-path:inset(0 -100vmax)}
 :host(.compact-nav) nav .mobile{display:block!important;margin:0;border:0;background:none;color:white;font-size:25px;padding:4px}
 :host(.compact-nav) .mobile span{display:none}
 :host(.compact-nav) #sections{display:none}
