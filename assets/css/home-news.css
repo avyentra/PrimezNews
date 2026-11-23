@@ -87,3 +87,5 @@
 /* Market strip stays fixed at the bottom of the screen on desktop */
 @media(min-width:1101px){.market-moved{position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;max-width:none!important;margin:0!important;border-radius:0!important;z-index:90;box-shadow:0 -6px 20px #0d183233}body{padding-bottom:40px}.float-top{bottom:58px!important}}
 @media(min-width:1440px){.site-skin{height:min(624px,calc(100dvh - var(--skin-start,190px) - 50px))!important}}
+
+.pn-featured{margin-block:24px}.pn-featured>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.pn-featured article{border-top:2px solid #132744;padding:12px 0}.pn-featured a{color:inherit}.pn-featured a:hover{text-decoration:underline}@media(max-width:720px){.pn-featured>div{grid-template-columns:1fr;gap:4px}}

@@ -69,6 +69,35 @@ def write_news_index(template):
     page_html=template.replace('<head>','<head><base href="../">',1)
     (ROOT/'news'/'index.html').write_text(page_html.replace('<use href="#', '<use href="assets/images/reader-icons.svg#'))
 
+def write_home_headlines(rows):
+    """Give readers real article links before the interactive homepage loads."""
+    def headline(row):
+        slug = row["slug"]
+        if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
+            raise ValueError("Invalid homepage headline slug")
+        title = escape(row.get("pa") or row["title"])
+        return f'<a href="news/{slug}/">{title}</a>'
+
+    if not rows:
+        return
+    lead = rows[0]
+    photo = escape(image(lead))
+    hero = (f'<article class="lead-story"><a class="lead-image" href="news/{lead["slug"]}/">'
+            f'<img fetchpriority="high" width="1200" height="675" src="{photo}" alt=""></a>'
+            f'<h2>{headline(lead)}</h2></article><div class="secondary-stories">'
+            + "".join(f'<article class="secondary-card"><h3>{headline(row)}</h3></article>' for row in rows[1:3]) + '</div>')
+    features = "".join(f'<article><h3>{headline(row)}</h3></article>' for row in rows[3:6])
+    if features:
+        features = '<section class="wrap pn-featured"><h2>ਹੋਰ ਪ੍ਰਕਾਸ਼ਿਤ ਖ਼ਬਰਾਂ</h2><div>' + features + '</div></section>'
+    for filename in ("index.html", "home-v2.html"):
+        path = ROOT / filename
+        text = path.read_text()
+        for marker, block in (("published-headlines", hero), ("published-features", features)):
+            text = re.sub(f'<!--{marker}-->.*?<!--/{marker}-->',
+                          lambda _: f'<!--{marker}-->{block}<!--/{marker}-->', text, count=1, flags=re.S)
+        if text != path.read_text():
+            path.write_text(text)
+
 def write_lead_preload(rows):
     """Speed (LCP): tell the browser the home page's top-story photo before any JavaScript runs."""
     now=datetime.now(timezone.utc)
@@ -95,6 +124,8 @@ def build():
     rows=fetch(); seen={s['slug'] for s in rows}
     route_file=ROOT/'assets/js/news-routes.js'
     previous=json.loads(route_file.read_text().splitlines()[0].removeprefix('window.PRIMEZ_NEWS_ROUTES=').rstrip().removesuffix(';')) if route_file.exists() else {}
+    # fetch() reads the public-only RPC, before the offline seed rows are appended.
+    write_home_headlines(rows)
     for s in seeds():
         if s.get('id')=='video':continue
         slug=previous.get(s['id']) or slugify(s.get('en') or s['title'])
