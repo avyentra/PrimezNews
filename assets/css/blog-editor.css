@@ -9,8 +9,8 @@ body { margin: 0; background: #f1f3f8; color: var(--ink); font: 15px/1.5 system-
 .blog-tabs, .blog-steps { border-bottom: 1px solid var(--line); }
 .blog-tabs label { margin-left: auto; }
 .blog-actions { justify-content: space-between; position: sticky; bottom: 0; padding-inline: 0; background: #f8f9fc; border-top: 1px solid var(--line); }
-#healthReviewList > details { padding: 16px 20px; border-top: 1px solid var(--line); }
-#healthReviewList summary { cursor: pointer; font-weight: 700; }
+.blog-entry { padding: 16px 20px; border-top: 1px solid var(--line); }
+.blog-entry summary { cursor: pointer; font-weight: 700; }
 #healthReviewList summary small { display: block; color: #536177; font-weight: 400; margin: 4px 0 8px; }
 #healthReviewMessage { margin: 0; padding: 8px 20px; }
 #healthReviewMessage:empty { display: none; }
@@ -25,6 +25,16 @@ textarea, select { font: inherit; border: 1px solid #cbd5e5; background: #f8f9fc
 .btn[aria-pressed="true"], .blog-actions .btn:last-child { background: var(--ink); color: white; }
 .blog-actions .btn:last-child { border-radius: 24px; }
 @media (max-width: 700px) {
-  .blog-tabs, .blog-steps, #healthReviewList > details { padding-inline: 12px; }
+  .blog-tabs, .blog-steps, .blog-entry { padding-inline: 12px; }
   .blog-tabs label { margin-left: 0; }
 }
+
+.blog-entry { position: relative; }
+.blog-entry:has(.blog-entry-toolbar) summary { padding-inline-end: 104px; }
+.blog-entry-toolbar { position: absolute; inset-block-start: 12px; inset-inline-end: 20px; display: flex; gap: 8px; }
+.blog-entry-toolbar .blog-icon-button { display: grid; place-items: center; width: 42px; height: 42px; padding: 0; }
+.blog-icon-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.blog-icon-button:hover { background: #f1f4f9; }
+.blog-icon-delete { color: #b42318; }
+.blog-icon-delete:hover { background: #fff0ee; }
+@media (max-width: 700px) { .blog-entry-toolbar { inset-inline-end: 12px; } }
