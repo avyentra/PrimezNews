@@ -32,6 +32,27 @@
     button.onclick = handler;
     return button;
   }
+  function iconAction(label, name, handler) {
+    const button = action('', handler);
+    button.classList.add('blog-icon-button', 'blog-icon-' + name);
+    button.setAttribute('aria-label', label);
+    button.title = label;
+    let icon;
+    if (name === 'edit') {
+      icon = element('span', '');
+      icon.className = 'ic ic-edit';
+    } else {
+      const ns = 'http://www.w3.org/2000/svg';
+      icon = document.createElementNS(ns, 'svg');
+      icon.setAttribute('viewBox', '0 0 24 24');
+      const path = document.createElementNS(ns, 'path');
+      path.setAttribute('d', 'M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5');
+      icon.append(path);
+    }
+    icon.setAttribute('aria-hidden', 'true');
+    button.append(icon);
+    return button;
+  }
   function same(a, b) {
     if (a === b) return true;
     if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
@@ -52,7 +73,10 @@
   function show(row, edit = false) {
     const lang = byId('healthReviewLanguage').value;
     const post = structuredClone(row.post);
+    const card = element('div', '');
+    card.className = 'blog-entry';
     const entry = document.createElement('details');
+    card.append(entry);
     entry.open = edit;
     entry.append(element('summary', post.title[lang]));
     const live = publicPosts?.get(post.slug);
@@ -70,7 +94,9 @@
       entry.append(link);
     } else if (row.status === 'approved') status += ' · Publication queued';
     entry.querySelector('summary').append(element('small',status));
-    entry.append(element('small',row.received_at ? 'Received: ' + new Date(row.received_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}) + ' IST' : 'Article date: ' + post.date));
+    if (!live && row.received_at) {
+      entry.append(element('small', 'Received: ' + new Date(row.received_at).toLocaleString('en-IN', {timeZone:'Asia/Kolkata'}) + ' IST'));
+    }
     const form = document.createElement('form');
     const articleFields = document.createElement('div');
     const publishFields = document.createElement('div');
@@ -186,17 +212,28 @@
       entry.append(footer);
       selectStep(0);
     } else if (row.status !== 'deleted') {
-      entry.append(action('Edit ' + lang.toUpperCase(),() => {editing = true;render();list.replaceChildren(show(row,true));}));
-      for (const [status,label] of [['approved','Approve for publication'],['rejected','Reject'],['deleted','Delete blog']]) {
-        if (row.status !== 'draft' && status !== 'deleted' && !(row.status === 'rejected' && status === 'approved')) continue;
-        const button = action(label,() => {
-          if (status === 'deleted' && !confirm('Delete this blog and remove its public article on the next export?')) return;
-          save(row,{status},button);
-        });
+      const toolbar = element('div', '');
+      toolbar.className = 'blog-entry-toolbar';
+      const editButton = iconAction('Edit blog in ' + lang.toUpperCase(), 'edit', () => {
+        editing = true;
+        render();
+        list.replaceChildren(show(row, true));
+        list.querySelector('summary').focus();
+      });
+      const deleteButton = iconAction('Delete blog', 'delete', () => {
+        if (confirm('Delete this blog and remove its public article on the next export?')) {
+          save(row, {status:'deleted'}, deleteButton);
+        }
+      });
+      toolbar.append(editButton, deleteButton);
+      card.append(toolbar);
+      for (const [status,label] of [['approved','Approve for publication'],['rejected','Reject']]) {
+        if (row.status !== 'draft' && !(row.status === 'rejected' && status === 'approved')) continue;
+        const button = action(label, () => save(row, {status}, button));
         entry.append(button);
       }
     }
-    return entry;
+    return card;
   }
   function render() {
     byId('healthReviewLanguage').disabled = editing;
