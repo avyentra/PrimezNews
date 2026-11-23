@@ -523,8 +523,10 @@ def rewrite_with_gemini(item: dict, source_text: str, api_key: str) -> dict:
     priority = "high" if str(parsed.get("priority", "")).strip().lower() == "high" else "low"
     if re.search(r"primez\s*news|ਪ੍ਰਾਈਮ[ਜ਼ਜਜ਼]+\s*ਨਿਊ[ਜ਼ਜਜ਼]+|प्राइम[ज़ज]+\s*न्यू[जज़]+", " ".join((pa_title,en_title,pa_summary,pa_body)), re.I):
         raise RuntimeError("Generated copy attributes reporting to the newsroom")
+    if len(pa_body) > 95000:
+        raise RuntimeError("Article exceeds the newsroom limit; keep it for draft review")
     evidence = location_evidence(parsed.get("district"), parsed.get("evidence"), material)
-    return {"evidence": evidence, "title": pa_title, "en": en_title, "summary": pa_summary, "body": pa_body[:95000], "priority": priority}
+    return {"evidence": evidence, "title": pa_title, "en": en_title, "summary": pa_summary, "body": pa_body, "priority": priority}
 
 
 def fallback_rewrite(item: dict) -> dict:

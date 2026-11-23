@@ -20,10 +20,10 @@
  function date(story){const d=new Date(story.publish_at);if(!Number.isFinite(d.getTime()))return '';const day=window.PrimezLocaleFormatting.date(d,lang());const time=d.toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'numeric',minute:'2-digit',hour12:true}).replace(/am/i,copy('ਸਵੇਰ','सुबह','am')).replace(/pm/i,copy('ਸ਼ਾਮ','शाम','pm'));return day+' · '+time+' IST';}
  function button(name,key,action){const b=node('button',null,'reader-icon-button');b.type='button';b.setAttribute('aria-label',name);b.title=name;if(key)b.append(icon(key));b.addEventListener('click',action);return b;}
  function articleParagraph(text){
-  const source = /^ਸਰੋਤ: ([^\n]+)\n(https?:\/\/[^\s]+)$/i.exec(text);
-  if (!source || !api.safeUrl(source[2])) return node('p',text);
-  const paragraph=node('p','ਸਰੋਤ: ');
-  paragraph.append(link(source[2],source[1]));
+  const source = /^(ਸਰੋਤ|Source): ([^\n]+)\n(https?:\/\/[^\s]+)$/i.exec(text);
+  if (!source || !api.safeUrl(source[3])) return node('p',text);
+  const paragraph=node('p',source[1]+': ');
+  paragraph.append(link(source[3],source[2]));
   return paragraph;
  }
  function article(story){

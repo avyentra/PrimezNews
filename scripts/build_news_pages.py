@@ -36,9 +36,9 @@ def nice_date(value):
     except (ValueError, TypeError):
         return str(value or '')
 def paragraph_html(text):
-    source = re.fullmatch(r"ਸਰੋਤ: ([^\n]+)\n(https?://[^\s]+)", text, re.I)
+    source = re.fullmatch(r"(ਸਰੋਤ|Source): ([^\n]+)\n(https?://[^\s]+)", text, re.I)
     if source:
-        return '<p>ਸਰੋਤ: <a href="' + escape(source[2]) + '">' + escape(source[1]) + '</a></p>'
+        return '<p>' + escape(source[1]) + ': <a href="' + escape(source[3]) + '">' + escape(source[2]) + '</a></p>'
     return '<p>' + escape(text) + '</p>'
 
 

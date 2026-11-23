@@ -58,7 +58,10 @@
   el('rssSource').textContent = [s.source_name, s.source_url].filter(Boolean).join(' · ');
   el('verificationNote').value = '';
   if (!story) el('author').value = (el('userName').textContent || '').trim() || 'News desk';   // byline = who is signed in
-  el('district').value = s.district || 'Chandigarh'; image = s.image || ''; el('storyFile').value = ''; updateImage();
+  if (s.district && !Array.from(el('district').options).some(opt => opt.value === s.district)) {
+   el('district').append(option(s.district));
+  }
+  el('district').value = s.district || 'District unconfirmed'; image = s.image || ''; el('storyFile').value = ''; updateImage();
   document.querySelectorAll('#categories input').forEach(input => { input.checked = (s.categories || [s.category || 'Punjab']).includes(input.value); });
   primaryOptions(); if (s.category) el('primaryCategory').value = s.category;
   document.querySelector('input[name=mode][value=' + (s.status === 'scheduled' ? 'scheduled' : 'published') + ']').checked = true;
