@@ -30,7 +30,7 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
     [category('Weather'),'☁','ਮੌਸਮ','मौसम','Weather','ਮੀਂਹ, ਠੰਢ ਤੇ ਮੌਸਮ ਦੀ ਜਾਣਕਾਰੀ','बारिश, ठंड और मौसम की जानकारी','Rain, cold and forecasts'],
     [category('Technology'),'⌘','ਤਕਨੀਕ','तकनीक','Technology','ਫ਼ੋਨ, ਇੰਟਰਨੈੱਟ ਤੇ ਨਵੀਂ ਤਕਨੀਕ','फ़ोन, इंटरनेट और नई तकनीक','Phones, internet and new tech']
   ];
-  root.innerHTML = `<link rel="stylesheet" href="assets/css/public-navigation.css?v=masthead2"><nav><button class="mobile" aria-expanded="false" aria-controls="sections">☰ <span></span></button><div id="sections"></div><a class="live" href="news/">◉ LIVE</a><button class="more" aria-controls="panel" aria-expanded="false"></button><button class="search" aria-label="Search" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><div id="panel" hidden><div class="cols"></div><footer></footer></div></nav><div class="wire"><div><b></b><div class="headlines"></div></div></div><div class="market"><div></div></div>`;
+  root.innerHTML = `<link rel="stylesheet" href="assets/css/public-navigation.css?v=chevron1"><nav><button class="mobile" aria-expanded="false" aria-controls="sections">☰ <span></span></button><div id="sections"></div><a class="live" href="news/">◉ LIVE</a><button class="more" aria-controls="panel" aria-expanded="false"></button><button class="search" aria-label="Search" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><div id="panel" hidden><div class="cols"></div><footer></footer></div></nav><div class="wire"><div><b></b><div class="headlines"></div></div></div><div class="market"><div></div></div>`;
   const q = s => root.querySelector(s);
   const locale = () => ['pa','hi','en'].includes(document.documentElement.lang) ? document.documentElement.lang : 'pa';
   const t = (...words) => words[['pa','hi','en'].indexOf(locale())];
@@ -148,7 +148,7 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
     const lang=locale();
     const date=document.querySelector('#pn-date');
     if(date)date.textContent=pnDate(new Date(),lang,false);
-    mobile.querySelector('span').textContent=t('ਮੀਨੂ','मेन्यू','Menu');trigger.textContent=t('ਹੋਰ','और','More')+' ⌄';
+    mobile.querySelector('span').textContent=t('ਮੀਨੂ','मेन्यू','Menu');trigger.textContent=t('ਹੋਰ','और','More');
     const links=sections.map(([url,...names])=>anchor(url,t(...names)));links[0].setAttribute('aria-label',t('ਮੁੱਖ ਪੰਨਾ','होम','Home'));
     q('#sections').replaceChildren(...links);
     q('.cols').replaceChildren();
