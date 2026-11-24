@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pa">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9CEE951WEE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-9CEE951WEE');
+</script>
+<script>(function(l){var p=l.pathname;if(!/\.html$/.test(p))return;if(/(^|\/)news\.html$/.test(p)){l.replace(p.replace(/news\.html$/,"news/")+l.search+l.hash);return}var c=p.replace(/index\.html$/,"").replace(/\.html$/,"");try{history.replaceState(history.state,"",c+l.search+l.hash)}catch(e){}})(location)</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="icon" href="assets/images/primznews-logo.svg">
+<link rel="stylesheet" href="assets/css/legal.css?v=20261114b">
+<script defer src="assets/js/analytics.js?v=20261114b"></script>
+<title>Grievance Redressal | PrimezNews</title>
+<meta name="description" content="How to raise a complaint with PrimezNews and contact our Grievance Redressal Officer.">
+<link rel="canonical" href="https://primeznews.com/grievance-redressal">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PrimezNews">
+<meta property="og:title" content="Grievance Redressal | PrimezNews">
+<meta property="og:description" content="How to raise a complaint with PrimezNews and contact our Grievance Redressal Officer.">
+<meta property="og:url" content="https://primeznews.com/grievance-redressal">
+<meta property="og:image" content="https://primeznews.com/assets/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Grievance Redressal | PrimezNews">
+<meta name="twitter:description" content="How to raise a complaint with PrimezNews and contact our Grievance Redressal Officer.">
+<meta name="twitter:image" content="https://primeznews.com/assets/images/og-image.jpg">
+<link rel="stylesheet" href="assets/css/info-language.css">
+<script defer src="assets/js/info-language-data.js"></script>
+<script defer src="assets/js/public-language.js?v=publicframe1"></script>
+<script defer src="assets/js/site-nav.js?v=20261118a"></script><link rel="stylesheet" href="assets/css/public-frame.css"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2741581420475007" crossorigin="anonymous"></script><link rel="preload" as="image" href="/assets/images/punjab-panorama.webp" media="(min-width: 701px)" fetchpriority="high"><link rel="preload" as="image" href="/assets/images/punjab-panorama-900.webp" media="(max-width: 700px)" fetchpriority="high"><script defer src="assets/js/backend-config.js"></script><script defer src="assets/js/article-views.js?v=20261119b"></script></head>
+<body>
+<header class="pn-header">
+<div class="pn-utility"><div class="pn-topline"><div class="pn-context"><strong><span data-frame-lang="pa">ਪੰਜਾਬ ਦੀਆਂ ਖ਼ਬਰਾਂ ਤੇ ਜ਼ਮੀਨੀ ਹਕੀਕਤ</span><span data-frame-lang="hi">पंजाब की ख़बरें और ज़मीनी हक़ीक़त</span><span data-frame-lang="en">Punjab news and ground reality</span></strong>
+<a class="pn-district" href="./#districts">⌖ <span data-frame-lang="pa">ਜ਼ਿਲ੍ਹਾ ਚੁਣੋ</span><span data-frame-lang="hi">ज़िला चुनें</span><span data-frame-lang="en">Select district</span> ⌄</a></div>
+<a href="login"><span data-frame-lang="pa">ਸਾਈਨ ਇਨ</span><span data-frame-lang="hi">साइन इन</span><span data-frame-lang="en">Sign in</span></a><div class="pn-langs"><span class="pn-channel" aria-disabled="true">◌ <span data-frame-lang="pa">WhatsApp ਚੈਨਲ</span><span data-frame-lang="hi">WhatsApp चैनल</span><span data-frame-lang="en">WhatsApp channel</span></span><button type="button" class="language" data-lang="hi">हिन्दी</button><button type="button" class="language" data-lang="en">English</button><button type="button" class="language" data-lang="pa">ਪੰਜਾਬੀ</button><select id="siteLanguage" data-language-switch aria-label="Website language"><option value="pa">ਪੰਜਾਬੀ</option><option value="hi">हिन्दी</option><option value="en">English</option></select></div></div></div>
+<div class="pn-panorama"><div class="pn-banner"><div class="pn-edition"><b><span data-frame-lang="pa">ਪੰਜਾਬ ਅੰਕ</span><span data-frame-lang="hi">पंजाब अंक</span><span data-frame-lang="en">Punjab edition</span></b><time id="pn-date"></time><small>☀ <span data-frame-lang="pa">ਚੰਡੀਗੜ੍ਹ</span><span data-frame-lang="hi">चंडीगढ़</span><span data-frame-lang="en">Chandigarh</span> <span id="pn-temperature"></span></small></div>
+<a class="pn-logo" href="./"><img src="assets/images/primznews-logo-new.webp" width="1000" height="344" alt="PrimezNews — Punjab · Pulse of Pind"></a></div></div></header>
+<primez-site-nav></primez-site-nav>
+<main>
+  <span class="kicker"><span data-info-lang="pa">ਸ਼ਿਕਾਇਤ ਨਿਵਾਰਨ</span><span data-info-lang="hi">शिकायत निवारण</span><span data-info-lang="en">Grievance redressal</span></span>
+  <h1><span data-info-lang="pa">ਸ਼ਿਕਾਇਤ ਨਿਵਾਰਨ ਅਧਿਕਾਰੀ</span><span data-info-lang="hi">शिकायत निवारण अधिकारी</span><span data-info-lang="en">Grievance Redressal Officer</span></h1>
+  <p><span data-info-lang="pa">ਵੈੱਬਸਾਈਟ ਉੱਤੇ ਛਪੀ ਸਮੱਗਰੀ ਬਾਰੇ ਸ਼ਿਕਾਇਤ ਲਈ ਹੇਠਾਂ ਦਿੱਤੇ ਸੰਪਰਕ ਵੇਰਵੇ ਵਰਤੋ।</span><span data-info-lang="hi">वेबसाइट पर प्रकाशित सामग्री की शिकायत के लिए नीचे दिए गए संपर्क विवरण का उपयोग करें।</span><span data-info-lang="en">For complaints about content published on this website, use the contact details below.</span></p>
+
+  <div class="card">
+    <p><span data-info-lang="pa">ਨਾਮ: <span class="placeholder" data-field="[GRIEVANCE OFFICER NAME]">ਵੇਰਵਿਆਂ ਦੀ ਪੁਸ਼ਟੀ ਬਾਕੀ ਹੈ</span></span><span data-info-lang="hi">नाम: <span class="placeholder" data-field="[GRIEVANCE OFFICER NAME]">जानकारी की पुष्टि बाकी है</span></span><span data-info-lang="en"><strong>Name:</strong> <span class="placeholder" data-field="[GRIEVANCE OFFICER NAME]">Details pending confirmation</span></span></p>
+    <p><span data-info-lang="pa">ਈਮੇਲ: <a href="mailto:primeznewshq@gmail.com" translate="no">primeznewshq@gmail.com</a></span><span data-info-lang="hi">ईमेल: <a href="mailto:primeznewshq@gmail.com" translate="no">primeznewshq@gmail.com</a></span><span data-info-lang="en"><strong>Email:</strong> <a href="mailto:primeznewshq@gmail.com" translate="no">primeznewshq@gmail.com</a></span></p>
+    <p><span data-info-lang="pa">ਦਫ਼ਤਰ ਦਾ ਫ਼ੋਨ: <a href="tel:+918847053663" translate="no">+91 8847053663</a></span><span data-info-lang="hi">कार्यालय का फ़ोन: <a href="tel:+918847053663" translate="no">+91 8847053663</a></span><span data-info-lang="en"><strong>Office phone:</strong> <a href="tel:+918847053663" translate="no">+91 8847053663</a></span></p>
+    <p><span data-info-lang="pa">ਪਤਾ: <span translate="no">Plot No. i9, IT City Rd, Sector 83, JLPL Industrial Area, Sahibzada Ajit Singh Nagar, Punjab 140306</span></span><span data-info-lang="hi">पता: <span translate="no">Plot No. i9, IT City Rd, Sector 83, JLPL Industrial Area, Sahibzada Ajit Singh Nagar, Punjab 140306</span></span><span data-info-lang="en"><strong>Address:</strong> <span translate="no">Plot No. i9, IT City Rd, Sector 83, JLPL Industrial Area, Sahibzada Ajit Singh Nagar, Punjab 140306</span></span></p>
+    <p><span data-info-lang="pa">ਦਫ਼ਤਰ ਦਾ ਸਮਾਂ: <span translate="no">9:00 AM – 7:00 PM</span></span><span data-info-lang="hi">कार्यालय का समय: <span translate="no">9:00 AM – 7:00 PM</span></span><span data-info-lang="en"><strong>Working hours:</strong> <span translate="no">9:00 AM – 7:00 PM</span></span></p>
+  </div>
+
+  <h2><span data-info-lang="pa">ਕਿਹੜੇ ਮਾਮਲਿਆਂ ਦੀ ਸ਼ਿਕਾਇਤ ਕਰ ਸਕਦੇ ਹੋ</span><span data-info-lang="hi">किन मामलों की शिकायत कर सकते हैं</span><span data-info-lang="en">What you can complain about</span></h2>
+  <ul>
+    <li><span data-info-lang="pa">ਅਜਿਹੀ ਖ਼ਬਰ ਜੋ ਗ਼ਲਤ, ਮਾਣਹਾਨੀ ਵਾਲੀ ਜਾਂ ਤੁਹਾਡੇ ਨਾਲ ਬੇਇਨਸਾਫ਼ੀ ਕਰਦੀ ਹੋਵੇ</span><span data-info-lang="hi">ऐसी ख़बर जो ग़लत, मानहानिकारक हो या आपके साथ अन्याय करती हो</span><span data-info-lang="en">A news story that is inaccurate, defamatory or unfair to you</span></li>
+    <li><span data-info-lang="pa">ਤੁਹਾਡੀ ਨਿੱਜਤਾ ਜਾਂ ਬੌਧਿਕ ਸੰਪਤੀ ਦੇ ਹੱਕਾਂ ਦੀ ਉਲੰਘਣਾ</span><span data-info-lang="hi">आपकी निजता या बौद्धिक संपदा के अधिकारों का उल्लंघन</span><span data-info-lang="en">Content that infringes your privacy or intellectual property</span></li>
+    <li><span data-info-lang="pa">ਅਸ਼ਲੀਲ, ਨਾਬਾਲਗਾਂ ਲਈ ਹਾਨੀਕਾਰਕ ਜਾਂ ਗ਼ੈਰਕਾਨੂੰਨੀ ਸਮੱਗਰੀ</span><span data-info-lang="hi">अश्लील, नाबालिगों के लिए हानिकारक या ग़ैरकानूनी सामग्री</span><span data-info-lang="en">Content that is obscene, harmful to minors or otherwise unlawful</span></li>
+    <li><span data-info-lang="pa">ਗੁੰਮਰਾਹ ਕਰਨ ਵਾਲਾ ਜਾਂ ਪ੍ਰਾਯੋਜਿਤ ਹੋਣ ਦੀ ਪਛਾਣ ਬਿਨਾਂ ਛਪਿਆ ਇਸ਼ਤਿਹਾਰ</span><span data-info-lang="hi">भ्रामक विज्ञापन या ऐसा विज्ञापन जिस पर प्रायोजित होने की पहचान न हो</span><span data-info-lang="en">An advertisement that is misleading or not labelled as sponsored</span></li>
+  </ul>
+
+  <h2><span data-info-lang="pa">ਸ਼ਿਕਾਇਤ ਕਿਵੇਂ ਦਰਜ ਕਰਨੀ ਹੈ</span><span data-info-lang="hi">शिकायत कैसे दर्ज करें</span><span data-info-lang="en">How to file a complaint</span></h2>
+  <p><span data-info-lang="pa">ਅਧਿਕਾਰੀ ਨੂੰ ਈਮੇਲ ਵਿੱਚ ਆਪਣਾ ਪੂਰਾ ਨਾਮ, ਸੰਪਰਕ ਵੇਰਵੇ, ਸਮੱਗਰੀ ਦਾ ਵੈੱਬ ਪਤਾ, ਸ਼ਿਕਾਇਤ ਦਾ ਸਪਸ਼ਟ ਵੇਰਵਾ ਅਤੇ ਸਬੰਧਤ ਦਸਤਾਵੇਜ਼ ਭੇਜੋ। ਅਧੂਰੇ ਵੇਰਵਿਆਂ ਕਾਰਨ ਕਾਰਵਾਈ ਵਿੱਚ ਦੇਰੀ ਹੋ ਸਕਦੀ ਹੈ।</span><span data-info-lang="hi">अधिकारी को ईमेल में अपना पूरा नाम, संपर्क विवरण, सामग्री का वेब पता, शिकायत का स्पष्ट विवरण और संबंधित दस्तावेज़ भेजें। अधूरी जानकारी से कार्रवाई में देरी हो सकती है।</span><span data-info-lang="en">Send an email to the Grievance Redressal Officer with your full name, contact details, the web address (URL) of the content, a clear description of your concern, and any supporting documents. Complaints received without these details may take longer to process.</span></p>
+
+  <h2><span data-info-lang="pa">ਸਮਾਂ-ਸੀਮਾ</span><span data-info-lang="hi">समय-सीमा</span><span data-info-lang="en">Timelines</span></h2>
+  <table>
+    <tr><th><span data-info-lang="pa">ਪੜਾਅ</span><span data-info-lang="hi">चरण</span><span data-info-lang="en">Step</span></th><th><span data-info-lang="pa">ਮਿਆਦ</span><span data-info-lang="hi">समय</span><span data-info-lang="en">Timeline</span></th></tr>
+    <tr><td><span data-info-lang="pa">ਸ਼ਿਕਾਇਤ ਮਿਲਣ ਦੀ ਪੁਸ਼ਟੀ</span><span data-info-lang="hi">शिकायत मिलने की पुष्टि</span><span data-info-lang="en">Acknowledgement of your complaint</span></td><td><span data-info-lang="pa">24 ਘੰਟਿਆਂ ਦੇ ਅੰਦਰ</span><span data-info-lang="hi">24 घंटे के भीतर</span><span data-info-lang="en">Within 24 hours</span></td></tr>
+    <tr><td><span data-info-lang="pa">ਸ਼ਿਕਾਇਤ ਦਾ ਨਿਪਟਾਰਾ</span><span data-info-lang="hi">शिकायत का निपटारा</span><span data-info-lang="en">Resolution of the complaint</span></td><td><span data-info-lang="pa">ਪ੍ਰਾਪਤੀ ਤੋਂ 15 ਦਿਨਾਂ ਦੇ ਅੰਦਰ</span><span data-info-lang="hi">प्राप्ति से 15 दिनों के भीतर</span><span data-info-lang="en">Within 15 days of receipt</span></td></tr>
+  </table>
+
+  <h2><span data-info-lang="pa">ਸੁਧਾਰ</span><span data-info-lang="hi">सुधार</span><span data-info-lang="en">Corrections</span></h2>
+  <p><span data-info-lang="pa">ਤੱਥਾਂ ਦੀ ਗ਼ਲਤੀ ਲਈ <a href="editorial-policy">ਸੰਪਾਦਕੀ ਨੀਤੀ</a> ਵੀ ਵੇਖੋ। ਅਹਿਮ ਗ਼ਲਤੀਆਂ ਦੇ ਸੁਧਾਰ ਪੰਨੇ ਉੱਤੇ ਸਪਸ਼ਟ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ।</span><span data-info-lang="hi">तथ्य संबंधी ग़लतियों के लिए <a href="editorial-policy">संपादकीय नीति</a> भी देखें। अहम ग़लतियों के सुधार पृष्ठ पर स्पष्ट दिखाए जाते हैं।</span><span data-info-lang="en">For factual errors, please also see our <a href="editorial-policy">editorial policy</a>. Material errors are corrected visibly on the page.</span></p>
+
+  <p class="notice"><span data-info-lang="pa">ਇਹ ਖਰੜਾ ਹੈ। ਸ਼ੁਰੂਆਤ ਤੋਂ ਪਹਿਲਾਂ ਯੋਗ ਵਕੀਲ ਤੋਂ ਸਮੀਖਿਆ ਕਰਵਾਓ ਅਤੇ ਲਾਗੂ ਨਿਯਮਾਂ ਅਨੁਸਾਰ ਲੋੜ ਪੈਣ ’ਤੇ ਸਮਾਂ-ਸੀਮਾ ਸੋਧੋ।</span><span data-info-lang="hi">यह मसौदा है। शुरुआत से पहले योग्य वकील से समीक्षा कराएँ और लागू नियमों के अनुसार ज़रूरत पड़ने पर समय-सीमा बदलें।</span><span data-info-lang="en">Template text: have this section reviewed by a qualified lawyer before launch, and update the timelines if required by the applicable rules.</span></p>
+</main>
+<footer class="pn-footer"><div class="pn-footinner">
+<div class="pn-footlead"><strong><span data-frame-lang="pa">ਇੱਕ ਸਪਸ਼ਟ ਨਜ਼ਰੀਆ।</span><span data-frame-lang="hi">एक स्पष्ट नज़रिया।</span><span data-frame-lang="en">A clear vision.</span><br><span data-frame-lang="pa">ਇੱਕ ਨੇੜਲਾ ਜੁੜਾਅ।</span><span data-frame-lang="hi">एक करीबी जुड़ाव।</span><span data-frame-lang="en">A close connection.</span></strong>
+<div class="pn-footactions"><span class="pn-footchannel" aria-disabled="true">◌ <span data-frame-lang="pa">WhatsApp ਚੈਨਲ · ਜਲਦੀ</span><span data-frame-lang="hi">WhatsApp चैनल · जल्द</span><span data-frame-lang="en">WhatsApp channel · coming soon</span></span><a id="tipFooter" href="./#tipOpen">✎ <span data-frame-lang="pa">ਆਪਣੀ ਖ਼ਬਰ ਭੇਜੋ</span><span data-frame-lang="hi">अपनी ख़बर भेजें</span><span data-frame-lang="en">Tell your story</span></a></div></div>
+<div class="pn-footgrid"><div class="pn-footbrand"><a href="./"><img src="assets/images/primznews-logo-new.webp" width="1000" height="344" alt="PrimezNews — Punjab · Pulse of Pind"></a><p><span data-frame-lang="pa">ਪੰਜਾਬ, ਇਸ ਦੇ ਜ਼ਿਲ੍ਹਿਆਂ ਅਤੇ ਪਿੰਡਾਂ ਦੀਆਂ ਸੁਤੰਤਰ ਖ਼ਬਰਾਂ।</span><span data-frame-lang="hi">पंजाब, उसके ज़िलों और गाँवों की स्वतंत्र ख़बरें।</span><span data-frame-lang="en">Independent reporting from Punjab, its districts and villages.</span></p><a href="about-us"><span data-frame-lang="pa">ਹੋਰ ਪੜ੍ਹੋ →</span><span data-frame-lang="hi">और पढ़ें →</span><span data-frame-lang="en">Read more →</span></a></div>
+<div class="pn-footlinks"><h2><span data-frame-lang="pa">ਖ਼ਬਰਾਂ</span><span data-frame-lang="hi">ख़बरें</span><span data-frame-lang="en">News</span></h2><a href="home-v2?category=Punjab"><span data-frame-lang="pa">ਪੰਜਾਬ</span><span data-frame-lang="hi">पंजाब</span><span data-frame-lang="en">Punjab</span></a><a href="home-v2?category=Agriculture"><span data-frame-lang="pa">ਖੇਤੀਬਾੜੀ</span><span data-frame-lang="hi">कृषि</span><span data-frame-lang="en">Agriculture</span></a><a href="jobs"><span data-frame-lang="pa">ਰੁਜ਼ਗਾਰ</span><span data-frame-lang="hi">रोज़गार</span><span data-frame-lang="en">Jobs</span></a><a href="home-v2?category=Politics"><span data-frame-lang="pa">ਸਿਆਸਤ</span><span data-frame-lang="hi">राजनीति</span><span data-frame-lang="en">Politics</span></a><a href="home-v2?category=Sports"><span data-frame-lang="pa">ਖੇਡਾਂ</span><span data-frame-lang="hi">खेल</span><span data-frame-lang="en">Sports</span></a><a href="nri"><span data-frame-lang="pa">NRI ਖ਼ਬਰਾਂ</span><span data-frame-lang="hi">NRI समाचार</span><span data-frame-lang="en">NRI News</span></a></div><div class="pn-footlinks"><h2><span data-frame-lang="pa">ਹੋਰ ਵੇਖੋ</span><span data-frame-lang="hi">और देखें</span><span data-frame-lang="en">See more</span></h2><a href="rashi"><span data-frame-lang="pa">ਰਾਸ਼ੀਫਲ</span><span data-frame-lang="hi">राशिफल</span><span data-frame-lang="en">Horoscope</span></a><a href="health-beauty"><span data-frame-lang="pa">ਸਿਹਤ ਤੇ ਸੁੰਦਰਤਾ</span><span data-frame-lang="hi">स्वास्थ्य और सौंदर्य</span><span data-frame-lang="en">Health &amp; Beauty</span></a><a href="mandi-bhav"><span data-frame-lang="pa">ਮੰਡੀ ਭਾਅ</span><span data-frame-lang="hi">मंडी भाव</span><span data-frame-lang="en">Market prices</span></a><a href="hukamnama"><span data-frame-lang="pa">ਹੁਕਮਨਾਮਾ</span><span data-frame-lang="hi">हुकमनामा</span><span data-frame-lang="en">Hukamnama</span></a><a href="sarkari-yojana"><span data-frame-lang="pa">ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ</span><span data-frame-lang="hi">सरकारी योजनाएँ</span><span data-frame-lang="en">Government schemes</span></a><a href="videos"><span data-frame-lang="pa">ਵੀਡੀਓ ਖ਼ਬਰਾਂ</span><span data-frame-lang="hi">वीडियो समाचार</span><span data-frame-lang="en">Video news</span></a></div><div class="pn-footlinks"><h2><span data-frame-lang="pa">ਤੁਹਾਡੇ ਨੇੜੇ</span><span data-frame-lang="hi">आपके पास</span><span data-frame-lang="en">Near you</span></h2><a href="./#districts"><span data-frame-lang="pa">ਤੁਹਾਡਾ ਜ਼ਿਲ੍ਹਾ</span><span data-frame-lang="hi">आपका ज़िला</span><span data-frame-lang="en">Your district</span></a><a href="home-v2?category=Education"><span data-frame-lang="pa">ਸਿੱਖਿਆ</span><span data-frame-lang="hi">शिक्षा</span><span data-frame-lang="en">Education</span></a><a href="home-v2?category=Crime"><span data-frame-lang="pa">ਅਪਰਾਧ ਤੇ ਸੁਰੱਖਿਆ</span><span data-frame-lang="hi">अपराध और सुरक्षा</span><span data-frame-lang="en">Crime &amp; safety</span></a><a href="dharm"><span data-frame-lang="pa">ਆਸਥਾ ਤੇ ਸੱਭਿਆਚਾਰ</span><span data-frame-lang="hi">आस्था और संस्कृति</span><span data-frame-lang="en">Faith &amp; culture</span></a><a href="./#tipOpen"><span data-frame-lang="pa">ਆਪਣੀ ਖ਼ਬਰ ਭੇਜੋ</span><span data-frame-lang="hi">अपनी ख़बर भेजें</span><span data-frame-lang="en">Tell your story</span></a></div><div class="pn-footads"><h2><span data-frame-lang="pa">ਇਸ਼ਤਿਹਾਰ ਦਿਓ</span><span data-frame-lang="hi">विज्ञापन दें</span><span data-frame-lang="en">Advertise</span></h2><div><p><span data-frame-lang="pa">ਪੰਜਾਬ ਦੇ ਪਾਠਕਾਂ ਤੱਕ ਆਪਣੀ ਗੱਲ ਪਹੁੰਚਾਓ। ਸਰਕਾਰੀ ਅਤੇ ਕਾਰੋਬਾਰੀ ਇਸ਼ਤਿਹਾਰਾਂ ਲਈ ਸੰਪਰਕ ਕਰੋ।</span><span data-frame-lang="hi">पंजाब के पाठकों तक पहुँचें। सरकारी और व्यावसायिक विज्ञापनों के लिए संपर्क करें।</span><span data-frame-lang="en">Reach readers across Punjab. Get in touch about government and business advertising.</span></p><a href="advertise"><span data-frame-lang="pa">ਸਾਡੇ ਨਾਲ ਇਸ਼ਤਿਹਾਰ ਦਿਓ →</span><span data-frame-lang="hi">विज्ञापन दें →</span><span data-frame-lang="en">Advertise with us →</span></a></div></div></div></div>
+<div class="pn-legal"><div><small>© 2026 PrimezNews · <span data-frame-lang="pa">SHARVIX Studio ਵੱਲੋਂ ਚਲਾਇਆ ਜਾਂਦਾ ਡਿਜੀਟਲ ਖ਼ਬਰ ਪੋਰਟਲ।</span><span data-frame-lang="hi">SHARVIX Studio द्वारा संचालित डिजिटल समाचार पोर्टल।</span><span data-frame-lang="en">A digital news portal operated by SHARVIX Studio.</span></small><div><a href="about-us"><span data-frame-lang="pa">ਸਾਡੇ ਬਾਰੇ</span><span data-frame-lang="hi">हमारे बारे में</span><span data-frame-lang="en">About us</span></a><a href="editorial-policy"><span data-frame-lang="pa">ਸੰਪਾਦਕੀ ਨੀਤੀ</span><span data-frame-lang="hi">संपादकीय नीति</span><span data-frame-lang="en">Editorial policy</span></a><a href="privacy-policy"><span data-frame-lang="pa">ਨਿੱਜਤਾ</span><span data-frame-lang="hi">निजता</span><span data-frame-lang="en">Privacy</span></a><a href="grievance-redressal"><span data-frame-lang="pa">ਸ਼ਿਕਾਇਤ</span><span data-frame-lang="hi">शिकायत</span><span data-frame-lang="en">Complaint</span></a><a href="advertise"><span data-frame-lang="pa">ਇਸ਼ਤਿਹਾਰ ਦਿਓ</span><span data-frame-lang="hi">विज्ञापन दें</span><span data-frame-lang="en">Advertise</span></a><a href="contact"><span data-frame-lang="pa">ਸੰਪਰਕ</span><span data-frame-lang="hi">संपर्क</span><span data-frame-lang="en">Contact</span></a><button type="button" id="searchOpen"><span data-frame-lang="pa">ਖੋਜ</span><span data-frame-lang="hi">खोज</span><span data-frame-lang="en">Search</span></button><span class="pn-visitors" data-site-visitors><span data-frame-lang="pa">ਕੁੱਲ ਵਿਜ਼ਿਟਰ</span><span data-frame-lang="hi">कुल विज़िटर</span><span data-frame-lang="en">Total visitors</span> <b data-visitor-count>…</b></span><button type="button" id="savedOpen" hidden><span id="savedCount">0</span></button></div></div></div></footer>
+</body>
+</html>
