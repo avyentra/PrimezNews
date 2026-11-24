@@ -1,0 +1,6 @@
+# Multilingual SEO update (phase 1)
+Existing Punjabi URLs are preserved. Hindi and English static editions are generated for the health blog (list and posts), editorial policy, privacy policy, grievance redressal and advertising page. The language switch navigates to the corresponding published edition on these pages. Each edition has its own canonical, reciprocal hreflang and sitemap entry. No database changes are required for this phase.
+
+Run `python scripts/build_multilingual.py` from the repository root. Existing news-pages and health-blog-daily workflows invoke it automatically. Policy source files are in scripts/language-templates/*.txt; edit these rather than the generated policy HTML. Blog source snapshots are refreshed when the existing health blog builder regenerates pages. Deploy the complete repository or all changed files together; no deployment was performed here.
+
+News, homepage, About and Contact are not fully translated in the supplied source. Do not create indexable alternate URLs for these until full translated copy is available. News requires a per-language body/summary publishing model and reader routing changes. Existing news behavior remains unchanged. Browser and Search Console verification after deployment are still required.
