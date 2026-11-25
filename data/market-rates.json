@@ -1,21 +1,21 @@
 {
   "gold": {
-    "price": 127910.0,
+    "price": 124730.0,
     "date": "2026-11-25",
     "source": "https://www.goodreturns.in/gold-rates/chandigarh.html",
-    "checked": "2026-11-25T08:42+05:30",
-    "prev": 127900.0
+    "checked": "2026-11-25T09:55+05:30",
+    "prev": 127910.0
   },
   "petrol": {
     "price": 101.54,
     "date": "2026-11-25",
     "source": "https://www.goodreturns.in/petrol-price-in-chandigarh.html",
-    "checked": "2026-11-25T08:42+05:30"
+    "checked": "2026-11-25T09:55+05:30"
   },
   "diesel": {
     "price": 89.47,
     "date": "2026-11-25",
     "source": "https://www.goodreturns.in/diesel-price-in-chandigarh.html",
-    "checked": "2026-11-25T08:42+05:30"
+    "checked": "2026-11-25T09:55+05:30"
   }
 }
