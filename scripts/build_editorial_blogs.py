@@ -2,7 +2,6 @@
 import html
 import json
 import math
-import os
 import re
 import urllib.parse
 import urllib.request
@@ -53,15 +52,16 @@ def category_id(value):
 
 
 def load_rows():
-    url = os.environ['SUPABASE_URL'].rstrip('/')
-    key = os.environ['SUPABASE_SERVICE_KEY']
+    config = (ROOT / 'assets/js/backend-config.js').read_text(encoding='utf-8')
+    url = re.search(r"url: '(https://[a-z0-9-]+\.supabase\.co)'", config)[1]
+    key = re.search(r"publicKey: '([^']+)'", config)[1]
     rows = []
     while True:
         query = urllib.parse.urlencode({'select': FIELDS, 'status': 'eq.published',
                                         'order': 'published_at.desc,id.asc', 'limit': 100,
                                         'offset': len(rows)})
         req = urllib.request.Request(f'{url}/rest/v1/editorial_blogs?{query}',
-                                     headers={'apikey': key, 'Authorization': f'Bearer {key}'})
+                                     headers={'apikey': key})
         with urllib.request.urlopen(req, timeout=30) as response:
             batch = json.load(response)
         rows.extend(batch)
