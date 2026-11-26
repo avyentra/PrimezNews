@@ -1,0 +1,3 @@
+# Citizen stories — configured candidate
+Database migration and edge function deployment were reported successful in the connected project. Do not rerun the original migration on that project. Public site key configured; backend source uses TURNSTILE_SECRET_KEY. No secret included.
+Before production: test real CAPTCHA and submission from authorized hostname, verify editor inbox and status changes, verify non-editor denial, update privacy policy and retention, then deploy with approval. No automatic publishing, direct media upload or notifications. Network DNS unavailable in local test environment.
