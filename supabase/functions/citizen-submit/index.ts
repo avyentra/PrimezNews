@@ -1,0 +1,11 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
+Deno.serve(async req => {
+ const origin=req.headers.get('origin')||''; const allowed=['https://primeznews.com','https://www.primeznews.com'];
+ const headers={'Access-Control-Allow-Origin':allowed.includes(origin)?origin:'https://primeznews.com','Access-Control-Allow-Headers':'apikey, content-type, authorization, x-client-info','Access-Control-Allow-Methods':'POST, OPTIONS','Content-Type':'application/json','Vary':'Origin'};
+ const reply=(status:number,data:unknown)=>new Response(JSON.stringify(data),{status,headers});
+ if(req.method==='OPTIONS')return new Response(null,{status:204,headers});
+ if(req.method!=='POST'||!allowed.includes(origin))return reply(403,{error:'Forbidden'});
+ try {const raw=await req.text();if(raw.length>20000)return reply(413,{error:'Too large'});const d=JSON.parse(raw);const limits:Record<string,number>={name:120,phone:20,district:80,city:120,category:40,headline:250,details:10000,evidence:1000};const row:Record<string,string>={};for(const [k,max] of Object.entries(limits)){if(typeof d[k]!=='string'||d[k].length>max||(!d[k].trim()&&k!=='evidence'))return reply(400,{error:'Invalid fields'});row[k]=d[k].trim();}if(row.details.length<30||!/^\+?[0-9 ()-]{7,20}$/.test(row.phone)||d.accurate!=='on'||d.consent!=='on'||typeof d.token!=='string'||d.token.length>2048)return reply(400,{error:'Invalid submission'});if(row.evidence&&new URL(row.evidence).protocol!=='https:')return reply(400,{error:'HTTPS evidence only'});
+ const secret=Deno.env.get('TURNSTILE_SECRET_KEY');if(!secret)return reply(503,{error:'Unavailable'});const verify=await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{method:'POST',body:new URLSearchParams({secret,response:d.token})});const v=await verify.json();if(!v.success||!['primeznews.com','www.primeznews.com'].includes(v.hostname))return reply(400,{error:'Verification failed'});
+ const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);const {data,error}=await db.from('citizen_stories').insert(row).select('id').single();if(error)return reply(400,{error:'Unable to save'});return reply(201,{id:data.id});}catch{return reply(400,{error:'Invalid submission'});}
+});
