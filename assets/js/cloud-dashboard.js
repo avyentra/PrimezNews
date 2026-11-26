@@ -130,6 +130,13 @@
        && !confirm('Does the source explicitly place the event or its impact in ' + story.district + '? If uncertain, cancel and choose District unconfirmed.')) {
     feedback('Check the district against the source before publishing.'); return;
    }
+   if (status !== 'draft') {
+    await refresh();
+    const review = window.PrimezQuality.inspect({...story, image: el('storyFile').files[0] ? 'pending-upload' : story.image}, rows);
+    window.PrimezQuality.render(review);
+    if (review.errors.length) { window.PrimezWorkspace.show('publishing'); feedback(review.errors.join(' | ')); return; }
+    if (!confirm([...review.warnings, 'Confirm facts, sources, originality and image rights before publication.'].join('\n'))) { feedback('Editorial review cancelled. Your changes remain in the form.'); return; }
+   }
    api.validateStory(story);
    if (el('storyFile').files[0]) story.image = await api.upload(el('storyFile').files[0]);
    const saved = await api.save(story); dirty = false; dropLocal(story.id); dropLocal(null); rows = [saved,...rows.filter(row=>row.id!==saved.id)]; select(saved); window.PrimezPublication.render(saved, true);
