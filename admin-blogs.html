@@ -10,15 +10,7 @@
 </head>
 <body>
   <div class="ad-app">
-    <aside class="ad-side" id="blogSidebar">
-      <a class="ad-logo" href="admin.html"><img src="assets/images/newsroom-logo.webp" alt="PrimezNews"></a>
-      <p class="ad-tag">Newsroom</p>
-      <nav class="ad-nav" aria-label="Newsroom">
-        <a href="admin.html"><i class="ic ic-grid"></i> Newsroom dashboard</a>
-        <a href="admin-blogs.html" aria-current="page"><i class="ic ic-edit"></i> Health &amp; Beauty blogs</a>
-        <a href="health-blog/"><i class="ic ic-globe"></i> View live blogs ↗</a>
-      </nav>
-    </aside>
+    <aside class="ad-side" id="blogSidebar"><a class="ad-logo" href="./"><img src="assets/images/newsroom-logo.webp" width="1000" height="334" fetchpriority="high" decoding="async" alt="Primez News"></a><p class="ad-tag">Newsroom</p><nav class="ad-nav" aria-label="Newsroom"><a href="admin.html?section=home"><i class="ic ic-grid"></i>My dashboard</a><a href="admin.html?section=new"><i class="ic ic-plus"></i>New story</a><a href="admin.html?section=recent"><i class="ic ic-list"></i>Recent news<em class="ad-count" id="recentCount" hidden></em></a><a href="admin.html?section=drafts"><i class="ic ic-edit"></i>Draft news<em class="ad-count" id="draftCount" hidden></em></a><a href="admin-blogs.html" class="active" aria-current="page" id="openHealthReviews"><i class="ic ic-edit"></i>Health &amp; Beauty blogs</a><a href="admin-citizen.html"><i class="ic ic-list"></i>Citizen Stories</a><a href="admin.html?section=ads"><i class="ic ic-ad"></i>Advertisements</a><a id="reviewJournalists" hidden href="join-newsroom#review"><i class="ic ic-users"></i>Journalist applications</a><a href="admin.html?section=settings"><i class="ic ic-gear"></i>Profile settings</a><a href="news/" target="_blank" rel="noopener"><i class="ic ic-globe"></i>View live stories ↗</a></nav><div class="ad-profile"><button type="button" class="ad-gear" id="openSettings" onclick="location.href='admin.html?section=settings'" aria-label="Profile settings" title="Profile settings"><i class="ic ic-gear"></i></button><span class="user-chip" id="userChip" hidden><b id="userInitials"></b><span><strong id="userName"></strong><small id="userEmail"></small></span></span><button class="btn" id="logout"><i class="ic ic-out"></i>Sign out</button></div></aside>
     <main class="ad-main" id="healthReviews">
       <header class="ad-top">
         <button class="btn ad-menu" type="button" id="blogMenu" aria-label="Toggle newsroom menu" aria-controls="blogSidebar" aria-expanded="false">Menu</button>
@@ -39,5 +31,5 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js"></script>
   <script src="assets/js/newsroom-api.js"></script>
   <script src="assets/js/health-blog-review.js?v=editor-tabs2"></script>
-</body>
+<script>document.getElementById('logout').addEventListener('click',async function(){this.disabled=true;try{await PrimezAPI.logout();location.href='admin.html';}catch(e){this.disabled=false;alert('Sign out failed. Please retry.');}});</script></body>
 </html>
