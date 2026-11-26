@@ -7,3 +7,5 @@ Disallow: /reset-password.html
 Disallow: /journalist.html
 
 Sitemap: https://primeznews.com/sitemap.xml
+
+Sitemap: https://primeznews.com/blog-sitemap.xml

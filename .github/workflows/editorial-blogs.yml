@@ -1,0 +1,43 @@
+name: Editorial blogs
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build_editorial_blogs.py'
+      - 'scripts/editorial-blog-requirements.txt'
+      - '.github/workflows/editorial-blogs.yml'
+      - 'health-beauty.html'
+  workflow_dispatch:
+concurrency:
+  group: editorial-blog-export
+permissions:
+  contents: write
+  pages: write
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - run: pip install -r scripts/editorial-blog-requirements.txt
+      - run: python -m unittest discover -s tests -p test_editorial_blogs.py
+      - run: python scripts/build_editorial_blogs.py
+      - name: Commit changed public pages and request a Pages build
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A blogs blog-sitemap.xml
+          if ! git diff --cached --quiet; then
+            git commit -m 'Refresh published editorial blogs'
+            git pull --rebase origin main
+            git push origin HEAD:main
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds" --silent
+          fi

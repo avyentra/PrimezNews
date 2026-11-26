@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Blogs | PrimezNews Newsroom</title>
+  <link rel="stylesheet" href="/assets/css/admin-dashboard.css">
+  <link rel="stylesheet" href="/assets/css/blog-management.css">
+</head>
+<body>
+  <div class="ad-app">
+    <aside class="ad-side" id="blogSidebar">
+      <a class="ad-logo" href="/"><img src="/assets/images/newsroom-logo.webp" width="1000" height="334" alt="PrimezNews"></a>
+      <p class="ad-tag">Newsroom</p>
+      <nav class="ad-nav" aria-label="Newsroom">
+        <a href="/admin.html">My dashboard</a>
+        <a href="/blog-management.html" class="active" aria-current="page">Blogs</a>
+        <a href="/admin-blogs.html">Health &amp; Beauty queue</a>
+        <a href="/admin-citizen.html">Citizen Stories</a>
+        <a href="/blogs/">View live blogs</a>
+      </nav>
+      <button class="btn" id="blogLogout" type="button">Sign out</button>
+    </aside>
+    <main class="ad-main blog-admin">
+      <header class="ad-top"><button id="blogMenu" type="button" class="btn ad-menu" aria-controls="blogSidebar" aria-expanded="false">Menu</button><h1>Blogs</h1></header>
+      <p id="blogMessage" role="status" aria-live="polite">Checking newsroom access…</p>
+      <section id="blogLibrary" hidden>
+        <div class="blog-actions">
+          <button type="button" data-status="" aria-pressed="true">All Blogs</button>
+          <button type="button" data-status="published" aria-pressed="false">Published Blogs</button>
+          <button type="button" data-status="draft" aria-pressed="false">Drafts</button>
+          <button type="button" id="newBlog">New Blog</button>
+          <label class="blog-import">Import Blog Studio draft<input type="file" id="blogImport" accept=".json,application/json"></label>
+        </div>
+        <div class="blog-fields">
+          <label>Search by title<input type="search" id="blogSearch"></label>
+          <label>Category<select id="blogCategory"><option value="">All categories</option></select></label>
+          <label>Language<select id="blogLanguage"><option value="">All languages</option><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option><option value="hi">हिन्दी</option></select></label>
+        </div>
+        <ul id="blogResults" class="blog-results"></ul>
+        <div class="blog-actions"><button type="button" id="blogPrev">Previous</button><span id="blogPage"></span><button type="button" id="blogNext">Next</button></div>
+      </section>
+      <form id="blogForm" hidden novalidate>
+        <h2 id="blogFormTitle">New Blog</h2>
+        <div class="blog-fields">
+          <label>Blog title<input name="title" maxlength="220"></label>
+          <label>Category<select name="category"></select></label>
+          <label>Language<select name="language"><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option><option value="hi">हिन्दी</option></select></label>
+          <label>Author<input name="author" maxlength="150"></label>
+          <label>Target audience or country<input name="audience" maxlength="180"></label>
+          <label class="blog-wide">Short summary<textarea name="summary" maxlength="600"></textarea></label>
+          <label>Cover image (1672 × 941 px recommended)<input id="blogCoverFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
+          <label>Cover image alt text<input name="cover_alt" maxlength="250"></label>
+          <label>Cover caption<input name="cover_caption" maxlength="350"></label>
+          <input name="cover_url" type="hidden">
+          <img id="blogCover" class="blog-cover" alt="" hidden>
+        </div>
+        <fieldset>
+          <legend>Article body</legend>
+          <div class="blog-actions" id="blogToolbar" aria-label="Article formatting"></div>
+          <input type="file" id="blogInlineFile" accept="image/jpeg,image/png,image/webp" hidden>
+          <div id="blogBody" contenteditable="true" role="textbox" aria-label="Article body" aria-multiline="true" tabindex="0"></div>
+          <p id="blogWords"></p>
+        </fieldset>
+        <fieldset>
+          <legend>Search and sharing</legend>
+          <div class="blog-fields">
+            <label>SEO title<input name="seo_title" maxlength="120"><small id="blogTitleCount"></small></label>
+            <label>English URL slug<input name="slug" maxlength="100" placeholder="article-title"></label>
+            <label class="blog-wide">Meta description<textarea name="seo_description" maxlength="320"></textarea><small id="blogDescriptionCount"></small></label>
+            <label>Focus keyword<input name="focus_keyword" maxlength="100"></label>
+            <label>Secondary keywords<input name="secondary_keywords" maxlength="300"></label>
+            <label>Canonical URL<input name="canonical_url" type="url"></label>
+            <label>Social image URL<input name="social_image" type="url"></label>
+            <label class="blog-wide">Sources and references (one HTTPS URL per line)<textarea name="sources"></textarea></label>
+          </div>
+          <label><input type="checkbox" name="claims_reviewed"> I checked the source links and verified any medical, financial or legal claims.</label>
+          <div class="blog-snippet" aria-label="Google search preview"><small id="blogSnippetUrl"></small><strong id="blogSnippetTitle"></strong><p id="blogSnippetDescription"></p></div>
+        </fieldset>
+        <ul id="blogChecks" aria-live="polite"></ul>
+        <div class="blog-actions">
+          <button type="button" id="blogSave">Save Draft</button>
+          <button type="button" id="blogPreview">Preview</button>
+          <button type="button" id="blogPublish">Publish Now</button>
+          <button type="button" id="blogUnpublish" hidden>Unpublish</button>
+          <button type="button" id="blogDelete" hidden>Delete</button>
+          <button type="button" id="blogBack">Back to Blogs</button>
+        </div>
+      </form>
+      <dialog id="blogPreviewDialog"><button id="blogClosePreview" type="button">Close preview</button><article id="blogPreviewContent"></article></dialog>
+    </main>
+  </div>
+  <script defer src="/assets/js/backend-config.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.js"></script>
+  <script defer src="/assets/js/newsroom-api.js"></script>
+  <script defer src="/assets/js/vendor/blog-purify.js"></script>
+  <script defer src="/assets/js/vendor/blog-marked.js"></script>
+  <script defer src="/assets/js/blog-management.js"></script>
+</body>
+</html>

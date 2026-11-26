@@ -4,7 +4,7 @@ import re
 from html import escape
 
 ROOT = Path(__file__).resolve().parents[1]
-PRIVATE = {"admin.html", "superadmin.html", "login.html", "reset-password.html", "journalist.html"}
+PRIVATE = {"admin.html", "superadmin.html", "login.html", "reset-password.html", "journalist.html", "admin-blogs.html", "admin-citizen.html", "blog-management.html"}
 FOOTER_ONLY = {"join-newsroom.html"}  # has its own page layout; only the common footer is baked in
 COUNTER_SCRIPTS = ('<script defer src="assets/js/backend-config.js"></script>'
                    '<script defer src="assets/js/article-views.js?v=20261119b"></script>')
@@ -38,6 +38,7 @@ def footer(has_tools):
         (("See more", "और देखें", "ਹੋਰ ਵੇਖੋ"), [
             ('rashi','Horoscope','राशिफल','ਰਾਸ਼ੀਫਲ'),
             ('health-beauty','Health & Beauty','स्वास्थ्य और सौंदर्य','ਸਿਹਤ ਤੇ ਸੁੰਦਰਤਾ'),
+            ('/blogs/','Blogs','ब्लॉग','ਬਲੌਗ'),
             ('mandi-bhav','Market prices','मंडी भाव','ਮੰਡੀ ਭਾਅ'),
             ('hukamnama','Hukamnama','हुकमनामा','ਹੁਕਮਨਾਮਾ'),
             ('sarkari-yojana','Government schemes','सरकारी योजनाएँ','ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ'),
