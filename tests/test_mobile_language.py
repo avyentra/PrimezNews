@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import unittest
 from urllib.request import Request, urlopen
+from urllib.parse import urlsplit
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from functools import partial
 from threading import Thread
@@ -23,6 +24,17 @@ PAGES = ("about-us", "contact", "editorial-policy", "privacy-policy",
 DRIVER = shutil.which("chromedriver")
 
 
+class PagesRequestHandler(SimpleHTTPRequestHandler):
+    """Mirror GitHub Pages extensionless HTML routes in the local test server."""
+    def translate_path(self, path):
+        resolved = super().translate_path(path)
+        if not Path(resolved).exists() and not urlsplit(path).path.endswith("/"):
+            candidate = Path(resolved + ".html")
+            if candidate.is_file():
+                return str(candidate)
+        return resolved
+
+
 class MobileLanguageTest(unittest.TestCase):
     def test_language_switch_and_layout(self):
         if sync_playwright and not os.environ.get("GITHUB_ACTIONS"):
@@ -33,7 +45,7 @@ class MobileLanguageTest(unittest.TestCase):
             self.skipTest("ChromeDriver unavailable")
 
         server = ThreadingHTTPServer(("127.0.0.1", 0),
-                                     partial(SimpleHTTPRequestHandler, directory=str(ROOT)))
+                                     partial(PagesRequestHandler, directory=str(ROOT)))
         self.addCleanup(server.server_close)
         Thread(target=server.serve_forever, daemon=True).start()
         self.addCleanup(server.shutdown)
@@ -149,7 +161,7 @@ class MobileLanguageTest(unittest.TestCase):
     # ChromeDriver and Chrome versions often do not match.
     def _run_with_playwright(self):
         server = ThreadingHTTPServer(("127.0.0.1", 0),
-                                     partial(SimpleHTTPRequestHandler, directory=str(ROOT)))
+                                     partial(PagesRequestHandler, directory=str(ROOT)))
         self.addCleanup(server.server_close)
         Thread(target=server.serve_forever, daemon=True).start()
         self.addCleanup(server.shutdown)
