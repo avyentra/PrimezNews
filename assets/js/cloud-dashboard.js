@@ -177,6 +177,21 @@
  el('cloudStoryForm').addEventListener('change', changed);
  el('removeImage').addEventListener('click', changed);
  document.querySelectorAll('input[name=mode]').forEach(r => { r.onchange = mode; });
+ const qualityPanel = el('qualityReview');
+ if (qualityPanel && window.PrimezQuality) {
+  const counter = document.createElement('p'); counter.setAttribute('aria-live','polite');
+  const button = document.createElement('button'); button.type='button'; button.className='btn'; button.textContent='Run Quality Check';
+  const results = document.createElement('div'); results.id='qualityReviewResults';
+  qualityPanel.id='qualityReviewContainer'; results.id='qualityReview';
+  qualityPanel.replaceChildren(counter,button,results);
+  const current = () => ({id:selected?.id,title:el('title').value,en:el('en').value,summary:el('summary').value,body:rssBody('published'),author:el('author').value,image:el('storyFile').files[0]?'pending-upload':image});
+  const updateCount = () => {counter.textContent='Article word count: '+window.PrimezQuality.inspect(current(),[]).count; results.textContent='Run a fresh quality check before publishing.';};
+  el('cloudStoryForm').addEventListener('input',updateCount);
+  el('cloudStoryForm').addEventListener('change',updateCount);
+  el('step-publishing').addEventListener('click',updateCount);
+  button.onclick=async()=>{button.disabled=true;try{await refresh();window.PrimezQuality.render(window.PrimezQuality.inspect(current(),rows));}catch(error){results.textContent='Quality check unavailable: '+error.message;}finally{button.disabled=false;}};
+  updateCount();
+ }
  el('publish').onclick = () => save(document.querySelector('input[name=mode]:checked').value);
  el('newStory').onclick = () => { if (!saving && (!dirty || confirm('Discard unsaved changes?'))) select(null); };
  el('storySearch').oninput = renderList;
