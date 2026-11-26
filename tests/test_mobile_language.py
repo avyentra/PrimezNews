@@ -70,14 +70,21 @@ class MobileLanguageTest(unittest.TestCase):
         for page in PAGES:
             with self.subTest(page=page):
                 command(base + "/url", {"url": f"http://127.0.0.1:{server.server_port}/{page}.html"})
-                element = command(base + "/element", selector)
-                select_id = next(iter(element.values()))
                 headings = set()
                 paragraphs = set()
                 for lang in ("hi", "en", "pa"):
+                    # Language-specific routes replace the document; locate the current selector each time.
+                    element = command(base + "/element", selector)
+                    select_id = next(iter(element.values()))
                     option = command(f"{base}/element/{select_id}/element", {
                         "using": "css selector", "value": f'option[value="{lang}"]'})
                     command(f"{base}/element/{next(iter(option.values()))}/click", {})
+                    for attempt in range(100):
+                        ready = command(base + "/execute/sync", {"args": [lang], "script": "return document.readyState === 'complete' && document.documentElement.lang === arguments[0] && !!document.querySelector('primez-site-nav')?.shadowRoot;"})
+                        if ready:
+                            break
+                        time.sleep(0.1)
+                    self.assertTrue(ready, (page, lang, "Language navigation did not settle"))
                     state = command(base + "/execute/sync", {"args": [], "script": """
                         const root = document.documentElement;
                         const frame = ['.pn-header', '.pn-footer'].map(selector =>
@@ -162,6 +169,7 @@ class MobileLanguageTest(unittest.TestCase):
                     headings, paragraphs = set(), set()
                     for lang in ("hi", "en", "pa"):
                         mobile.select_option("select[data-language-switch]", lang)
+                        mobile.wait_for_function("(lang) => document.readyState === 'complete' && document.documentElement.lang === lang && !!document.querySelector('primez-site-nav')?.shadowRoot", arg=lang)
                         state = mobile.evaluate("""() => {
                             const root = document.documentElement;
                             const frame = ['.pn-header', '.pn-footer'].map(selector =>
