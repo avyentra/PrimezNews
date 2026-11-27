@@ -43,6 +43,8 @@ def paragraph_html(text):
 
 
 def page(template,s,share_image=None):
+    # The listing's visually hidden heading must not duplicate the article headline.
+    template = re.sub(r'<h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect\(0 0 0 0\);white-space:nowrap">ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ — PrimezNews</h1>', '', template, count=1)
     title=s.get('pa') or s['title'];url=BASE+'news/'+quote(s['slug'])+'/'
     photo=image(s)
     share_image = share_image or photo
