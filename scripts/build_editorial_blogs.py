@@ -208,6 +208,17 @@ def build(rows, root=ROOT):
     pages = {Path('blogs/index.html'): listing(root, rows)}
     sitemap = ET.Element('urlset', xmlns=XMLNS)
     ET.SubElement(ET.SubElement(sitemap, 'url'), 'loc').text = f'{SITE}/blogs/'
+    # Include the existing health archive and its canonical published articles.
+    archive = root / 'data/health-blog.json'
+    if archive.exists():
+        if (root / 'health-blog/index.html').is_file():
+            ET.SubElement(ET.SubElement(sitemap, 'url'), 'loc').text = f'{SITE}/health-blog/'
+        for post in json.loads(archive.read_text(encoding='utf-8'))['posts']:
+            slug = post['slug']
+            if not SLUG.fullmatch(slug):
+                raise ValueError(f'Invalid archived blog slug: {slug}')
+            if (root / 'health-blog' / slug / 'index.html').is_file():
+                ET.SubElement(ET.SubElement(sitemap, 'url'), 'loc').text = f'{SITE}/health-blog/{slug}/'
     for row in rows:
         pages[Path('blogs', row['slug'], 'index.html')] = article(root, row, rows)
         url = blog_url(row['slug'])
