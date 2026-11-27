@@ -113,7 +113,7 @@ def frame(root, language, title, description, canonical, content, image='', stru
     return (f'<!doctype html><html lang="{language}" data-fixed-language="{language}"><head>'
             '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="/">'
             f'<title>{escape(title)}</title><link rel="canonical" href="{escape(canonical)}">'
-            f'{meta}{scripts_and_styles}<link rel="stylesheet" href="/assets/css/blog-management.css?v=public-layout-20261127">{frame_scripts}<script defer src="/assets/js/analytics.js?v=20261128a"></script>{ld}</head>'
+            f'{meta}{scripts_and_styles}<link rel="stylesheet" href="/assets/css/blog-management.css?v=public-layout-20261128">{frame_scripts}<script defer src="/assets/js/analytics.js?v=20261128a"></script>{ld}</head>'
             f'{pre}{content}{post}')
 
 
@@ -188,7 +188,7 @@ def article(root, row, rows):
     )
     structured = {'@context': 'https://schema.org', '@type': 'BlogPosting', 'headline': row['title'],
                   'description': row['summary'], 'image': share, 'datePublished': row['published_at'],
-                  'dateModified': row['updated_at'], 'mainEntityOfPage': canonical,
+                  'dateModified': row['updated_at'], 'url': canonical, 'mainEntityOfPage': canonical,
                   'articleSection': row['category'], 'inLanguage': lang, 'wordCount': words,
                   'author': {'@type': 'Person', 'name': row['author']},
                   'publisher': {'@type': 'Organization', 'name': 'PrimezNews'}}

@@ -284,8 +284,8 @@ def build():
             '<section class="bl-related"><h2 class="topic-section-title">' + L(T('ਹੋਰ ਪੜ੍ਹੋ', 'और पढ़ें', 'Read more')) + '</h2><div class="bl-grid">' + ''.join(card(q, tags) for q in related) + '</div></section>'
             '</article>' + side(tags) + '</div></main>')
         ld = {'@context': 'https://schema.org', '@type': 'BlogPosting', 'headline': p['title']['en'], 'description': p['excerpt']['en'],
-              'image': share_url, 'datePublished': p['date'], 'dateModified': p['date'], 'inLanguage': ['pa', 'hi', 'en'],
-              'author': {'@type': 'Organization', 'name': 'PrimezNews'}, 'publisher': {'@type': 'Organization', 'name': 'PrimezNews', 'logo': {'@type': 'ImageObject', 'url': f'{SITE}/assets/images/primznews-logo-new.webp'}},
+              'image': share_url, 'url': url, 'datePublished': p['date'], 'inLanguage': ['pa', 'hi', 'en'],
+              'author': {'@type': 'Organization', 'name': 'PrimezNews', 'url': f'{SITE}/about-us'}, 'publisher': {'@type': 'Organization', 'name': 'PrimezNews', 'logo': {'@type': 'ImageObject', 'url': f'{SITE}/assets/images/primznews-logo-new.webp'}},
               'mainEntityOfPage': url, 'articleSection': tag['en'], 'wordCount': word_count(p['body'])}
         if p.get('keywords') or p.get('keyword'):
             ld['keywords'] = ', '.join(([p['keyword']] if p.get('keyword') else []) + [k for k in p.get('keywords', []) if k != p.get('keyword')])

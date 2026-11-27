@@ -31,7 +31,6 @@ def footer(has_tools):
         (("News", "ख़बरें", "ਖ਼ਬਰਾਂ"), [
             ('home-v2?category=Punjab','Punjab','पंजाब','ਪੰਜਾਬ'),
             ('home-v2?category=Agriculture','Agriculture','कृषि','ਖੇਤੀਬਾੜੀ'),
-            ('jobs','Jobs','रोज़गार','ਰੁਜ਼ਗਾਰ'),
             ('home-v2?category=Politics','Politics','राजनीति','ਸਿਆਸਤ'),
             ('home-v2?category=Sports','Sports','खेल','ਖੇਡਾਂ'),
             ('nri','NRI News','NRI समाचार','NRI ਖ਼ਬਰਾਂ')]),

@@ -26,7 +26,7 @@ def edition(source,route,lang,title,desc,available,post=None):
         s=re.sub(r'(<meta (?:name|property)="'+re.escape(key)+r'" content=")[^"]*',lambda m:m[1]+html.escape(val,quote=True),s)
     s=re.sub(r'<script type="application/ld\+json">.*?</script>','',s,flags=re.S)
     ld={'@context':'https://schema.org','@type':'BlogPosting' if post else 'WebPage','name':title,'description':desc,'url':canonical,'inLanguage':lang}
-    if post: ld.update(headline=post['title'][lang],datePublished=post['date'],mainEntityOfPage=canonical,author={'@type':'Organization','name':'PrimezNews'},publisher={'@type':'Organization','name':'PrimezNews'},image=BASE+'media/share/blog-'+post['slug']+'.jpg')
+    if post: ld.update(headline=post['title'][lang],datePublished=post['date'],mainEntityOfPage=canonical,author={'@type':'Organization','name':'PrimezNews','url':BASE+'about-us'},publisher={'@type':'Organization','name':'PrimezNews'},image=BASE+'media/share/blog-'+post['slug']+'.jpg')
     s=s.replace('</head>','<script type="application/ld+json">'+json.dumps(ld,ensure_ascii=False).replace('<','\\u003c')+'</script></head>',1)
     if lang!='pa':
         def local(m):

@@ -89,3 +89,7 @@
 @media(min-width:1440px){.site-skin{height:min(624px,calc(100dvh - var(--skin-start,190px) - 50px))!important}}
 
 .pn-featured{margin-block:24px}.pn-featured>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.pn-featured article{border-top:2px solid #132744;padding:12px 0}.pn-featured a{color:inherit}.pn-featured a:hover{text-decoration:underline}@media(max-width:720px){.pn-featured>div{grid-template-columns:1fr;gap:4px}}
+
+@media (min-width: 701px) and (max-width: 1024px) {
+  .hero-section::before { inset-inline: -20px; }
+}

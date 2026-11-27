@@ -71,3 +71,8 @@
 @media (max-width: 760px) {
   .blog-fields { grid-template-columns: minmax(0, 1fr); }
 }
+
+@media (min-width: 761px) and (max-width: 960px) {
+  .pn-topline { display: flex; flex-wrap: wrap; justify-content: space-between; }
+  .pn-context { min-width: 0; flex-wrap: wrap; gap: 4px 12px; }
+}
