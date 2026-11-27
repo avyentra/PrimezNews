@@ -54,7 +54,7 @@ const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQ
     assert.equal(await page.locator('.ad-logo').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(20, 35, 58)');
     await page.getByRole('button', { name: 'Menu', exact: true }).click();
     assert.equal(await page.locator('#blogSidebar').evaluate(node => getComputedStyle(node).visibility), 'visible');
-    await page.getByRole('button', { name: 'Menu', exact: true }).evaluate(button => button.click());
+    await page.getByRole('button', { name: 'Close menu', exact: true }).click();
     assert.equal(await page.locator('#blogSidebar').evaluate(node => getComputedStyle(node).visibility), 'hidden');
     await page.getByRole('button',{name:'New Blog',exact:true}).click();
     assert.equal(await page.locator('#blogForm select[name=category] option').count(),7);

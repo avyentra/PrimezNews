@@ -458,10 +458,16 @@ function startStudioHandoff() {
   opener.postMessage({ type: 'primez-studio-ready', token }, studioOrigin);
 }
 
-byId('blogMenu').addEventListener('click', event => {
-  const open = byId('blogSidebar').classList.toggle('blog-sidebar-open');
+function setSidebarOpen(open) {
   document.body.classList.toggle('ad-menu-open', open);
-  event.currentTarget.setAttribute('aria-expanded', String(open));
+  byId('blogMenu').setAttribute('aria-expanded', String(open));
+  byId(open ? 'blogCloseMenu' : 'blogMenu').focus();
+}
+
+byId('blogMenu').addEventListener('click', () => setSidebarOpen(true));
+byId('blogCloseMenu').addEventListener('click', () => setSidebarOpen(false));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && document.body.classList.contains('ad-menu-open')) setSidebarOpen(false);
 });
 byId('blogLogout').addEventListener('click', () => run(async () => {
   if (dirty && !window.confirm('Sign out and discard unsaved changes?')) return;
