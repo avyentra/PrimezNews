@@ -167,7 +167,10 @@ def build():
     pages=['','news/','rashi','dharm','jobs','health-beauty','health-blog/','nri','videos','mandi-bhav','hukamnama','sarkari-yojana','about-us','editorial-policy','privacy-policy','grievance-redressal','contact','advertise','join-newsroom']
     try: pages+=['health-blog/'+p['slug']+'/' for p in json.loads((ROOT/'data'/'health-blog.json').read_text())['posts']]
     except (OSError, ValueError, KeyError): pass
-    urls=[BASE+p for p in pages]+[BASE+'news/'+quote(s['slug'])+'/' for s in rows]
+    # Keep only existing destinations and deduplicate without changing URL order.
+    def exists(p):
+        return (ROOT / (p+'index.html' if not p or p.endswith('/') else p+'.html')).is_file()
+    urls=list(dict.fromkeys([BASE+p for p in pages if exists(p)]+[BASE+'news/'+quote(s['slug'])+'/' for s in rows if exists('news/'+s['slug']+'/')]))
     (ROOT/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+escape(u)+'</loc></url>' for u in urls)+'</urlset>\n')
     print(f'Built {len(rows)} public headline pages')
 if __name__=='__main__':build()
