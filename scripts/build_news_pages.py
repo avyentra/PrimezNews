@@ -83,7 +83,10 @@ def page(template,s,share_image=None):
     body+='<figure class="reader-figure"><img class="reader-hero-image" fetchpriority="high" decoding="async" src="'+escape(photo)+'" alt="'+escape(title)+'"></figure>'
     body+='<p class="reader-meta">'+escape(re.sub(r'^RSS Desk.*$','PrimezNews Desk',s.get('author') or s.get('source') or 'PrimezNews',flags=re.I))+(' · '+escape(s['district']) if s.get('district') and s['district'] != 'District unconfirmed' else '')+' · '+escape(nice_date(s.get('publish_at') or s.get('published')))+'</p><div class="reader-body">'
     body+=''.join(paragraph_html(p) for p in s.get('body','').split('\n\n') if p.strip())+'</div>'
-    if s.get('sourceUrl'):body+='<p>Source: <a rel="noopener noreferrer" href="'+escape(s['sourceUrl'])+'">'+escape(s['source'])+'</a> · Curated news brief. Photograph is illustrative.</p>'
+    source_url = s.get('source_url') or s.get('sourceUrl')
+    source_name = s.get('source_name') or s.get('source') or 'Source report'
+    if isinstance(source_url, str) and re.fullmatch(r'https?://[^\s]+', source_url):
+        body += '<p>Source: <a rel="noopener noreferrer" href="' + escape(source_url) + '">' + escape(source_name) + '</a> · Curated news brief.</p>'
     out=out.replace('<section id="newsContent" aria-label="ਖ਼ਬਰਾਂ"></section>','<section id="newsContent" class="reader-article" aria-label="ਖ਼ਬਰਾਂ">'+body+'</section>').replace('ਖ਼ਬਰਾਂ ਲੋਡ ਹੋ ਰਹੀਆਂ ਹਨ…','')
     return out.replace('<use href="#', '<use href="assets/images/reader-icons.svg#')
 
