@@ -89,6 +89,14 @@ def set_meta(head, base, title, desc, url, image, kind, extra=''):
         head = re.sub(r'(<meta (?:name|property)="' + re.escape(name) + r'" content=")[^"]*', lambda mm: mm.group(1) + e(value, quote=True), head)
     head = re.sub(r'(<link rel="canonical" href=")[^"]*', lambda mm: mm.group(1) + url, head)
     head = re.sub(r'<script type="application/ld\+json">.*?</script>', '', head, flags=re.S)
+    # Preserve reciprocal language links when rebuilding the Punjabi archive.
+    route = url.removeprefix(SITE + '/')
+    if route.startswith('health-blog/'):
+        head = re.sub(r'<link\b[^>]*\bhreflang="[^"]+"[^>]*>', '', head)
+        if all((ROOT / lang / route / 'index.html').is_file() for lang in ('hi', 'en')):
+            for lang in ('pa', 'hi', 'en', 'x-default'):
+                prefix = lang + '/' if lang in ('hi', 'en') else ''
+                head += f'<link rel="alternate" hreflang="{lang}" href="{SITE}/{prefix}{route}">'
     return head + extra
 
 
