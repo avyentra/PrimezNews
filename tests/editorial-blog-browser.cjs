@@ -69,6 +69,12 @@ const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQ
     await page.locator('#blogSearch').fill('');
     await page.getByRole('button', { name: 'All Blogs', exact: true }).click();
     await page.getByRole('button',{name:'New Blog',exact:true}).click();
+    assert.equal(await page.getByRole('button', { name: 'New Blog', exact: true }).getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.getByRole('button', { name: 'Published Blogs', exact: true }).isVisible(), true);
+    await page.getByRole('button', { name: 'Published Blogs', exact: true }).click();
+    assert.equal(await page.locator('#blogForm').isVisible(), false);
+    assert.equal(await page.getByRole('button', { name: 'Published Blogs', exact: true }).getAttribute('aria-pressed'), 'true');
+    await page.getByRole('button', { name: 'New Blog', exact: true }).click();
     assert.equal(await page.locator('#blogForm select[name=category] option').count(),7);
     await page.locator('[name=title]').fill('Mobile publication test');
     await page.locator('[name=summary]').fill('An editorial summary.');
@@ -110,6 +116,7 @@ const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQ
     await page.getByRole('button',{name:'Unpublish',exact:true}).click();
     await page.getByText(/Unpublished in the CMS/).waitFor();
     await page.getByRole('button',{name:'Back to Blogs'}).click();
+    await page.waitForFunction(() => !document.querySelector('#blogNavigation').inert);
     const report={article:{title:'Studio draft',body:'## Verified heading\n\nOriginal content.'},category:'Technology',sources:[{url:'https://example.org/reference'}],status:'editor_review_required'};
     await page.locator('#blogImport').setInputFiles({name:'studio.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(report))});
     await page.getByText(/Studio draft imported/).waitFor();

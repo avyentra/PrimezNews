@@ -8,6 +8,7 @@ const byId = id => document.getElementById(id);
 const form = byId('blogForm');
 const body = byId('blogBody');
 const library = byId('blogLibrary');
+const navigation = byId('blogNavigation');
 const editorFields = 'title summary category language author audience cover_url cover_alt cover_caption seo_title seo_description focus_keyword secondary_keywords canonical_url social_image'.split(' ');
 const field = name => form.elements.namedItem(name);
 const message = text => { byId('blogMessage').textContent = text; };
@@ -89,7 +90,14 @@ function syncEditor() {
   cover.alt = field('cover_alt').value;
 }
 
+function selectView(active) {
+  for (const button of navigation.querySelectorAll('button[aria-pressed]')) {
+    button.setAttribute('aria-pressed', String(button === active));
+  }
+}
+
 function openEditor(row = {}) {
+  selectView(row.id ? null : byId('newBlog'));
   form.inert = false;
   current = row;
   form.reset();
@@ -353,8 +361,11 @@ async function importDraft(report) {
   message('Studio draft imported. Check the sources and complete the editorial fields before publishing.');
 }
 
-async function showList() {
+async function showList(nextStatus = status) {
   if (dirty && !window.confirm('Discard unsaved blog changes?')) return;
+  if (status !== nextStatus) page = 0;
+  status = nextStatus;
+  selectView([...navigation.querySelectorAll('[data-status]')].find(button => button.dataset.status === status));
   dirty = false;
   form.hidden = true;
   library.hidden = false;
@@ -366,11 +377,13 @@ async function run(action) {
   busy = true;
   form.inert = true;
   library.inert = true;
+  navigation.inert = true;
   message('');
   try { await action(); } catch (error) { message(error.message); } finally {
     busy = false;
     form.inert = false;
     library.inert = false;
+    navigation.inert = false;
   }
 }
 
@@ -454,25 +467,21 @@ async function init() {
   }));
   byId('blogImport').addEventListener('change', event => run(async () => {
     try {
+      if (dirty && !window.confirm('Discard unsaved blog changes?')) return;
       const file = event.target.files[0];
       if (!file || file.size > 1000000) throw new Error('Choose a Blog Studio JSON export below 1 MB.');
       await importDraft(JSON.parse(await file.text()));
     } finally { event.target.value = ''; }
   }));
   for (const [id, action] of Object.entries({
-    newBlog: () => openEditor(), blogBack: showList, blogPreview: preview,
+    newBlog: () => { if (!dirty || window.confirm('Discard unsaved blog changes?')) openEditor(); }, blogBack: showList, blogPreview: preview,
     blogClosePreview: () => byId('blogPreviewDialog').close(),
     blogSave: () => persist('draft'), blogPublish: () => persist('published'),
     blogDelete: () => persist('deleted'), blogUnpublish: () => persist('unpublish'),
     blogPrev: () => { page--; return loadList(); }, blogNext: () => { page++; return loadList(); }
   })) byId(id).addEventListener('click', () => run(action));
-  for (const button of library.querySelectorAll('[data-status]')) {
-    button.addEventListener('click', () => {
-      for (const other of library.querySelectorAll('[data-status]')) other.setAttribute('aria-pressed', String(other === button));
-      status = button.dataset.status;
-      page = 0;
-      loadList().catch(error => message(error.message));
-    });
+  for (const button of navigation.querySelectorAll('[data-status]')) {
+    button.addEventListener('click', () => run(() => showList(button.dataset.status)));
   }
   for (const id of ['blogSearch', 'blogCategory', 'blogLanguage']) {
     byId(id).addEventListener(id === 'blogSearch' ? 'input' : 'change', () => {
@@ -480,6 +489,7 @@ async function init() {
       loadList().catch(error => message(error.message));
     });
   }
+  navigation.hidden = false;
   await showList();
   startStudioHandoff();
 }
