@@ -73,10 +73,18 @@ def blog_url(slug):
     return f'{SITE}/blogs/{slug}/'
 
 
+def blog_card(url, title, summary, author, language, label, cover):
+    image = (f'<span class="blog-card-cover"><img src="{escape(cover)}" alt="" '
+             'width="800" height="450" loading="lazy" decoding="async"></span>') if cover else ''
+    return (f'<a class="blog-card" lang="{language}" href="{escape(url)}">{image}'
+            f'<span class="blog-card-copy"><h3>{escape(title)}</h3>'
+            f'<span class="blog-card-summary">{escape(" ".join(summary.split()))}</span>'
+            f'<small>{escape(author)} · {escape(label)}</small></span></a>')
+
+
 def card(row):
-    return (f'<article class="bl-card" lang="{row["language"]}">'
-            f'<a href="{blog_url(row["slug"])}"><strong>{escape(row["title"])}</strong></a>'
-            f'<p>{escape(row["summary"])}</p><small>{escape(row["author"])} · {LANGUAGES[row["language"]]}</small></article>')
+    return blog_card(blog_url(row['slug']), row['title'], row['summary'], row['author'],
+                     row['language'], LANGUAGES[row['language']], https_url(row['cover_url']))
 
 
 def frame(root, language, title, description, canonical, content, image='', structured=None):
@@ -86,6 +94,9 @@ def frame(root, language, title, description, canonical, content, image='', stru
     post = re.sub(r'<script\b[^>]*src="[^"]*googlesyndication[^"]*"[^>]*></script>', '', post)
     post = re.sub(r'<script\b[^>]*src="[^"]*topic-page[^"]*"[^>]*></script>', '', post)
     scripts_and_styles = ''.join(re.findall(r'<link\b[^>]+rel="stylesheet"[^>]*>', original[:original.index('</head>')]))
+    frame_scripts = ''.join(re.findall(
+        r'<script\b[^>]*src="assets/js/(?:public-language|site-nav|site-language-data|news-routes|news-urls)\.js[^"]*"[^>]*></script>',
+        original[:original.index('</head>')]))
     image = image or f'{SITE}/assets/images/primznews-logo-new.webp'
     metadata = {
         'description': description, 'og:title': title, 'og:description': description,
@@ -102,7 +113,7 @@ def frame(root, language, title, description, canonical, content, image='', stru
     return (f'<!doctype html><html lang="{language}" data-fixed-language="{language}"><head>'
             '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="/">'
             f'<title>{escape(title)}</title><link rel="canonical" href="{escape(canonical)}">'
-            f'{meta}{scripts_and_styles}<link rel="stylesheet" href="/assets/css/blog-management.css">{ld}</head>'
+            f'{meta}{scripts_and_styles}<link rel="stylesheet" href="/assets/css/blog-management.css?v=public-layout-20261127">{frame_scripts}{ld}</head>'
             f'{pre}{content}{post}')
 
 
@@ -115,27 +126,36 @@ def archive_cards(root):
         slug = post['slug']
         if not SLUG.fullmatch(slug):
             raise ValueError(f'Invalid archived blog slug: {slug}')
-        title = escape(post['title']['en'])
-        summary = escape(' '.join(post['excerpt']['en'].split()))
-        author = escape(post['author']['en'])
-        cards.append(f'<article class="bl-card" lang="en"><a href="/en/health-blog/{slug}/">'
-                     f'<strong>{title}</strong></a><p>{summary}</p><small>{author} · English, ਪੰਜਾਬੀ, हिन्दी</small></article>')
+        image = post.get('image', '')
+        cover = https_url(image)
+        if not cover and SLUG.fullmatch(image):
+            cover = f'/assets/images/{image}.webp'
+        translated = root / 'en' / 'health-blog' / slug / 'index.html'
+        url = f'/en/health-blog/{slug}/' if translated.exists() else f'/health-blog/{slug}/'
+        cards.append(blog_card(url, post['title']['en'], post['excerpt']['en'], post['author']['en'],
+                               'en', 'English, ਪੰਜਾਬੀ, हिन्दी', cover))
     return ''.join(cards)
 
 
 def listing(root, rows):
-    nav = ''.join(f'<a class="bl-tag" href="/blogs/#{category_id(c)}">{escape(c)}</a> ' for c in CATEGORIES)
-    sections = []
+    links, sections = [], []
     for category in CATEGORIES:
         articles = ''.join(card(row) for row in rows if row['category'] == category)
         if category == 'Health & Beauty':
             articles += archive_cards(root)
-        existing = ('<p><a href="/health-blog/">Health &amp; Beauty archive</a></p>'
-                    if category == 'Health & Beauty' else '')
-        sections.append(f'<section id="{category_id(category)}"><h2>{escape(category)}</h2>'
-                        f'{existing}<div class="bl-grid">{articles}</div></section>')
-    content = ('<main class="topic bl editorial-blogs"><h1>Blogs</h1>'
-               f'<nav aria-label="Blog categories">{nav}</nav>{"".join(sections)}</main>')
+        if not articles:
+            continue
+        anchor = category_id(category)
+        links.append(f'<a href="#{anchor}">{escape(category)}</a>')
+        archive = ('<a class="blog-archive-link" href="/health-blog/">View archive →</a>'
+                   if category == 'Health & Beauty' else '')
+        sections.append(f'<section id="{anchor}"><div class="blog-section-heading">'
+                        f'<h2>{escape(category)}</h2>{archive}</div>'
+                        f'<div class="bl-grid">{articles}</div></section>')
+    nav = f'<nav class="blog-category-nav" aria-label="Blog categories">{"".join(links)}</nav>' if len(links) > 1 else ''
+    stories = ''.join(sections) or '<p>No published blogs yet.</p>'
+    content = ('<main class="topic bl editorial-blogs blog-index"><h1>Blogs</h1>'
+               f'{nav}{stories}</main>')
     return frame(root, 'en', 'Blogs | PrimezNews', 'Browse PrimezNews blogs by category.', f'{SITE}/blogs/', content)
 
 

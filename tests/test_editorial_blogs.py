@@ -68,8 +68,11 @@ class EditorialBlogsTests(unittest.TestCase):
             (root / 'data/health-blog.json').write_bytes((ROOT / 'data/health-blog.json').read_bytes())
             build([post()], root)
             listing = (root / 'blogs/index.html').read_text()
-            self.assertIn('href="/en/health-blog/how-to-compare-gym-memberships/"', listing)
+            self.assertIn('href="/health-blog/how-to-compare-gym-memberships/"', listing)
             self.assertIn('A gym membership that fits your real week', listing)
+            self.assertIn('class="blog-card-cover"', listing)
+            self.assertIn('site-nav.js', listing)
+            self.assertNotIn('id="business-finance"', listing)
             self.assertIn(f'href="{SITE}/blogs/test-post/"', listing)
             self.assertFalse((root / 'blogs/how-to-compare-gym-memberships').exists())
 
