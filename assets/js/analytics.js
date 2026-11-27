@@ -4,8 +4,14 @@
   if (window.__primezAnalyticsLoaderInstalled) return;
   window.__primezAnalyticsLoaderInstalled = true;
   var id = "G-9CEE951WEE";
-  var disableKey = "ga-disable-" + id;
-  window[disableKey] = true;
+  // The Google tag currently routes to this linked Analytics destination.
+  var analyticsIds = [id, "G-DGB14KT8R9"];
+  function setAnalyticsDisabled(disabled) {
+    analyticsIds.forEach(function (analyticsId) {
+      window["ga-disable-" + analyticsId] = disabled;
+    });
+  }
+  setAnalyticsDisabled(true);
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
   window.gtag("consent", "default", {
@@ -16,7 +22,7 @@
   });
 
   function activate() {
-    window[disableKey] = false;
+    setAnalyticsDisabled(false);
     window.gtag("consent", "update", { analytics_storage: "granted" });
     if (window.__primezAnalyticsStarted) return;
     if (document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
@@ -40,7 +46,10 @@
     if (window.location.hostname.endsWith(".primeznews.com")) {
       domains.push("; Domain=primeznews.com");
     }
-    ["_ga", "_ga_" + id.slice(2)].forEach(function (name) {
+    var names = ["_ga"].concat(analyticsIds.map(function (analyticsId) {
+      return "_ga_" + analyticsId.slice(2);
+    }));
+    names.forEach(function (name) {
       domains.forEach(function (domain) {
         document.cookie = name + "=; Max-Age=0; Path=/" + domain;
       });
@@ -52,7 +61,7 @@
     if (event.detail === true) {
       activate();
     } else if (event.detail === false) {
-      window[disableKey] = true;
+      setAnalyticsDisabled(true);
       window.gtag("consent", "update", { analytics_storage: "denied" });
       clearAnalyticsCookies();
     }
