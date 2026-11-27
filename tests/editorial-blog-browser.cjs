@@ -50,6 +50,12 @@ const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQ
       })};
     })();`}));
     await page.goto(root+'/blog-management.html');
+    assert.equal(await page.locator('body').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(243, 244, 248)');
+    assert.equal(await page.locator('.ad-logo').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(20, 35, 58)');
+    await page.getByRole('button', { name: 'Menu', exact: true }).click();
+    assert.equal(await page.locator('#blogSidebar').evaluate(node => getComputedStyle(node).visibility), 'visible');
+    await page.getByRole('button', { name: 'Menu', exact: true }).evaluate(button => button.click());
+    assert.equal(await page.locator('#blogSidebar').evaluate(node => getComputedStyle(node).visibility), 'hidden');
     await page.getByRole('button',{name:'New Blog',exact:true}).click();
     assert.equal(await page.locator('#blogForm select[name=category] option').count(),7);
     await page.locator('[name=title]').fill('Mobile publication test');

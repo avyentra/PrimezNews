@@ -1,10 +1,18 @@
-.blog-admin { max-width: 1250px; padding-bottom: 2rem; }
-.blog-admin > :is(section, form, p) { margin-inline: clamp(.75rem, 3vw, 2rem); }
-.blog-admin form, .blog-admin section { padding: clamp(.85rem, 3vw, 1.5rem); background: #fff; border: 1px solid #dce3ec; border-radius: .85rem; }
+.blog-management-page { margin: 0; color: var(--ink); }
+.blog-management-page *, .blog-management-page *::before, .blog-management-page *::after { box-sizing: border-box; }
+.blog-management-page .ad-main { overflow-y: auto; }
+.blog-management-page .ad-top h1 { margin: 0; font-size: clamp(1.25rem, 3vw, 1.625rem); }
+.blog-management-page #blogLogout { margin-top: auto; }
+.blog-admin { width: 100%; max-width: 1250px; padding-bottom: 2rem; }
+.blog-admin #blogMessage { margin: 0 0 1rem; padding: .75rem 1rem; border: 1px solid var(--line); border-radius: .65rem; background: #fff; }
+.blog-admin #blogMessage:empty { display: none; }
+.blog-admin form, .blog-admin section { padding: clamp(.85rem, 3vw, 1.5rem); background: #fff; border: 1px solid #dce3ec; border-radius: .85rem; box-shadow: 0 1px 3px #14233a0d; }
 .blog-admin [hidden] { display: none !important; }
 .blog-admin button, .blog-import { font: inherit; cursor: pointer; }
 .blog-admin :is(button, .blog-import) { padding: .45rem .7rem; border: 1px solid #c4ceda; background: #f7f9fc; color: #203657; border-radius: .35rem; }
 .blog-admin button[aria-pressed="true"], #newBlog, #blogPublish { background: #173869; border-color: #173869; color: #fff; }
+.blog-admin button:enabled:hover, .blog-import:hover { border-color: #6f87a5; }
+.blog-admin #blogMenu { width: auto; min-height: 40px; }
 .blog-admin button:disabled { opacity: .5; cursor: default; }
 .blog-admin :focus-visible { outline: 2px solid #1f64bd; outline-offset: 3px; }
 .blog-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; margin-block: .8rem; }
@@ -34,7 +42,11 @@
 .editorial-blogs .bl-card { padding: .8rem; border: 1px solid #dce3ec; border-radius: .5rem; }
 .editorial-blogs .bl-card p { margin-block: .3rem; }
 .editorial-blogs .bl-figure img { width: 100%; aspect-ratio: 1672 / 941; object-fit: cover; }
+@media (max-width: 980px) {
+  .blog-management-page .ad-main { overflow-y: visible; }
+  .blog-management-page .ad-side { visibility: hidden; width: min(270px, 90vw); }
+  .blog-management-page.ad-menu-open .ad-side { visibility: visible; }
+}
 @media (max-width: 760px) {
-  .blog-fields { grid-template-columns: 1fr; }
-  .ad-side.blog-sidebar-open { display: flex; transform: none; visibility: visible; }
+  .blog-fields { grid-template-columns: minmax(0, 1fr); }
 }
