@@ -1,9 +1,14 @@
 /* Shared GA4 loader: opt-in only; never duplicate an existing Google tag. */
 (function () {
   "use strict";
+  if (window.__primezAnalyticsLoaderInstalled) return;
+  window.__primezAnalyticsLoaderInstalled = true;
   var id = "G-9CEE951WEE";
   function activate() {
-    if (window.__primezAnalyticsStarted) return;
+    if (window.__primezAnalyticsStarted) {
+      window.gtag("consent", "update", { analytics_storage: "granted" });
+      return;
+    }
     if (document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
     if ((window.dataLayer || []).some(function (entry) {
       return entry && entry[0] === "config" && entry[1] === id;
