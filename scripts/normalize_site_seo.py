@@ -15,7 +15,11 @@ def normalize(name):
  description=re.search(r'<meta name="description" content="([^"]*)"',head)[1]
  if name in OVERRIDES:title,description=OVERRIDES[name]
  if name=='home-v2.html':title,description=OVERRIDES['index.html']
- canonical=BASE if name in ('index.html','home-v2.html') else BASE+name
+ canonical=BASE if name in ('index.html','home-v2.html') else BASE+('news/' if name=='news.html' else name.removesuffix('.html'))
+ alternates=re.findall(r'<link\b[^>]*\bhreflang="[^"]+"[^>]*>',head)
+ if alternates:
+  existing=re.search(r'<link rel="canonical" href="([^"]+)"',head)
+  if existing: canonical=existing[1]
  head=re.sub(r'<title>.*?</title>','',head,flags=re.S)
  head=re.sub(r'<link rel="canonical"[^>]*>','',head)
  head=re.sub(r'<meta (?:name="(?:description|keywords|robots|twitter:[^"]+)"|property="og:[^"]+")[^>]*>','',head)
