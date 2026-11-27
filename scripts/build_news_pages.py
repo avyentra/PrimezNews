@@ -7,6 +7,20 @@ from pathlib import Path
 from urllib.parse import quote
 ROOT=Path(__file__).resolve().parents[1]
 BASE = "https://" + (ROOT / "CNAME").read_text().strip() + "/"
+def clean_title(value):
+    if not isinstance(value, str): return value
+    value = ' '.join(value.split())
+    # Collapse only exact repeated halves, preserving legitimate headline wording.
+    words = value.split()
+    while len(words) >= 4 and len(words) % 2 == 0:
+        mid = len(words) // 2
+        if words[:mid] != words[mid:]: break
+        words = words[:mid]
+    return ' '.join(words)
+
+def clean_story_titles(story):
+    return {k: clean_title(v) if k in ('title', 'pa', 'hi', 'en') else v for k, v in story.items()}
+
 def slugify(text):
     words=re.findall(r'[a-z0-9]+',text.lower())
     stop={'a','an','the','and','of','in','to','for','with','on','at'}
@@ -45,7 +59,7 @@ def paragraph_html(text):
 def page(template,s,share_image=None):
     # The listing's visually hidden heading must not duplicate the article headline.
     template = re.sub(r'<h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect\(0 0 0 0\);white-space:nowrap">ਤਾਜ਼ਾ ਖ਼ਬਰਾਂ — PrimezNews</h1>', '', template, count=1)
-    title=s.get('pa') or s['title'];url=BASE+'news/'+quote(s['slug'])+'/'
+    title=clean_title(s.get('pa') or s['title']);url=BASE+'news/'+quote(s['slug'])+'/'
     photo=image(s)
     share_image = share_image or photo
     summary = ' '.join((s.get('summary') or '').split())
@@ -130,12 +144,13 @@ def build():
     from social_preview import preview
     cfg = (ROOT/'assets/js/backend-config.js').read_text()
     storage_origin = re.search(r"url: '([^']+)'", cfg)[1]
-    rows=fetch(); seen={s['slug'] for s in rows}
+    rows=[clean_story_titles(s) for s in fetch()]; seen={s['slug'] for s in rows}
     route_file=ROOT/'assets/js/news-routes.js'
     previous=json.loads(route_file.read_text().splitlines()[0].removeprefix('window.PRIMEZ_NEWS_ROUTES=').rstrip().removesuffix(';')) if route_file.exists() else {}
     # fetch() reads the public-only RPC, before the offline seed rows are appended.
     write_home_headlines(rows)
     for s in seeds():
+        s=clean_story_titles(s)
         if s.get('id')=='video':continue
         slug=previous.get(s['id']) or slugify(s.get('en') or s['title'])
         if slug in seen:slug+='-brief'
