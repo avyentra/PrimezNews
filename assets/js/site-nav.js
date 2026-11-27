@@ -91,11 +91,11 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
   const mobile=q('.mobile'), trigger=q('.more'), panel=q('#panel');
   const masthead = document.querySelector('.pn-header:has(.pn-logo):has(.pn-topline)');
   const groups = [
-    [sections[6].slice(1), [sections[6], [category('National'),'ਦੇਸ਼','देश','National']]],
+    [sections[5].slice(1), [sections[5], [category('National'),'ਦੇਸ਼','देश','National']]],
     [['ਦੇਸ਼','देश','India'], [[category('National'),'ਦੇਸ਼','देश','National'], ['sarkari-yojana','ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ','सरकारी योजनाएँ','Government schemes']]],
-    [['ਦੁਨੀਆ','दुनिया','World'], [[category('World'),'ਅੰਤਰਰਾਸ਼ਟਰੀ','अंतरराष्ट्रीय','International'], sections[8]]],
-    [sections[8].slice(1), [sections[8]], ['Canada','UK','Australia','USA','UAE']],
-    [['ਲਾਈਫਸਟਾਈਲ','लाइफ़स्टाइल','Lifestyle'], [sections[7], ['health-blog/','ਸਿਹਤ ਬਲੌਗ','हेल्थ ब्लॉग','Health blog'], sections[4], ['dharm','ਆਸਥਾ ਤੇ ਸੱਭਿਆਚਾਰ','आस्था व संस्कृति','Faith & culture']]]
+    [['ਦੁਨੀਆ','दुनिया','World'], [[category('World'),'ਅੰਤਰਰਾਸ਼ਟਰੀ','अंतरराष्ट्रीय','International'], sections[7]]],
+    [sections[7].slice(1), [sections[7]], ['Canada','UK','Australia','USA','UAE']],
+    [['ਲਾਈਫਸਟਾਈਲ','लाइफ़स्टाइल','Lifestyle'], [sections[6], ['health-blog/','ਸਿਹਤ ਬਲੌਗ','हेल्थ ब्लॉग','Health blog'], sections[3], ['dharm','ਆਸਥਾ ਤੇ ਸੱਭਿਆਚਾਰ','आस्था व संस्कृति','Faith & culture']]]
   ];
   const primary = document.createElement('div');
   primary.className = 'primary';
@@ -127,7 +127,7 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
   function renderPrimary() {
     if (!quick) return;
     const link = ([url,...names]) => anchor(url,t(...names));
-    quick.replaceChildren(anchor('./','PrimezNews'), ...[sections[1],sections[2],sections[6],groups[2][1][0],sections[8],sections[9]].map(link));
+    quick.replaceChildren(anchor('./','PrimezNews'), ...[sections[1],sections[2],sections[5],groups[2][1][0],sections[7],sections[8]].map(link));
     primary.replaceChildren(anchor('./',t('ਹੋਮ','होम','Home')),link(sections[1]),link(sections[2]));
     if(location.pathname === '/' || location.pathname === '/index.html') primary.firstChild.setAttribute('aria-current','page');
     for(const [names,items,future] of groups) {
