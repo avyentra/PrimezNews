@@ -92,7 +92,7 @@ class MobileLanguageTest(unittest.TestCase):
                         "using": "css selector", "value": f'option[value="{lang}"]'})
                     command(f"{base}/element/{next(iter(option.values()))}/click", {})
                     for attempt in range(100):
-                        ready = command(base + "/execute/sync", {"args": [lang], "script": "return document.readyState === 'complete' && document.documentElement.lang === arguments[0] && !!document.querySelector('primez-site-nav')?.shadowRoot;"})
+                        ready = command(base + "/execute/sync", {"args": [lang], "script": "return document.readyState === 'complete' && document.documentElement.lang === arguments[0] && document.querySelector('primez-site-nav')?.shadowRoot?.querySelector('#sections a')?.getAttribute('aria-label') === ({hi:'होम',en:'Home',pa:'ਮੁੱਖ ਪੰਨਾ'})[arguments[0]];"})
                         if ready:
                             break
                         time.sleep(0.1)
@@ -122,7 +122,7 @@ class MobileLanguageTest(unittest.TestCase):
                         toggle.click();
                         return result;
                     """})
-                    self.assertEqual(nav[:3], ["true", 10, {"en": "Home", "hi": "होम", "pa": "ਮੁੱਖ ਪੰਨਾ"}[lang]])
+                    self.assertEqual(nav[:3], ["true", 9, {"en": "Home", "hi": "होम", "pa": "ਮੁੱਖ ਪੰਨਾ"}[lang]])
                     self.assertGreater(nav[3], 0)
                     self.assertEqual(nav[4], "Agriculture")
                     headings.add(state[3])
@@ -181,7 +181,7 @@ class MobileLanguageTest(unittest.TestCase):
                     headings, paragraphs = set(), set()
                     for lang in ("hi", "en", "pa"):
                         mobile.select_option("select[data-language-switch]", lang)
-                        mobile.wait_for_function("(lang) => document.readyState === 'complete' && document.documentElement.lang === lang && !!document.querySelector('primez-site-nav')?.shadowRoot", arg=lang)
+                        mobile.wait_for_function("(lang) => document.readyState === 'complete' && document.documentElement.lang === lang && document.querySelector('primez-site-nav')?.shadowRoot?.querySelector('#sections a')?.getAttribute('aria-label') === ({hi:'होम',en:'Home',pa:'ਮੁੱਖ ਪੰਨਾ'})[lang]", arg=lang)
                         state = mobile.evaluate("""() => {
                             const root = document.documentElement;
                             const frame = ['.pn-header', '.pn-footer'].map(selector =>
@@ -207,7 +207,7 @@ class MobileLanguageTest(unittest.TestCase):
                             toggle.click();
                             return result;
                         }""")
-                        self.assertEqual(nav[:3], ["true", 10, {"en": "Home", "hi": "होम", "pa": "ਮੁੱਖ ਪੰਨਾ"}[lang]])
+                        self.assertEqual(nav[:3], ["true", 9, {"en": "Home", "hi": "होम", "pa": "ਮੁੱਖ ਪੰਨਾ"}[lang]])
                         self.assertGreater(nav[3], 0)
                         self.assertEqual(nav[4], "Agriculture")
                         headings.add(state[3])
