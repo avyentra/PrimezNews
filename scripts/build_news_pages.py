@@ -167,7 +167,7 @@ def build():
     write_lead_preload(rows)
     # Only genuine public articles and established public pages enter the sitemap.
     # Clean URLs (no .html): GitHub Pages serves about-us.html at /about-us
-    pages=['','news/','rashi','dharm','jobs','health-beauty','health-blog/','nri','videos','mandi-bhav','hukamnama','sarkari-yojana','about-us','editorial-policy','privacy-policy','grievance-redressal','contact','advertise','join-newsroom']
+    pages=['','news/','rashi','dharm','health-beauty','health-blog/','nri','videos','mandi-bhav','hukamnama','sarkari-yojana','about-us','editorial-policy','privacy-policy','grievance-redressal','contact','advertise','join-newsroom']
     try: pages+=['health-blog/'+p['slug']+'/' for p in json.loads((ROOT/'data'/'health-blog.json').read_text())['posts']]
     except (OSError, ValueError, KeyError): pass
     # Keep only existing destinations and deduplicate without changing URL order.
