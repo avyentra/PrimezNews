@@ -10,7 +10,7 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
   const search = term => home + '?headerSearch=' + encodeURIComponent(term);
   const sections = [
     [home,'⌂','⌂','⌂'], [category('Punjab'),'ਪੰਜਾਬ','पंजाब','Punjab'],
-    [category('Agriculture'),'ਖੇਤੀਬਾੜੀ','कृषि','Agriculture'],['jobs','ਰੁਜ਼ਗਾਰ','रोज़गार','Jobs'],
+    [category('Agriculture'),'ਖੇਤੀਬਾੜੀ','कृषि','Agriculture'],
     ['rashi','ਰਾਸ਼ੀਫਲ','राशिफल','Horoscope'],[category('Sports'),'ਖੇਡਾਂ','खेल','Sports'],
     [category('Politics'),'ਸਿਆਸਤ','राजनीति','Politics'],['health-beauty','ਸਿਹਤ ਤੇ ਸੁੰਦਰਤਾ','स्वास्थ्य व सौंदर्य','Health & Beauty'],
     ['nri','NRI ਖ਼ਬਰਾਂ','NRI खबरें','NRI News'],['videos','ਵੀਡੀਓ','वीडियो','Video']
