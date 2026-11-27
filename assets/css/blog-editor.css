@@ -45,3 +45,32 @@ textarea, select { font: inherit; border: 1px solid #cbd5e5; background: #f8f9fc
   .blog-editing[open] > summary { margin-inline-end: 18rem; overflow-wrap: anywhere; min-height: 2.75rem; }
   .blog-editing > .blog-steps { position: absolute; inset-block-start: 16px; inset-inline-end: 20px; padding: 0; }
 }
+
+#healthReviews .blog-workspace { background: #f8f9fc; }
+#healthReviews .blog-tabs { position: sticky; top: 0; z-index: 1; background: #fff; }
+#healthReviewList { display: grid; gap: .75rem; padding: clamp(.65rem, 2vw, 1.25rem); }
+#healthReviewList .blog-entry { background: #fff; border: 1px solid #dfe5ef; border-radius: 12px; }
+#healthReviewList details[open]:not(.blog-editing) > summary { padding-bottom: .6rem; border-bottom: 1px solid #e7ebf3; }
+#healthReviewList summary { overflow-wrap: anywhere; }
+#healthReviewList summary small { margin-bottom: .2rem; }
+.blog-live-link { display: inline-flex; margin-top: .8rem; padding: .35rem .7rem; border: 1px solid #cbd6e6; border-radius: 7px; color: #193a66; text-decoration: none; font-weight: 600; }
+.blog-live-link:hover { background: #eef4fb; }
+.blog-reading { width: min(100%, 78ch); margin: 1rem auto 1.25rem; color: #26384b; font-size: 1rem; line-height: 1.7; overflow-wrap: anywhere; }
+.blog-reading-intro { display: flex; gap: 1.2rem; align-items: flex-start; padding-block: .5rem 1.2rem; border-bottom: 1px solid #e3e8f1; }
+.blog-reading-intro img { width: clamp(120px, 27%, 190px); aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; }
+.blog-reading h2, .blog-reading h3 { color: #14233a; line-height: 1.3; }
+.blog-reading h2 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 .5rem; }
+.blog-reading h3 { font-size: 1.15rem; margin: 1.4rem 0 .4rem; }
+.blog-reading p { margin: 0 0 .9rem; }
+.blog-reading-intro small { color: #52647a; font-weight: 650; }
+.blog-reading-points, .blog-reading-tip { margin-block: 1rem; padding: .85rem 1rem; border-inline-start: 3px solid #365681; border-radius: 6px; background: #f0f4fa; }
+.blog-reading-points h3, .blog-reading-points ul { margin: 0; }
+.blog-reading ul, .blog-reading ol { padding-inline-start: 1.35rem; }
+.blog-reading li + li { margin-top: .25rem; }
+.blog-reading-faq { border-top: 1px solid #e3e8f1; margin-top: 1.5rem; }
+.blog-reading-faq dt { font-weight: 700; }
+.blog-reading-faq dd { margin: .25rem 0 .85rem; }
+@media (max-width: 560px) {
+  .blog-reading-intro { flex-direction: column; }
+  .blog-reading-intro img { width: min(100%, 260px); }
+}

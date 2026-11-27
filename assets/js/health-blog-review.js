@@ -70,6 +70,64 @@
     } catch (error) { message.textContent = error.message; }
     finally { button.disabled = false; }
   }
+  function renderPreview(post, lang) {
+    const article = element('article', '');
+    article.className = 'blog-reading';
+    article.lang = lang;
+    const intro = element('header', '');
+    intro.className = 'blog-reading-intro';
+    const text = element('div', '');
+    text.append(element('h2', post.title[lang]), element('p', post.excerpt[lang]), element('small', post.author[lang]));
+    intro.append(text);
+    const cover = window.PrimezAPI.safeUrl(post.image) ||
+      (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(post.image || '') ? '/assets/images/' + post.image + '.webp' : '');
+    if (cover) {
+      const image = document.createElement('img');
+      image.src = cover;
+      image.alt = '';
+      image.loading = 'lazy';
+      intro.append(image);
+    }
+    article.append(intro);
+    const labels = {
+      en: ['Key points', 'Frequently asked questions'],
+      pa: ['ਮੁੱਖ ਨੁਕਤੇ', 'ਅਕਸਰ ਪੁੱਛੇ ਜਾਂਦੇ ਸਵਾਲ'],
+      hi: ['मुख्य बिंदु', 'अक्सर पूछे जाने वाले सवाल']
+    }[lang];
+    function addList(parent, values, ordered = false) {
+      const list = element(ordered ? 'ol' : 'ul', '');
+      list.append(...values.map(value => element('li', value[lang])));
+      parent.append(list);
+    }
+    if (post.points.length) {
+      const points = element('section', '');
+      points.className = 'blog-reading-points';
+      points.append(element('h3', labels[0]));
+      addList(points, post.points);
+      article.append(points);
+    }
+    for (const block of post.body) {
+      for (const [kind, value] of Object.entries(block)) {
+        if (Array.isArray(value)) addList(article, value, kind === 'ol');
+        else {
+          const node = element(kind === 'h2' ? 'h3' : 'p', value[lang]);
+          if (kind === 'tip') node.className = 'blog-reading-tip';
+          article.append(node);
+        }
+      }
+    }
+    if (post.faq?.length) {
+      const faq = element('section', '');
+      faq.className = 'blog-reading-faq';
+      faq.append(element('h3', labels[1]));
+      const entries = element('dl', '');
+      for (const { q, a } of post.faq) entries.append(element('dt', q[lang]), element('dd', a[lang]));
+      faq.append(entries);
+      article.append(faq);
+    }
+    return article;
+  }
+
   function show(row, edit = false) {
     const lang = byId('healthReviewLanguage').value;
     const post = structuredClone(row.post);
@@ -91,6 +149,7 @@
       const link = element('a','View live article');
       link.href = '/health-blog/' + encodeURIComponent(post.slug) + '/';
       link.target = '_blank'; link.rel = 'noopener';
+      link.className = 'blog-live-link';
       entry.append(link);
     } else if (row.status === 'approved') status += ' · Publication queued';
     entry.querySelector('summary').append(element('small',status));
@@ -152,7 +211,6 @@
       entry.addEventListener('blog-cover-close', clearPreview, {once:true});
     }
     function field(label, value, minimum = 3) {
-      if (!edit) { form.append(element('p', value[lang])); return; }
       const wrap = element('label',label);
       const input = element('textarea','');
       input.required = true; input.minLength = minimum;
@@ -162,16 +220,18 @@
       input.oninput = () => { value[lang] = input.value.trim(); const script = {en:/[A-Za-z]/,pa:/[ਁ-੿]/,hi:/[ऀ-ॿ]/}[lang]; input.setCustomValidity(value[lang].length >= minimum && script.test(value[lang]) ? '' : 'Enter complete text in the selected language.'); };
       wrap.append(input); fields.append(wrap);
     }
-    field('Title',post.title,8); field('Summary',post.excerpt,8); field('Author',post.author);
-    if (edit) fields = articleFields;
-    post.points.forEach((v,i) => field('Key point ' + (i+1), v,8));
-    for (const block of post.body) for (const [kind,value] of Object.entries(block)) {
-      if (Array.isArray(value)) value.forEach(v => field('List item', v));
-      else field(({p:'Paragraph',h2:'Heading',tip:'Tip'})[kind] || kind, value);
-    }
-    for (const faq of post.faq || []) {field('Question',faq.q,8);field('Answer',faq.a,8);}
-    entry.append(form);
     if (edit) {
+      field('Title', post.title, 8);
+      field('Summary', post.excerpt, 8);
+      field('Author', post.author);
+      fields = articleFields;
+      post.points.forEach((value, index) => field('Key point ' + (index + 1), value, 8));
+      for (const block of post.body) for (const [kind, value] of Object.entries(block)) {
+        if (Array.isArray(value)) value.forEach(item => field('List item', item));
+        else field(({p:'Paragraph', h2:'Heading', tip:'Tip'})[kind] || kind, value);
+      }
+      for (const faq of post.faq || []) { field('Question', faq.q, 8); field('Answer', faq.a, 8); }
+      entry.append(form);
       const button = action(row.status === 'approved' ? 'Save and publish changes' : 'Save draft changes', async () => {
         if (!form.reportValidity()) return;
         if (row.status === 'draft' || (row.status === 'approved' && !live && !row.first_public_date)) {
@@ -213,7 +273,9 @@
       footer.append(cancel,button);
       entry.append(footer);
       selectStep(0);
-    } else if (row.status !== 'deleted') {
+    } else {
+      entry.append(renderPreview(post, lang));
+      if (row.status === 'deleted') return card;
       const toolbar = element('div', '');
       toolbar.className = 'blog-entry-toolbar';
       const editButton = iconAction('Edit blog in ' + lang.toUpperCase(), 'edit', () => {
