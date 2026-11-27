@@ -4,36 +4,60 @@
   if (window.__primezAnalyticsLoaderInstalled) return;
   window.__primezAnalyticsLoaderInstalled = true;
   var id = "G-9CEE951WEE";
+  var disableKey = "ga-disable-" + id;
+  window[disableKey] = true;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+  window.gtag("consent", "default", {
+    analytics_storage: "denied",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied"
+  });
+
   function activate() {
-    if (window.__primezAnalyticsStarted) {
-      window.gtag("consent", "update", { analytics_storage: "granted" });
-      return;
-    }
+    window[disableKey] = false;
+    window.gtag("consent", "update", { analytics_storage: "granted" });
+    if (window.__primezAnalyticsStarted) return;
     if (document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) return;
-    if ((window.dataLayer || []).some(function (entry) {
+    if (window.dataLayer.some(function (entry) {
       return entry && entry[0] === "config" && entry[1] === id;
     })) return;
     window.__primezAnalyticsStarted = true;
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-    window.gtag("consent", "default", { analytics_storage: "denied", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
-    window.gtag("consent", "update", { analytics_storage: "granted" });
     window.gtag("js", new Date());
-    window.gtag("config", id);
+    window.gtag("config", id, {
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false
+    });
     var script = document.createElement("script");
     script.async = true;
     script.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
     document.head.appendChild(script);
   }
-  // Integration contract: the CMP must explicitly grant analytics consent.
+
+  function clearAnalyticsCookies() {
+    var domains = ["", "; Domain=" + window.location.hostname];
+    if (window.location.hostname.endsWith(".primeznews.com")) {
+      domains.push("; Domain=primeznews.com");
+    }
+    ["_ga", "_ga_" + id.slice(2)].forEach(function (name) {
+      domains.forEach(function (domain) {
+        document.cookie = name + "=; Max-Age=0; Path=/" + domain;
+      });
+    });
+  }
+
+  // This banner owns analytics storage. Google CMP owns advertising updates.
   window.addEventListener("primez:analytics-consent", function (event) {
-    if (event.detail === true) activate();
-    else if (window.__primezAnalyticsStarted && window.gtag) {
+    if (event.detail === true) {
+      activate();
+    } else if (event.detail === false) {
+      window[disableKey] = true;
       window.gtag("consent", "update", { analytics_storage: "denied" });
+      clearAnalyticsCookies();
     }
   });
 
-  // Local opt-in control for analytics only; not an advertising CMP.
   function initConsent() {
     var key = "primez.analytics.consent.v1";
     var choice = null;
@@ -67,6 +91,12 @@
     document.body.appendChild(panel);
     document.body.appendChild(settings);
     if (choice === "granted") apply(true);
+    if (choice === "denied") apply(false);
+    window.addEventListener("storage", function (event) {
+      if (event.key !== key) return;
+      apply(event.newValue === "granted");
+      panel.hidden = event.newValue === "granted" || event.newValue === "denied";
+    });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initConsent, { once: true });
   else initConsent();
