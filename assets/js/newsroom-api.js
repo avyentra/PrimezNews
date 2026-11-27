@@ -149,7 +149,21 @@
         const entered = Date.parse(story.created_at || story.updated_at);
         return !Number.isFinite(entered) || entered > cutoff;
       }); },
-    async publicStories() { return check(await db().rpc('published_stories')); },
+    async publicStories() {
+      const rows = check(await db().rpc('published_stories'));
+      const clean = value => {
+        if (typeof value !== 'string') return value;
+        let words = value.trim().split(/\s+/);
+        while (words.length >= 4 && words.length % 2 === 0) {
+          const mid = words.length / 2;
+          if (!words.slice(0, mid).every((word, i) => word === words[mid + i])) break;
+          words = words.slice(0, mid);
+        }
+        return words.join(' ');
+      };
+      return rows.map(row => Object.fromEntries(Object.entries(row).map(([key, value]) =>
+        [key, ['title', 'pa', 'hi', 'en'].includes(key) ? clean(value) : value])));
+    },
     async save(story) { await requireEditor(); validateStory(story); return check(await db().from('stories').upsert(story).select().single()); },
     async remove(id) { await requireEditor(); check(await db().from('stories').delete().eq('id', id)); },
     async ads() { return check(await db().from('advertisements').select('*')); },
