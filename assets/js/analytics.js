@@ -32,4 +32,42 @@
       window.gtag("consent", "update", { analytics_storage: "denied" });
     }
   });
+
+  // Local opt-in control for analytics only; not an advertising CMP.
+  function initConsent() {
+    var key = "primez.analytics.consent.v1";
+    var choice = null;
+    try { choice = localStorage.getItem(key); } catch (_) {}
+    function apply(granted) {
+      window.dispatchEvent(new CustomEvent("primez:analytics-consent", { detail: granted }));
+    }
+    var panel = document.createElement("div");
+    panel.setAttribute("role", "region");
+    panel.setAttribute("aria-label", "Analytics cookie preferences");
+    panel.style.cssText = "position:fixed;bottom:16px;left:16px;right:16px;max-width:440px;z-index:10000;background:#fff;color:#222;border:1px solid #bbb;border-radius:8px;padding:16px;box-shadow:0 4px 20px #0002;font:14px/1.5 system-ui";
+    var message = document.createElement("p");
+    message.textContent = "ਅਸੀਂ ਤੁਹਾਡੀ ਇਜਾਜ਼ਤ ਨਾਲ ਵਰਤੋਂ ਦੇ ਅੰਕੜੇ ਇਕੱਠੇ ਕਰਦੇ ਹਾਂ। / Optional analytics cookies help us understand website usage.";
+    panel.appendChild(message);
+    function button(label, action) {
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = label;
+      b.style.cssText = "padding:8px 12px;margin:4px;border:1px solid #777;border-radius:4px;background:#fff;color:#222;cursor:pointer";
+      b.addEventListener("click", action);
+      return b;
+    }
+    function save(granted) {
+      try { localStorage.setItem(key, granted ? "granted" : "denied"); } catch (_) {}
+      apply(granted); panel.hidden = true;
+    }
+    panel.appendChild(button("Allow analytics", function () { save(true); }));
+    panel.appendChild(button("Reject analytics", function () { save(false); }));
+    var settings = button("Cookie settings", function () { panel.hidden = false; });
+    settings.style.cssText += ";position:fixed;bottom:0;right:0;z-index:9999;font-size:12px";
+    panel.hidden = choice === "granted" || choice === "denied";
+    document.body.appendChild(panel);
+    document.body.appendChild(settings);
+    if (choice === "granted") apply(true);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initConsent, { once: true });
+  else initConsent();
 })();
