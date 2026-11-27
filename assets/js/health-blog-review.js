@@ -237,13 +237,25 @@
     }
     return card;
   }
+  const requested = new URLSearchParams(location.search);
+  const requestedBlog = requested.get('blog');
+  const requestedLanguage = requested.get('lang');
+  if (library && ['en', 'pa', 'hi'].includes(requestedLanguage)) byId('healthReviewLanguage').value = requestedLanguage;
+
   function render() {
     byId('healthReviewLanguage').disabled = editing;
     for (const tab of filters) {tab.disabled = editing; tab.setAttribute('aria-pressed', String(tab.dataset.filter === selected));}
     if (editing) return;
     const visible = rows.filter(r => selected === 'all' ? r.status !== 'deleted' : r.status === selected);
     visible.sort((a,b) => b.post.date.localeCompare(a.post.date) || b.slot.localeCompare(a.slot));
-    list.replaceChildren(...visible.map(r => show(r)));
+    if (selected === 'all' && requestedBlog) {
+      visible.sort((a,b) => Number(b.post.slug === requestedBlog) - Number(a.post.slug === requestedBlog));
+    }
+    list.replaceChildren(...visible.map(row => {
+      const card = show(row);
+      if (selected === 'all' && row.post.slug === requestedBlog) card.querySelector('details').open = true;
+      return card;
+    }));
     if (!list.children.length) list.append(element('p','No blogs in this view.'));
   }
   for (const tab of filters) tab.onclick = () => {

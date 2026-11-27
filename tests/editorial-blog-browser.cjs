@@ -20,6 +20,7 @@ const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQ
         constructor(table) { this.table = table; this.filters = []; }
         select() { return this; }
         eq(key,value) { this.filters.push(r=>r[key]===value); return this; }
+        ilike(key,value) { this.filters.push(r=>r[key].toLowerCase().includes(value.slice(1,-1).toLowerCase())); return this; }
         neq(key,value) { this.filters.push(r=>r[key]!==value); return this; }
         order() { return this; }
         range(a,b) { this.bounds=[a,b]; return this; }
@@ -56,6 +57,17 @@ const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQ
     assert.equal(await page.locator('#blogSidebar').evaluate(node => getComputedStyle(node).visibility), 'visible');
     await page.getByRole('button', { name: 'Close menu', exact: true }).click();
     assert.equal(await page.locator('#blogSidebar').evaluate(node => getComputedStyle(node).visibility), 'hidden');
+    await page.locator('#blogCategory').selectOption('Health & Beauty');
+    await page.locator('#blogSearch').fill('A gym membership that fits your real week');
+    const existing = page.locator('#blogResults li').filter({ hasText: 'A gym membership that fits your real week' });
+    await existing.waitFor();
+    assert.equal(await existing.getByRole('link', { name: 'Live page' }).getAttribute('href'), '/en/health-blog/how-to-compare-gym-memberships/');
+    assert.match(await existing.getByRole('link', { name: 'Open in Health & Beauty queue' }).getAttribute('href'), /blog=how-to-compare-gym-memberships/);
+    await page.getByRole('button', { name: 'Drafts', exact: true }).click();
+    await existing.waitFor({ state: 'hidden' });
+    await page.locator('#blogCategory').selectOption('');
+    await page.locator('#blogSearch').fill('');
+    await page.getByRole('button', { name: 'All Blogs', exact: true }).click();
     await page.getByRole('button',{name:'New Blog',exact:true}).click();
     assert.equal(await page.locator('#blogForm select[name=category] option').count(),7);
     await page.locator('[name=title]').fill('Mobile publication test');

@@ -9,6 +9,7 @@ on:
       - 'scripts/editorial-blog-requirements.txt'
       - '.github/workflows/editorial-blogs.yml'
       - 'health-beauty.html'
+      - 'data/health-blog.json'
   workflow_dispatch:
 concurrency:
   group: editorial-blog-export

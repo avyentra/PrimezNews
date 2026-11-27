@@ -114,37 +114,84 @@ function openEditor(row = {}) {
   field('title').focus();
 }
 
+async function websiteBlogs() {
+  const response = await fetch('/data/health-blog.json', { cache: 'no-cache' });
+  if (!response.ok) throw new Error('Could not load the published Health & Beauty archive.');
+  const { posts } = await response.json();
+  if (!Array.isArray(posts)) throw new Error('The published Health & Beauty archive is unavailable.');
+  return posts.filter(post => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(post.slug));
+}
+
 async function loadList() {
   const request = ++listRequest;
-  let query = db.from('editorial_blogs').select('id,title,category,language,status,slug', { count: 'exact' }).neq('status', 'deleted').order('updated_at', { ascending: false }).order('id').range(page * pageSize, (page + 1) * pageSize - 1);
-  if (status) query = query.eq('status', status);
-  if (byId('blogCategory').value) query = query.eq('category', byId('blogCategory').value);
-  if (byId('blogLanguage').value) query = query.eq('language', byId('blogLanguage').value);
+  const category = byId('blogCategory').value;
+  const language = byId('blogLanguage').value;
   const search = byId('blogSearch').value.trim().replace(/[\\%_*]/g, ' ').trim();
-  if (search) query = query.ilike('title', '%' + search + '%');
-  const result = await query;
+  const start = page * pageSize;
+  function filtered(query) {
+    query = query.neq('status', 'deleted');
+    if (status) query = query.eq('status', status);
+    if (category) query = query.eq('category', category);
+    if (language) query = query.eq('language', language);
+    if (search) query = query.ilike('title', '%' + search + '%');
+    return query;
+  }
+  async function editorialPage() {
+    const table = db.from('editorial_blogs');
+    const query = filtered(table.select('id,title,category,language,status,slug', { count: 'exact' }))
+      .order('updated_at', { ascending: false }).order('id').range(start, start + pageSize - 1);
+    const result = await query;
+    if (result.status !== 416) return result;
+    const count = await filtered(table.select('id', { count: 'exact', head: true }));
+    return { ...count, data: [] };
+  }
+  const archive = status !== 'draft' && (!category || category === 'Health & Beauty')
+    ? websiteBlogs().then(posts => ({ posts }), error => ({ posts: [], error }))
+    : Promise.resolve({ posts: [] });
+  const [result, { posts, error }] = await Promise.all([editorialPage(), archive]);
   if (request !== listRequest) return;
-  const rows = checked(result);
-  if (!rows.length && page > 0) { page--; return loadList(); }
+  const term = search.toLowerCase();
+  const existing = posts.flatMap(post => {
+    const languages = (language ? [language] : ['en', 'pa', 'hi']).filter(lang => post.title?.[lang]);
+    const matched = languages.filter(lang => post.title[lang].toLowerCase().includes(term));
+    if (!matched.length) return [];
+    return [{ slug: post.slug, title: post.title[matched[0]], language: matched[0],
+      status: 'published', category: 'Health & Beauty', website: true }];
+  });
+  const editorial = checked(result);
+  const editorialCount = result.count;
+  const rows = [...editorial, ...existing.slice(Math.max(0, start - editorialCount), Math.max(0, start + pageSize - editorialCount))];
+  if (!rows.length && page > 0) {
+    page = Math.max(0, Math.ceil((editorialCount + existing.length) / pageSize) - 1);
+    return loadList();
+  }
+  if (error) message(error.message);
   const list = byId('blogResults');
   list.replaceChildren();
   for (const row of rows) {
     const item = element('li');
     const details = element('div');
     details.append(element('strong', row.title), element('p', [row.category, row.language.toUpperCase(), row.status === 'published' ? 'Published' : 'Draft'].join(' · ')));
-    const edit = element('button', 'Edit');
-    edit.type = 'button';
-    edit.addEventListener('click', () => run(async () => openEditor(checked(await db.from('editorial_blogs').select('*').eq('id', row.id).single()))));
-    item.append(details, edit);
+    item.append(details);
+    if (row.website) {
+      const edit = element('a', 'Open in Health & Beauty queue');
+      edit.href = '/admin-blogs.html?blog=' + encodeURIComponent(row.slug) + '&lang=' + row.language;
+      item.append(edit);
+    } else {
+      const edit = element('button', 'Edit');
+      edit.type = 'button';
+      edit.addEventListener('click', () => run(async () => openEditor(checked(await db.from('editorial_blogs').select('*').eq('id', row.id).single()))));
+      item.append(edit);
+    }
     if (row.status === 'published') {
       const live = element('a', 'Live page');
-      live.href = '/blogs/' + encodeURIComponent(row.slug) + '/';
+      live.href = (row.website ? (row.language === 'pa' ? '' : '/' + row.language) + '/health-blog/' : '/blogs/') + encodeURIComponent(row.slug) + '/';
       item.append(live);
     }
     list.append(item);
   }
   if (!rows.length) list.append(element('li', 'No blogs match these filters.'));
-  const total = Math.max(1, Math.ceil(result.count / pageSize));
+  const total = Math.max(1, Math.ceil((editorialCount + existing.length) / pageSize));
   byId('blogPrev').disabled = page === 0;
   byId('blogNext').disabled = page + 1 >= total;
   byId('blogPage').textContent = 'Page ' + (page + 1) + ' of ' + total;

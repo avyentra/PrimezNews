@@ -60,6 +60,19 @@ class EditorialBlogsTests(unittest.TestCase):
             self.assertFalse(page.exists())
             self.assertNotIn(f'{SITE}/blogs/member-0/', (root / 'blog-sitemap.xml').read_text())
 
+    def test_archive_uses_original_public_urls(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'health-beauty.html').write_bytes((ROOT / 'health-beauty.html').read_bytes())
+            (root / 'data').mkdir()
+            (root / 'data/health-blog.json').write_bytes((ROOT / 'data/health-blog.json').read_bytes())
+            build([post()], root)
+            listing = (root / 'blogs/index.html').read_text()
+            self.assertIn('href="/en/health-blog/how-to-compare-gym-memberships/"', listing)
+            self.assertIn('A gym membership that fits your real week', listing)
+            self.assertIn(f'href="{SITE}/blogs/test-post/"', listing)
+            self.assertFalse((root / 'blogs/how-to-compare-gym-memberships').exists())
+
     def test_rejects_invalid_slug(self):
         with self.assertRaisesRegex(ValueError, 'slug'):
             build([post('../draft')], Path('/unused'))

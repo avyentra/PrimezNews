@@ -106,11 +106,30 @@ def frame(root, language, title, description, canonical, content, image='', stru
             f'{pre}{content}{post}')
 
 
+def archive_cards(root):
+    archive = root / 'data/health-blog.json'
+    if not archive.exists():
+        return ''
+    cards = []
+    for post in json.loads(archive.read_text(encoding='utf-8'))['posts']:
+        slug = post['slug']
+        if not SLUG.fullmatch(slug):
+            raise ValueError(f'Invalid archived blog slug: {slug}')
+        title = escape(post['title']['en'])
+        summary = escape(' '.join(post['excerpt']['en'].split()))
+        author = escape(post['author']['en'])
+        cards.append(f'<article class="bl-card" lang="en"><a href="/en/health-blog/{slug}/">'
+                     f'<strong>{title}</strong></a><p>{summary}</p><small>{author} · English, ਪੰਜਾਬੀ, हिन्दी</small></article>')
+    return ''.join(cards)
+
+
 def listing(root, rows):
     nav = ''.join(f'<a class="bl-tag" href="/blogs/#{category_id(c)}">{escape(c)}</a> ' for c in CATEGORIES)
     sections = []
     for category in CATEGORIES:
         articles = ''.join(card(row) for row in rows if row['category'] == category)
+        if category == 'Health & Beauty':
+            articles += archive_cards(root)
         existing = ('<p><a href="/health-blog/">Health &amp; Beauty archive</a></p>'
                     if category == 'Health & Beauty' else '')
         sections.append(f'<section id="{category_id(category)}"><h2>{escape(category)}</h2>'
