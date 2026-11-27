@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Blogs | PrimezNews Newsroom</title>
   <link rel="stylesheet" href="/assets/css/admin-dashboard.css?v=blog-shell-20261127b">
-  <link rel="stylesheet" href="/assets/css/blog-management.css?v=website-tabs-20261127">
+  <link rel="stylesheet" href="/assets/css/blog-management.css?v=blog-toolbar-20261127">
 </head>
 <body class="ad-ui blog-management-page">
   <div class="ad-app">
@@ -24,17 +24,17 @@
       <button class="btn" id="blogLogout" type="button">Sign out</button>
     </aside>
     <main class="ad-main blog-admin">
-      <header class="ad-top"><button id="blogMenu" type="button" class="btn ad-menu" aria-controls="blogSidebar" aria-expanded="false">Menu</button><h1>Blogs</h1></header>
+      <header class="ad-top"><button id="blogMenu" type="button" class="btn ad-menu" aria-controls="blogSidebar" aria-expanded="false">Menu</button><h1>Blogs</h1><button type="button" id="newBlog" aria-pressed="false" hidden>New Blog</button></header>
       <p id="blogMessage" role="status" aria-live="polite">Checking newsroom access…</p>
       <nav class="blog-actions blog-navigation" id="blogNavigation" aria-label="Blog views" hidden>
           <button type="button" data-status="" aria-pressed="true">All Blogs</button>
           <button type="button" data-status="published" aria-pressed="false">Published Blogs</button>
           <button type="button" data-status="draft" aria-pressed="false">Drafts</button>
-          <button type="button" id="newBlog" aria-pressed="false">New Blog</button>
-          <label class="blog-import">Import Blog Studio draft<input type="file" id="blogImport" accept=".json,application/json"></label>
+          <button class="blog-import" type="button" id="blogImportButton">Import Blog Studio draft</button>
+          <input type="file" id="blogImport" accept=".json,application/json" hidden>
       </nav>
       <section id="blogLibrary" hidden>
-        <div class="blog-fields">
+        <div class="blog-fields blog-filters">
           <label>Search by title<input type="search" id="blogSearch"></label>
           <label>Category<select id="blogCategory"><option value="">All categories</option></select></label>
           <label>Language<select id="blogLanguage"><option value="">All languages</option><option value="en">English</option><option value="pa">ਪੰਜਾਬੀ</option><option value="hi">हिन्दी</option></select></label>
@@ -97,6 +97,6 @@
   <script defer src="/assets/js/newsroom-api.js"></script>
   <script defer src="/assets/js/vendor/blog-purify.js"></script>
   <script defer src="/assets/js/vendor/blog-marked.js"></script>
-  <script defer src="/assets/js/blog-management.js?v=website-tabs-20261127"></script>
+  <script defer src="/assets/js/blog-management.js?v=blog-toolbar-20261127"></script>
 </body>
 </html>

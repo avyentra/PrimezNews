@@ -24,6 +24,12 @@
 .blog-admin fieldset { margin: 1rem 0; padding: .75rem; min-inline-size: 0; border: 1px solid #c4ceda; border-radius: .5rem; }
 .blog-actions { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; }
 .blog-navigation { margin-bottom: 1rem; }
+.blog-management-page #newBlog { margin-inline-start: auto; background: #173869; border-color: #173869; color: #fff; }
+.blog-management-page #newBlog[aria-pressed="true"] { box-shadow: inset 0 0 0 1px #d9ad4e; }
+.blog-navigation .blog-import { margin-inline-start: auto; }
+@media (min-width: 761px) {
+  .blog-fields.blog-filters { grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)); }
+}
 .blog-results { padding: 0; list-style: none; }
 .blog-results li { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem; padding: .7rem 0; border-top: 1px solid #dce3ec; }
 .blog-results li div { flex: 1 1 15rem; overflow-wrap: anywhere; }

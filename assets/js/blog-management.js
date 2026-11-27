@@ -9,6 +9,7 @@ const form = byId('blogForm');
 const body = byId('blogBody');
 const library = byId('blogLibrary');
 const navigation = byId('blogNavigation');
+const newBlog = byId('newBlog');
 const editorFields = 'title summary category language author audience cover_url cover_alt cover_caption seo_title seo_description focus_keyword secondary_keywords canonical_url social_image'.split(' ');
 const field = name => form.elements.namedItem(name);
 const message = text => { byId('blogMessage').textContent = text; };
@@ -91,13 +92,13 @@ function syncEditor() {
 }
 
 function selectView(active) {
-  for (const button of navigation.querySelectorAll('button[aria-pressed]')) {
+  for (const button of [newBlog, ...navigation.querySelectorAll('[data-status]')]) {
     button.setAttribute('aria-pressed', String(button === active));
   }
 }
 
 function openEditor(row = {}) {
-  selectView(row.id ? null : byId('newBlog'));
+  selectView(row.id ? null : newBlog);
   form.inert = false;
   current = row;
   form.reset();
@@ -378,12 +379,14 @@ async function run(action) {
   form.inert = true;
   library.inert = true;
   navigation.inert = true;
+  newBlog.disabled = true;
   message('');
   try { await action(); } catch (error) { message(error.message); } finally {
     busy = false;
     form.inert = false;
     library.inert = false;
     navigation.inert = false;
+    newBlog.disabled = false;
   }
 }
 
@@ -465,6 +468,7 @@ async function init() {
       syncEditor();
     } finally { event.target.value = ''; }
   }));
+  byId('blogImportButton').addEventListener('click', () => byId('blogImport').click());
   byId('blogImport').addEventListener('change', event => run(async () => {
     try {
       if (dirty && !window.confirm('Discard unsaved blog changes?')) return;
@@ -490,6 +494,7 @@ async function init() {
     });
   }
   navigation.hidden = false;
+  newBlog.hidden = false;
   await showList();
   startStudioHandoff();
 }
