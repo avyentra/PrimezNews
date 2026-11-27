@@ -156,7 +156,7 @@ def listing(root, rows):
     stories = ''.join(sections) or '<p>No published blogs yet.</p>'
     content = ('<main class="topic bl editorial-blogs blog-index"><h1>Blogs</h1>'
                f'{nav}{stories}</main>')
-    return frame(root, 'en', 'Blogs | PrimezNews', 'Browse PrimezNews blogs by category.', f'{SITE}/blogs/', content)
+    return frame(root, 'en', 'Blogs | PrimezNews', 'Explore PrimezNews guides on health, fitness, beauty, nutrition and everyday wellbeing, with practical tips and articles in English, Punjabi and Hindi.', f'{SITE}/blogs/', content)
 
 
 def article(root, row, rows):
