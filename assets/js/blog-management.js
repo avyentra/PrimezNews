@@ -520,18 +520,7 @@ function startStudioHandoff() {
   opener.postMessage({ type: 'primez-studio-ready', token }, studioOrigin);
 }
 
-function setSidebarOpen(open) {
-  document.body.classList.toggle('ad-menu-open', open);
-  byId('blogMenu').setAttribute('aria-expanded', String(open));
-  byId(open ? 'blogCloseMenu' : 'blogMenu').focus();
-}
-
-byId('blogMenu').addEventListener('click', () => setSidebarOpen(true));
-byId('blogCloseMenu').addEventListener('click', () => setSidebarOpen(false));
-document.addEventListener('keydown', event => {
-  if (event.key === 'Escape' && document.body.classList.contains('ad-menu-open')) setSidebarOpen(false);
-});
-byId('blogLogout').addEventListener('click', () => run(async () => {
+byId('logout').addEventListener('click', () => run(async () => {
   if (dirty && !window.confirm('Sign out and discard unsaved changes?')) return;
   await PrimezAPI.logout();
   dirty = false;

@@ -44,6 +44,7 @@ const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQ
       window.PrimezAPI = {db:()=>({
         auth:{getUser:async()=>({data:{user}})},
         from:table=>new Query(table),
+        rpc:async name=>({data:name==='journalist_reviewer'}),
         storage:{from:()=>({
           upload:async (path,file)=>{uploads.push([path,file.type]);return {data:{path}};},
           getPublicUrl:path=>({data:{publicUrl:location.origin.replace('http:','https:')+'/'+path}})
@@ -53,8 +54,14 @@ const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQ
     await page.goto(root+'/blog-management.html');
     assert.equal(await page.locator('body').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(243, 244, 248)');
     assert.equal(await page.locator('.ad-logo').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(20, 35, 58)');
+    await page.locator('#userChip').waitFor({ state: 'attached' });
+    await page.waitForFunction(() => !document.querySelector('#reviewJournalists').hidden);
+    assert.equal(await page.locator('#logout').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(255, 245, 245)');
     await page.getByRole('button', { name: 'Menu', exact: true }).click();
     assert.equal(await page.locator('#blogSidebar').evaluate(node => getComputedStyle(node).visibility), 'visible');
+    assert.equal(await page.locator('.ad-nav a').allTextContents().then(items => items.map(x => x.trim()).join('|')),
+      'My dashboard|New story|Recent news|Draft news|Health & Beauty queue|Blogs|Citizen Stories|Advertisements|Journalist applications|Profile settings|View live stories ↗|View live blogs ↗');
+    assert.equal(await page.locator('.ad-nav [aria-current="page"]').textContent(), 'Blogs');
     await page.getByRole('button', { name: 'Close menu', exact: true }).click();
     assert.equal(await page.locator('#blogSidebar').evaluate(node => getComputedStyle(node).visibility), 'hidden');
     await page.locator('#blogCategory').selectOption('Health & Beauty');

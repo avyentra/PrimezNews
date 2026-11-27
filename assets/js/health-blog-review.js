@@ -304,12 +304,6 @@
     }
   }
   if (library) {
-    const menu = byId('blogMenu');
-    if (menu) menu.onclick = () => {
-      const expanded = menu.getAttribute('aria-expanded') !== 'true';
-      menu.setAttribute('aria-expanded', String(expanded));
-      document.body.classList.toggle('ad-menu-open',expanded);
-    };
     async function loadLibrary(){
       try {
         const db = window.PrimezAPI.db();

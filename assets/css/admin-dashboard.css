@@ -3,3 +3,14 @@
 @media(max-width:640px){.ad-ui .ad-search{display:none!important}}
 .ad-ui #saveDraft{display:none!important}
 .ad-ui .author-field{display:none!important}@media(min-width:641px){.ad-ui .metadata-row{grid-template-columns:1fr 1fr}.ad-ui .metadata-row .field:last-child{grid-column:auto}}
+
+/* Keep standalone newsroom workspaces aligned with the main dashboard. */
+.newsroom-subpage { margin: 0; }
+.newsroom-subpage .ad-side, .newsroom-subpage .ad-side * { box-sizing: border-box; }
+.newsroom-subpage .ad-side button { cursor: pointer; }
+.newsroom-subpage .newsroom-close-menu { display: none; }
+@media (max-width: 980px) {
+  .newsroom-subpage .ad-side { visibility: hidden; width: min(270px, 90vw); }
+  .newsroom-subpage.ad-menu-open .ad-side { visibility: visible; }
+  .newsroom-subpage .newsroom-close-menu { display: block; padding: .55rem; border: 1px solid var(--line); background: #f3f4f8; color: var(--navy); font: inherit; }
+}
