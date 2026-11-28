@@ -18,3 +18,20 @@ html:is(:lang(hi), :lang(pa)) .pn-compact :is(.pn-quick a:not(:first-child), .pn
   font-size: 14px;
   line-height: 1.45;
 }
+
+.pn-compact .pn-topline :is(a, button, select) {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+}
+.pn-compact .pn-topline a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 1200px) {
+  .pn-compact .pn-quick a:nth-child(n+4) { display: none; }
+}
+@media (max-width: 760px) {
+  .pn-compact .pn-quick { display: none; }
+  .pn-compact .pn-topline { flex-wrap: wrap; }
+}

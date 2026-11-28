@@ -81,6 +81,16 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
   font-size: 13.5px;
   line-height: 1.5;
 }
+  :host(.compact-nav) nav > :is(button, .live),
+  :host(.compact-nav) .primary :is(a, summary) {
+    min-inline-size: 44px;
+    min-block-size: 44px;
+    justify-content: center;
+  }
+  :host(.compact-nav) .primary > a {
+    display: inline-flex;
+    align-items: center;
+  }
 </style><nav><button class="mobile" aria-expanded="false" aria-controls="sections">☰ <span></span></button><div id="sections"></div><a class="live" href="news/">◉ LIVE</a><button class="more" aria-controls="panel" aria-expanded="false"></button><button class="search" aria-label="Search" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><div id="panel" hidden><div class="cols"></div><footer></footer></div></nav><div class="wire"><div><b></b><div class="headlines"></div></div></div><div class="market"><div></div></div>`;
   const q = s => root.querySelector(s);
   const locale = () => ['pa','hi','en'].includes(document.documentElement.lang) ? document.documentElement.lang : 'pa';
@@ -103,7 +113,7 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
   if (masthead) {
     const style = document.createElement('link');
     style.rel = 'stylesheet';
-    style.href = 'assets/css/masthead.css?v=2';
+    style.href = 'assets/css/masthead.css?v=3';
     document.head.append(style);
     masthead.classList.add('pn-compact');
     host.classList.add('compact-nav');
