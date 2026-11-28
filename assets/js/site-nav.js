@@ -170,10 +170,10 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
   }
   for (const part of [trigger, panel]) {
     part.addEventListener('pointerenter', event => {
-      if (event.pointerType === 'mouse') setMore(true);
+      if (event.pointerType === 'mouse' && matchMedia('(hover: hover)').matches) setMore(true);
     });
     part.addEventListener('pointerleave', event => {
-      if (event.pointerType === 'mouse') {
+      if (event.pointerType === 'mouse' && matchMedia('(hover: hover)').matches) {
         closeTimer = setTimeout(() => {
           if (!panel.contains(root.activeElement)) setMore(false);
         }, 180);
