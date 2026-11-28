@@ -170,10 +170,10 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
   }
   for (const part of [trigger, panel]) {
     part.addEventListener('pointerenter', event => {
-      if (event.pointerType === 'mouse' && matchMedia('(hover: hover)').matches) setMore(true);
+      if (event.pointerType === 'mouse') setMore(true);
     });
     part.addEventListener('pointerleave', event => {
-      if (event.pointerType === 'mouse' && matchMedia('(hover: hover)').matches) {
+      if (event.pointerType === 'mouse') {
         closeTimer = setTimeout(() => {
           if (!panel.contains(root.activeElement)) setMore(false);
         }, 180);
@@ -184,8 +184,8 @@ function pnDate(d,lang,short){const ist=new Date(d.getTime()+(d.getTimezoneOffse
     if (event.relatedTarget !== trigger && !panel.contains(event.relatedTarget)) setMore(false);
   });
   trigger.onclick = event => {
-    const mouseHover = event.detail > 0 && matchMedia('(hover: hover)').matches && event.pointerType !== 'touch';
-    setMore(mouseHover || panel.hidden);
+    const mouseClick = event.detail > 0 && (event.pointerType === 'mouse' || (!event.pointerType && matchMedia('(hover: hover)').matches));
+    setMore(mouseClick || panel.hidden);
   };
   trigger.addEventListener('keydown', event => {
     if (event.key === 'ArrowDown') {
