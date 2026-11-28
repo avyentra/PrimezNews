@@ -129,3 +129,8 @@
     scroll-padding-inline: 14px;
   }
 }
+
+@media (max-width: 720px) {
+  /* Match the 14px mobile page gutter so the scroll strips end at the viewport. */
+  .hero-section .secondary-stories, #latest .feed-grid { margin-inline: -14px; }
+}
